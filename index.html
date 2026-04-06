@@ -115,6 +115,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .concept-chip .chip-term{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600}
 
 /* RESPONSIVE */
+.audio-bar{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px}
+.audio-bar .play-btn{background:var(--accent);color:#0d0d0d;border:none;width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.audio-bar .play-btn:hover{background:#f08a3e}
+.audio-bar .audio-label{font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);flex:1}
+.audio-bar audio{display:none}
 @media(max-width:768px){
 .top-bar{grid-template-columns:1fr}
 .grid{grid-template-columns:1fr}
@@ -194,6 +199,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 1 // <span>How to Begin</span></div><div class="section-count" id="cnt-m1">0/4</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module1.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="10" data-id="install" data-tutorial="install"><div class="card-top"><div class="card-title">Install Claude Code</div><span class="pill pill-orange">START</span></div><div class="card-desc">One command to install the most powerful AI coding assistant on your machine.</div><div class="cmd"><code>curl -fsSL https://claude.ai/install | sh</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="10" data-id="apikey" data-tutorial="apikey"><div class="card-top"><div class="card-title">Get Your API Key</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Sign up at console.anthropic.com, create an API key, and add credits.</div><div class="cmd"><code>https://console.anthropic.com</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -204,6 +210,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 2 // <span>Foundation</span></div><div class="section-count" id="cnt-m2">0/5</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module2.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="15" data-id="memory" data-tutorial="memory"><div class="card-top"><div class="card-title">Memory System</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">How Claude remembers across sessions. User prefs, project context, feedback - it all persists.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="15" data-id="skills" data-tutorial="skills"><div class="card-top"><div class="card-title">Understanding Skills</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Downloadable instruction sets that teach Claude new abilities. Drop in ~/.claude/skills/ and go.</div><div class="cmd"><code>ls ~/.claude/skills/</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -215,6 +222,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 3 // <span>Creator Powers</span></div><div class="section-count" id="cnt-m3">0/6</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module3.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="20" data-id="imgedit" data-tutorial="imgedit"><div class="card-top"><div class="card-title">Image Editing & Face Swap</div><span class="pill pill-outline">CREATIVE</span></div><div class="card-desc">Take a reference photo and transform it into any scene while keeping their exact face.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="25" data-id="elevenlabs" data-tutorial="elevenlabs"><div class="card-top"><div class="card-title">ElevenLabs Voiceover</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Professional AI voiceovers. Hundreds of voices or clone your own.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -227,6 +235,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 4 // <span>Automation</span></div><div class="section-count" id="cnt-m4">0/5</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module4.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="25" data-id="crons" data-tutorial="crons"><div class="card-top"><div class="card-title">Cron Jobs & /loop</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Schedule recurring tasks. Check APIs every 5 minutes, run scrapers daily, send reports weekly.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="30" data-id="multiagent" data-tutorial="multiagent"><div class="card-top"><div class="card-title">Multi-Agent Architecture</div><span class="pill pill-orange">ADVANCED</span></div><div class="card-desc">Spawn separate agents with their own Telegram bots, instructions, and skills. One Mac, 10 AI employees.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -238,6 +247,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 5 // <span>Integration</span></div><div class="section-count" id="cnt-m5">0/7</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module5.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="25" data-id="gdrive" data-tutorial="gdrive"><div class="card-top"><div class="card-title">Google Drive API</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Create folders, upload files, organize deliverables automatically.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="30" data-id="stripe" data-tutorial="stripe"><div class="card-top"><div class="card-title">Stripe (Payments)</div><span class="pill pill-outline">REVENUE</span></div><div class="card-desc">Create products, generate payment links, process transactions. Claude becomes billing.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -251,6 +261,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 6 // <span>Mastery</span></div><div class="section-count" id="cnt-m6">0/4</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module6.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
 <div class="grid">
 <div class="skill-card" data-xp="40" data-id="customskills" data-tutorial="customskills"><div class="card-top"><div class="card-title">Build Custom Skills</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Write your own skills. Package them for others. Every workflow becomes a downloadable superpower.</div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 <div class="skill-card" data-xp="40" data-id="vectordb" data-tutorial="vectordb"><div class="card-top"><div class="card-title">Vector DB + RAG Memory</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">True semantic search across everything. Infinite memory with local SQLite vectors.</div><div class="cmd"><code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
@@ -271,6 +282,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- CASE STUDIES -->
 <div class="page" id="pg-cases">
 <div class="section-header"><div class="section-title"><span>&#9632;</span> Real Stories</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/cases.mp3')">&#9654;</button><div class="audio-label">Listen to case studies</div></div>
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">PROPOSAL</span></div><h4>The CyberFOX Proposal</h4><p>A $500M cybersecurity company needed an AI operations proposal. The agent researched the entire company — products, leadership, financials, tech stack — then wrote a 25-page department-by-department automation plan with ROI estimates. Total time: 10 minutes. Positioned a $10K service delivering $2-5M in annual savings.</p></div>
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">CONTENT</span></div><h4>The Peptide Bible</h4><p>28 YouTube video transcripts (238,000 words) from a peptide expert were processed, voice-analyzed, and synthesized into a 15,685-word sales training manual — written in the expert's exact voice. 16 peptide chapters, dosing protocols, objection handlers, and a sales rep cheat sheet.</p></div>
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">VIDEO</span></div><h4>10 Videos Overnight</h4><p>10 cinematic video scripts, 60 source images (Nano Banana), 60 video clips (Kling 3.0), 10 voiceovers (ElevenLabs), 10 Instagram captions, all organized in labeled folders. Produced autonomously while the client slept.</p></div>
@@ -280,6 +292,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- SECURITY -->
 <div class="page" id="pg-security">
 <div class="section-header"><div class="section-title"><span>&#9632;</span> Cybersecurity Training</div></div>
+<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/security.mp3')">&#9654;</button><div class="audio-label">Listen to security training</div></div>
 
 <div class="tip-card" style="border-color:#ff4444;margin-bottom:24px">
 <div class="tip-icon">&#9888;</div>
@@ -480,6 +493,20 @@ document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',
 // Tips rotation
 const TIPS=["SYSTEM READY // All modules operational.","TIP // Skills are markdown files in ~/.claude/skills/","TIP // Use /loop 5m to automate recurring tasks","TIP // Nano Banana image gen is completely free","TIP // CLAUDE.md loads at every session start","TIP // Edge TTS gives you free unlimited voiceover","TIP // You can spawn multiple agents via Telegram bots","TIP // MCP servers extend Claude with new capabilities"];
 let tipIdx=0;setInterval(()=>{tipIdx=(tipIdx+1)%TIPS.length;document.getElementById('tipText').textContent=TIPS[tipIdx]},8000);
+
+// Audio player
+let currentAudio=null;
+function playAudio(btn,src){
+if(currentAudio){currentAudio.pause();document.querySelectorAll('.play-btn').forEach(b=>{b.innerHTML='&#9654;';b.style.background='var(--accent)'});}
+if(btn.dataset.playing==='true'){btn.dataset.playing='false';btn.innerHTML='&#9654;';currentAudio=null;return;}
+let a=new Audio(src);
+currentAudio=a;
+btn.dataset.playing='true';
+btn.innerHTML='&#9646;&#9646;';
+btn.style.background='#00c896';
+a.play();
+a.onended=function(){btn.innerHTML='&#9654;';btn.style.background='var(--accent)';btn.dataset.playing='false';currentAudio=null;};
+}
 
 buildSkillsPage();
 updateUI();
