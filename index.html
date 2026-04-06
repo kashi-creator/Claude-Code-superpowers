@@ -3,1179 +3,1476 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code OS</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Claude Code Superpowers</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0d0d0d;--card:#141414;--card2:#1a1a1a;--border:#2a2a2a;--accent:#e87a2e;--text:#ffffff;--dim:#888888;--dimmer:#555555}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* NAV */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
-.nav-brand{display:flex;align-items:center;gap:10px}
-.nav-brand .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
-.nav-brand span{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
-.nav-links{display:flex;gap:6px}
-.nav-links a{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:8px 16px;border-radius:6px;transition:all 0.2s}
-.nav-links a:hover{color:var(--text)}
-.nav-links a.active{color:var(--accent);background:rgba(232,122,46,0.1)}
-.nav-level{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
-.nav-level span{color:var(--accent)}
+:root {
+  --bg: #0d0d0d;
+  --bg-card: #141414;
+  --bg-card-hover: #1a1a1a;
+  --gold: #D3AA64;
+  --gold-dim: #b8923f;
+  --gold-glow: rgba(211, 170, 100, 0.3);
+  --gold-subtle: rgba(211, 170, 100, 0.08);
+  --white: #ffffff;
+  --text: #e0e0e0;
+  --text-dim: #888888;
+  --border: #222222;
+  --border-gold: rgba(211, 170, 100, 0.25);
+  --success: #4ade80;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
 
-/* CONTAINER */
-.container{max-width:1200px;margin:0 auto;padding:24px 32px}
+html { scroll-behavior: smooth; }
 
-/* TOP BAR */
-.top-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px}
-.status-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-.status-card .label{font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-.status-card .value{font-size:22px;font-weight:800}
-.status-card .value span{color:var(--accent)}
-.status-card .bar-track{height:4px;background:#222;border-radius:2px;margin-top:10px;overflow:hidden}
-.status-card .bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s}
-.status-card .sub{font-size:11px;color:var(--dimmer);margin-top:6px;font-family:'JetBrains Mono',monospace}
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-/* PILLS */
-.pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
-.pill-orange{background:var(--accent);color:#0d0d0d}
-.pill-outline{background:transparent;border:1px solid var(--border);color:var(--dim)}
-.pill-done{background:rgba(0,200,150,0.15);color:#00c896}
-.pill-locked{background:rgba(255,255,255,0.05);color:#444}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
 
-/* SECTION */
-.section{margin-bottom:32px}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.section-title{font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim)}
-.section-title span{color:var(--accent)}
-.section-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dimmer)}
+/* ---- HERO ---- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
 
-/* SKILL GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
-.skill-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;transition:all 0.15s;cursor:pointer;position:relative}
-.skill-card:hover{border-color:#3a3a3a;transform:translateY(-1px)}
-.skill-card .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.skill-card .card-title{font-size:15px;font-weight:700;color:var(--text)}
-.skill-card .card-desc{font-size:13px;color:var(--dim);line-height:1.5;margin-bottom:14px}
-.skill-card .card-bottom{display:flex;align-items:center;justify-content:space-between}
-.skill-card .card-xp{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)}
-.skill-card .card-btn{background:none;border:1px solid var(--border);color:var(--dim);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.2s}
-.skill-card .card-btn:hover{border-color:var(--accent);color:var(--accent)}
-.skill-card .card-btn.done{border-color:#00c896;color:#00c896;background:rgba(0,200,150,0.08)}
-.skill-card .cmd{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;overflow-x:auto}
-.skill-card .cmd code{flex:1;white-space:nowrap}
-.skill-card .cmd button{background:var(--accent);color:#0d0d0d;border:none;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(211,170,100,0.06) 0%, transparent 50%);
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
 
-/* CASE STUDIES */
-.case-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px}
-.case-card h4{font-size:16px;font-weight:700;margin-bottom:4px}
-.case-card .case-tag{margin-bottom:10px}
-.case-card p{font-size:13px;color:var(--dim);line-height:1.6}
+@keyframes heroGlow {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.1) translate(2%, -2%); }
+}
 
-/* TIP */
-.tip-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px}
-.tip-card .tip-icon{font-size:20px}
-.tip-card .tip-label{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
-.tip-card .tip-text{font-size:13px;color:var(--dim);line-height:1.5}
+.hero-mascot {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 40px var(--gold-glow);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+  animation: mascotFloat 4s ease-in-out infinite;
+}
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
 
-/* TUTORIAL MODAL */
-.tutorial-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9000;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.tutorial-modal.open{display:flex;justify-content:center;align-items:flex-start}
-.tutorial-panel{width:100%;max-width:720px;margin:40px 20px;background:#141414;border:1px solid var(--border);border-radius:16px;padding:0;animation:modalIn 0.25s ease}
-@keyframes modalIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.tutorial-close{position:sticky;top:0;display:flex;justify-content:flex-end;padding:16px 20px 0;z-index:2}
-.tutorial-close button{background:none;border:1px solid var(--border);color:var(--dim);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 18px;border-radius:6px;cursor:pointer;transition:all 0.2s}
-.tutorial-close button:hover{border-color:var(--accent);color:var(--accent)}
-.tutorial-body{padding:0 32px 40px}
-.tutorial-title{font-size:26px;font-weight:800;margin-bottom:4px}
-.tutorial-subtitle{font-size:13px;color:var(--dim);margin-bottom:24px}
-.tutorial-protip{background:rgba(232,122,46,0.1);border:1px solid rgba(232,122,46,0.3);border-radius:10px;padding:14px 18px;margin-bottom:28px;display:flex;align-items:flex-start;gap:12px}
-.tutorial-protip .protip-badge{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);white-space:nowrap;padding-top:2px}
-.tutorial-protip .protip-text{font-size:13px;color:#ccc;line-height:1.6}
-.tutorial-section{margin-bottom:28px}
-.tutorial-section-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
-.tutorial-story{font-size:14px;color:#bbb;line-height:1.8;font-style:italic;background:#0f0f0f;border:1px solid #1e1e1e;border-radius:10px;padding:18px 20px;margin-bottom:28px}
-.tutorial-explain-box{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:10px;padding:16px 20px;margin-bottom:14px}
-.tutorial-explain-box .explain-term{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px}
-.tutorial-explain-box .explain-def{font-size:13px;color:#bbb;line-height:1.6}
-.tutorial-steps{list-style:none;padding:0;counter-reset:steps}
-.tutorial-steps li{counter-increment:steps;display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
-.tutorial-steps li::before{content:counter(steps);flex-shrink:0;width:28px;height:28px;background:var(--accent);color:#0d0d0d;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:1px}
-.tutorial-steps li span{font-size:14px;color:#ccc;line-height:1.7}
-.tutorial-steps li code{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)}
-.tutorial-tip-box{background:rgba(0,200,150,0.08);border:1px solid rgba(0,200,150,0.25);border-radius:10px;padding:14px 18px;margin-top:8px}
-.tutorial-tip-box .tip-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#00c896;margin-bottom:4px}
-.tutorial-tip-box .tip-body{font-size:13px;color:#aaa;line-height:1.6}
-.concept-tooltips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-.concept-chip{background:#1a1a1a;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;color:var(--dim);cursor:default;transition:all 0.2s;position:relative}
-.concept-chip:hover{border-color:var(--accent);color:var(--text)}
-.concept-chip .chip-term{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600}
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--gold), #f0d890, var(--gold-dim));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 16px;
+}
 
-/* RESPONSIVE */
-.audio-bar{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px}
-.audio-bar .play-btn{background:var(--accent);color:#0d0d0d;border:none;width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
-.audio-bar .play-btn:hover{background:#f08a3e}
-.audio-bar .audio-label{font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);flex:1}
-.audio-bar audio{display:none}
-@media(max-width:768px){
-.top-bar{grid-template-columns:1fr}
-.grid{grid-template-columns:1fr}
-.nav{padding:12px 16px;flex-wrap:wrap;gap:10px}
-.nav-links{overflow-x:auto;flex-wrap:nowrap}
-.container{padding:16px}
-.tutorial-panel{margin:20px 10px}
-.tutorial-body{padding:0 20px 30px}
-.tutorial-title{font-size:22px}
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  max-width: 600px;
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+/* XP Bar */
+.xp-dashboard {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 32px;
+}
+
+.xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0d0d0d;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.xp-text {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.xp-bar-outer {
+  width: 100%;
+  height: 14px;
+  background: #1a1a1a;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.xp-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), #f0d890);
+  border-radius: 7px;
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 12px var(--gold-glow);
+  width: 0%;
+}
+
+/* Achievements row */
+.achievements {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.achievement {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: var(--bg-card);
+  opacity: 0.4;
+  transition: all 0.3s;
+}
+
+.achievement.unlocked {
+  border-color: var(--gold);
+  opacity: 1;
+  box-shadow: 0 0 16px var(--gold-glow);
+}
+
+/* ---- TOAST ---- */
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0d0d0d;
+  padding: 16px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  z-index: 9999;
+  transform: translateX(120%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 8px 32px rgba(211,170,100,0.4);
+}
+
+.toast.show { transform: translateX(0); }
+
+/* ---- MODULES ---- */
+.module-section {
+  padding: 80px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.module-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-subtle);
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-gold);
+}
+
+.module-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--white);
+}
+
+.audio-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.audio-btn:hover {
+  background: var(--gold);
+  color: #0d0d0d;
+  box-shadow: 0 0 20px var(--gold-glow);
+  transform: scale(1.1);
+}
+
+.audio-btn.playing {
+  background: var(--gold);
+  color: #0d0d0d;
+  animation: audioPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes audioPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  50% { box-shadow: 0 0 0 10px transparent; }
+}
+
+/* ---- SKILL CARDS ---- */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.skill-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.skill-card:hover {
+  border-color: var(--border-gold);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border-gold);
+}
+
+.skill-card:hover::before { opacity: 1; }
+
+.skill-card.completed {
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.skill-card.completed::after {
+  content: '\2713';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background: var(--success);
+  color: #0d0d0d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.skill-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.skill-icon {
+  font-size: 1.6rem;
+}
+
+.skill-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-beginner { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+.badge-intermediate { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.badge-advanced { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+.badge-godtier { background: rgba(211, 170, 100, 0.2); color: var(--gold); border: 1px solid var(--border-gold); }
+
+.badge-xp {
+  background: var(--gold-subtle);
+  color: var(--gold);
+  border: 1px solid var(--border-gold);
+}
+
+.skill-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.skill-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Expanded content */
+.skill-expanded {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skill-card.open .skill-expanded {
+  max-height: 2000px;
+}
+
+.skill-expanded-inner {
+  padding-top: 24px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.skill-story {
+  background: var(--gold-subtle);
+  border-left: 3px solid var(--gold);
+  padding: 16px 20px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 20px;
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.skill-steps {
+  margin-bottom: 20px;
+}
+
+.skill-steps h4 {
+  color: var(--gold);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.skill-steps ol {
+  padding-left: 20px;
+}
+
+.skill-steps li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.skill-tip {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  color: #93c5fd;
+  margin-bottom: 20px;
+}
+
+.skill-tip::before {
+  content: '\1F4A1 ';
+}
+
+.install-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.install-cmd {
+  flex: 1;
+  background: #0a0a0a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--gold);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.copy-btn, .complete-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.copy-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.complete-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0d0d0d;
+  font-weight: 700;
+}
+
+.complete-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px var(--gold-glow);
+}
+
+.complete-btn.done {
+  background: var(--success);
+  pointer-events: none;
+}
+
+/* ---- CASE STUDIES ---- */
+.case-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  margin-bottom: 24px;
+  transition: all 0.35s;
+}
+
+.case-card:hover {
+  border-color: var(--border-gold);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.case-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.case-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+
+.case-body {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ---- SECURITY ---- */
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.security-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 22px;
+  transition: all 0.3s;
+}
+
+.security-item:hover {
+  border-color: var(--border-gold);
+  transform: translateY(-2px);
+}
+
+.security-item.danger { border-left: 3px solid #ef4444; }
+.security-item.safe { border-left: 3px solid var(--success); }
+
+.security-item h4 {
+  color: var(--white);
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.security-item p {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.emergency-box {
+  background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(211,170,100,0.08));
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius);
+  padding: 36px;
+  margin-top: 48px;
+}
+
+.emergency-box h3 {
+  color: #ef4444;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+}
+
+.emergency-box ol {
+  padding-left: 20px;
+  color: var(--text);
+}
+
+.emergency-box li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+/* ---- DIVIDER ---- */
+.section-divider {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
+}
+
+/* ---- FOOTER ---- */
+.footer {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.footer span { color: var(--gold); }
+
+/* ---- ANIMATIONS ---- */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .skills-grid { grid-template-columns: 1fr; }
+  .security-grid { grid-template-columns: 1fr; }
+  .module-header { flex-direction: column; align-items: flex-start; }
+  .hero { padding: 40px 16px; }
+  .skill-card { padding: 22px; }
 }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-<div class="nav-brand"><div class="dot"></div><span>Claude Code OS</span></div>
-<div class="nav-links">
-<a href="#" class="active" data-page="dashboard">Dashboard</a>
-<a href="#" data-page="modules">Modules</a>
-<a href="#" data-page="skills">Skills</a>
-<a href="#" data-page="cases">Case Studies</a>
-<a href="#" data-page="security">Security</a>
-</div>
-<div class="nav-level">LEVEL <span id="lvlNum">1</span> // <span id="xpDisplay">0</span> XP</div>
-</nav>
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
-<div class="container">
+<!-- HERO -->
+<section class="hero">
+  <img src="fox_mascot.png" alt="Fox Mascot" class="hero-mascot">
+  <h1>CLAUDE CODE SUPERPOWERS</h1>
+  <p class="hero-subtitle">Master the most powerful AI coding tool on the planet. 40+ skills. 6 levels. One legendary journey.</p>
+  <div class="xp-dashboard">
+    <div class="xp-header">
+      <div class="level-badge" id="levelBadge">&#9734; Rookie</div>
+      <div class="xp-text"><span id="xpCount">0</span> / <span id="xpMax">500</span> XP</div>
+    </div>
+    <div class="xp-bar-outer">
+      <div class="xp-bar-inner" id="xpBar"></div>
+    </div>
+  </div>
+  <div class="achievements" id="achievements">
+    <div class="achievement" data-level="0" title="Rookie">&#128051;</div>
+    <div class="achievement" data-level="1" title="Apprentice">&#128218;</div>
+    <div class="achievement" data-level="2" title="Builder">&#128295;</div>
+    <div class="achievement" data-level="3" title="Architect">&#127959;</div>
+    <div class="achievement" data-level="4" title="Operator">&#9889;</div>
+    <div class="achievement" data-level="5" title="God Tier">&#128081;</div>
+  </div>
+</section>
 
-<!-- DASHBOARD -->
-<div class="page active" id="pg-dashboard">
+<div class="section-divider"></div>
 
-<div class="tip-card">
-<div class="tip-icon">&#9889;</div>
-<div><div class="tip-label">System Status</div><div class="tip-text" id="tipText">SYSTEM READY // All modules operational. Begin with Module 1 to start your journey.</div></div>
-</div>
+<!-- ====== MODULE 1: HOW TO BEGIN ====== -->
+<section class="module-section fade-in" id="module1">
+  <div class="module-header">
+    <span class="module-number">Module 1</span>
+    <h2 class="module-title">How to Begin</h2>
+    <button class="audio-btn" onclick="toggleAudio('module1')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module1"></div>
+</section>
 
-<div class="top-bar">
-<div class="status-card">
-<div class="label">Progress</div>
-<div class="value"><span id="pctDone">0</span>%</div>
-<div class="bar-track"><div class="bar-fill" id="mainBar" style="width:0%"></div></div>
-<div class="sub" id="skillsDone">0 / 40 SKILLS COMPLETE</div>
-</div>
-<div class="status-card">
-<div class="label">Current Level</div>
-<div class="value"><span id="lvlName">ROOKIE</span></div>
-<div class="bar-track"><div class="bar-fill" id="lvlBar" style="width:0%"></div></div>
-<div class="sub" id="lvlSub">0 / 100 XP TO NEXT LEVEL</div>
-</div>
-<div class="status-card">
-<div class="label">Next Module</div>
-<div class="value" style="font-size:16px" id="nextModule">Module 1: How to Begin</div>
-<div style="margin-top:12px"><a href="#" onclick="showPage('modules');return false" style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none">Resume Session &#8594;</a></div>
-</div>
-</div>
+<div class="section-divider"></div>
 
-<div class="section-header"><div class="section-title"><span>&#9632;</span> Achievements</div></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px" id="badges">
-<span class="pill pill-locked">FIRST BOOT</span>
-<span class="pill pill-locked">SKILL HUNTER</span>
-<span class="pill pill-locked">IMAGE MAKER</span>
-<span class="pill pill-locked">VOICE MASTER</span>
-<span class="pill pill-locked">AGENT OPERATOR</span>
-<span class="pill pill-locked">INTEGRATOR</span>
-<span class="pill pill-locked">GOD TIER</span>
-</div>
+<!-- ====== MODULE 2: FOUNDATION ====== -->
+<section class="module-section fade-in" id="module2">
+  <div class="module-header">
+    <span class="module-number">Module 2</span>
+    <h2 class="module-title">Foundation</h2>
+    <button class="audio-btn" onclick="toggleAudio('module2')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module2"></div>
+</section>
 
-<div class="section-header"><div class="section-title"><span>&#9632;</span> Recent Activity</div></div>
-<div id="activity" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dimmer);line-height:2">
-<div>// No activity yet. Complete your first skill to begin.</div>
-</div>
+<div class="section-divider"></div>
 
-</div>
+<!-- ====== MODULE 3: CREATOR POWERS ====== -->
+<section class="module-section fade-in" id="module3">
+  <div class="module-header">
+    <span class="module-number">Module 3</span>
+    <h2 class="module-title">Creator Powers</h2>
+    <button class="audio-btn" onclick="toggleAudio('module3')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module3"></div>
+</section>
 
-<!-- MODULES -->
-<div class="page" id="pg-modules">
+<div class="section-divider"></div>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 1 // <span>How to Begin</span></div><div class="section-count" id="cnt-m1">0/4</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module1.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="10" data-id="install" data-tutorial="install"><div class="card-top"><div class="card-title">Install Claude Code</div><span class="pill pill-orange">START</span></div><div class="card-desc">One command to install the most powerful AI coding assistant on your machine.</div><div class="cmd"><code>curl -fsSL https://claude.ai/install | sh</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="10" data-id="apikey" data-tutorial="apikey"><div class="card-top"><div class="card-title">Get Your API Key</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Sign up at console.anthropic.com, create an API key, and add credits.</div><div class="cmd"><code>https://console.anthropic.com</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="10" data-id="firstrun" data-tutorial="firstrun"><div class="card-top"><div class="card-title">First Run</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Open Terminal, type claude, and have your first conversation. Feel the power.</div><div class="cmd"><code>claude</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="claudemd" data-tutorial="claudemd"><div class="card-top"><div class="card-title">Create CLAUDE.md</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Your AI's instruction manual. It reads this at every session start. This is where the magic begins.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<!-- ====== MODULE 4: AUTOMATION ====== -->
+<section class="module-section fade-in" id="module4">
+  <div class="module-header">
+    <span class="module-number">Module 4</span>
+    <h2 class="module-title">Automation</h2>
+    <button class="audio-btn" onclick="toggleAudio('module4')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module4"></div>
+</section>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 2 // <span>Foundation</span></div><div class="section-count" id="cnt-m2">0/5</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module2.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="15" data-id="memory" data-tutorial="memory"><div class="card-top"><div class="card-title">Memory System</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">How Claude remembers across sessions. User prefs, project context, feedback - it all persists.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="skills" data-tutorial="skills"><div class="card-top"><div class="card-title">Understanding Skills</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Downloadable instruction sets that teach Claude new abilities. Drop in ~/.claude/skills/ and go.</div><div class="cmd"><code>ls ~/.claude/skills/</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="hooks" data-tutorial="hooks"><div class="card-top"><div class="card-title">Hooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Shell commands that fire automatically on events. Pre-commit checks, auto-formatting, permission controls.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="mcp" data-tutorial="mcp"><div class="card-top"><div class="card-title">MCP Servers</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Model Context Protocol servers give Claude new tools. Search GitHub, query databases, control browsers.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="nanobanana" data-tutorial="nanobanana"><div class="card-top"><div class="card-title">Nano Banana (Image Gen)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Generate unlimited images from text for free using Google Gemini. Your first real superpower.</div><div class="cmd"><code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<div class="section-divider"></div>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 3 // <span>Creator Powers</span></div><div class="section-count" id="cnt-m3">0/6</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module3.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="20" data-id="imgedit" data-tutorial="imgedit"><div class="card-top"><div class="card-title">Image Editing & Face Swap</div><span class="pill pill-outline">CREATIVE</span></div><div class="card-desc">Take a reference photo and transform it into any scene while keeping their exact face.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="elevenlabs" data-tutorial="elevenlabs"><div class="card-top"><div class="card-title">ElevenLabs Voiceover</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Professional AI voiceovers. Hundreds of voices or clone your own.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="edgetts" data-tutorial="edgetts"><div class="card-top"><div class="card-title">Edge TTS (Free Voice)</div><span class="pill pill-orange">FREE</span></div><div class="card-desc">Microsoft Edge TTS. Completely free, unlimited, great quality. The budget voiceover move.</div><div class="cmd"><code>pip3 install edge-tts</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="vidpipe" data-tutorial="vidpipe"><div class="card-top"><div class="card-title">Video Production Pipeline</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Image → Kling 3.0 animation → voiceover → deliver. One prompt produces an entire video package.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="yttranscript" data-tutorial="yttranscript"><div class="card-top"><div class="card-title">YouTube Transcription</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">Pull transcripts from any video or entire channel. 238K words became a 15K word sales bible.</div><div class="cmd"><code>pip3 install youtube-transcript-api</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="social" data-tutorial="social"><div class="card-top"><div class="card-title">Social Media Content</div><span class="pill pill-outline">CONTENT</span></div><div class="card-desc">Captions, carousels, hashtags, posting schedules. Content that sounds human, not AI.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<!-- ====== MODULE 5: INTEGRATION ====== -->
+<section class="module-section fade-in" id="module5">
+  <div class="module-header">
+    <span class="module-number">Module 5</span>
+    <h2 class="module-title">Integration</h2>
+    <button class="audio-btn" onclick="toggleAudio('module5')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module5"></div>
+</section>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 4 // <span>Automation</span></div><div class="section-count" id="cnt-m4">0/5</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module4.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="25" data-id="crons" data-tutorial="crons"><div class="card-top"><div class="card-title">Cron Jobs & /loop</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Schedule recurring tasks. Check APIs every 5 minutes, run scrapers daily, send reports weekly.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="multiagent" data-tutorial="multiagent"><div class="card-top"><div class="card-title">Multi-Agent Architecture</div><span class="pill pill-orange">ADVANCED</span></div><div class="card-desc">Spawn separate agents with their own Telegram bots, instructions, and skills. One Mac, 10 AI employees.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="40" data-id="cortexos" data-tutorial="cortexos"><div class="card-top"><div class="card-title">CortexOS (24/7 Agents)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Persistent sessions, crash recovery, auto-restart, Telegram control. Your AI never goes offline.</div><div class="cmd"><code>git clone https://github.com/grandaenium/claude-remote-manager.git</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="telegram" data-tutorial="telegram"><div class="card-top"><div class="card-title">Remote Control (Telegram)</div><span class="pill pill-outline">CONTROL</span></div><div class="card-desc">Message your agent from your phone. Send tasks, receive results, get alerts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="playwright" data-tutorial="playwright"><div class="card-top"><div class="card-title">Browser Automation</div><span class="pill pill-outline">ADVANCED</span></div><div class="card-desc">Control a real browser with Playwright. Automate web UIs, fill forms, scrape JS-heavy sites.</div><div class="cmd"><code>pip3 install playwright && playwright install</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<div class="section-divider"></div>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 5 // <span>Integration</span></div><div class="section-count" id="cnt-m5">0/7</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module5.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="25" data-id="gdrive" data-tutorial="gdrive"><div class="card-top"><div class="card-title">Google Drive API</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Create folders, upload files, organize deliverables automatically.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="stripe" data-tutorial="stripe"><div class="card-top"><div class="card-title">Stripe (Payments)</div><span class="pill pill-outline">REVENUE</span></div><div class="card-desc">Create products, generate payment links, process transactions. Claude becomes billing.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="perplexity" data-tutorial="perplexity"><div class="card-top"><div class="card-title">Perplexity (Live Search)</div><span class="pill pill-orange">INTELLIGENCE</span></div><div class="card-desc">Real-time web search with citations. The internet at Claude's fingertips.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="twilio" data-tutorial="twilio"><div class="card-top"><div class="card-title">Twilio (SMS & Calls)</div><span class="pill pill-outline">COMMS</span></div><div class="card-desc">Send texts, make phone calls, auto-respond. Claude can literally call your clients.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="zapier" data-tutorial="zapier"><div class="card-top"><div class="card-title">Zapier / Make Webhooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Connect to 5,000+ apps. Triggers fire, Claude acts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="airtable" data-tutorial="airtable"><div class="card-top"><div class="card-title">Airtable (Database)</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">A real database Claude reads and writes. Track clients, manage projects, persist data forever.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="whisper" data-tutorial="whisper"><div class="card-top"><div class="card-title">Whisper (Transcription)</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Transcribe any audio or video locally. Podcasts, meetings, voice memos to searchable text.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<!-- ====== MODULE 6: MASTERY ====== -->
+<section class="module-section fade-in" id="module6">
+  <div class="module-header">
+    <span class="module-number">Module 6</span>
+    <h2 class="module-title">Mastery</h2>
+    <button class="audio-btn" onclick="toggleAudio('module6')">&#9654;</button>
+  </div>
+  <div class="skills-grid" id="skills-module6"></div>
+</section>
 
-<div class="section">
-<div class="section-header"><div class="section-title">Module 6 // <span>Mastery</span></div><div class="section-count" id="cnt-m6">0/4</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/module6.mp3')">&#9654;</button><div class="audio-label">Listen to this module</div></div>
-<div class="grid">
-<div class="skill-card" data-xp="40" data-id="customskills" data-tutorial="customskills"><div class="card-top"><div class="card-title">Build Custom Skills</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Write your own skills. Package them for others. Every workflow becomes a downloadable superpower.</div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="40" data-id="vectordb" data-tutorial="vectordb"><div class="card-top"><div class="card-title">Vector DB + RAG Memory</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">True semantic search across everything. Infinite memory with local SQLite vectors.</div><div class="cmd"><code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="50" data-id="prodpipe" data-tutorial="prodpipe"><div class="card-top"><div class="card-title">Production Pipelines</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Batch processing at scale. 60 images, 60 videos, 10 voiceovers, organized and delivered. One prompt.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="50" data-id="selling" data-tutorial="selling"><div class="card-top"><div class="card-title">Sell AI Services</div><span class="pill pill-orange">REVENUE</span></div><div class="card-desc">Build agents for clients at $10K each. Your Claude builds their Claude. Recurring revenue.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-</div>
-</div>
+<div class="section-divider"></div>
 
-</div><!-- modules -->
+<!-- ====== CASE STUDIES ====== -->
+<section class="module-section fade-in" id="cases">
+  <div class="module-header">
+    <span class="module-number">Case Studies</span>
+    <h2 class="module-title">Real-World Wins</h2>
+    <button class="audio-btn" onclick="toggleAudio('cases')">&#9654;</button>
+  </div>
+  <div id="case-studies"></div>
+</section>
 
-<!-- SKILLS (same as modules but flat) -->
-<div class="page" id="pg-skills">
-<div class="section-header"><div class="section-title"><span>&#9632;</span> All Skills</div><div class="section-count" id="totalSkills">0 / 31 complete</div></div>
-<div style="margin-bottom:16px"><input type="text" id="skillSearch" placeholder="Search skills..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--text);font-size:14px;outline:none;font-family:'Inter',sans-serif" oninput="filterSkills(this.value)"></div>
-<div class="grid" id="allSkillsGrid"></div>
-</div>
+<div class="section-divider"></div>
 
-<!-- CASE STUDIES -->
-<div class="page" id="pg-cases">
-<div class="section-header"><div class="section-title"><span>&#9632;</span> Real Stories</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/cases.mp3')">&#9654;</button><div class="audio-label">Listen to case studies</div></div>
-<div class="case-card"><div class="case-tag"><span class="pill pill-orange">PROPOSAL</span></div><h4>The CyberFOX Proposal</h4><p>A $500M cybersecurity company needed an AI operations proposal. The agent researched the entire company — products, leadership, financials, tech stack — then wrote a 25-page department-by-department automation plan with ROI estimates. Total time: 10 minutes. Positioned a $10K service delivering $2-5M in annual savings.</p></div>
-<div class="case-card"><div class="case-tag"><span class="pill pill-orange">CONTENT</span></div><h4>The Peptide Bible</h4><p>28 YouTube video transcripts (238,000 words) from a peptide expert were processed, voice-analyzed, and synthesized into a 15,685-word sales training manual — written in the expert's exact voice. 16 peptide chapters, dosing protocols, objection handlers, and a sales rep cheat sheet.</p></div>
-<div class="case-card"><div class="case-tag"><span class="pill pill-orange">VIDEO</span></div><h4>10 Videos Overnight</h4><p>10 cinematic video scripts, 60 source images (Nano Banana), 60 video clips (Kling 3.0), 10 voiceovers (ElevenLabs), 10 Instagram captions, all organized in labeled folders. Produced autonomously while the client slept.</p></div>
-<div class="case-card"><div class="case-tag"><span class="pill pill-orange">OPERATIONS</span></div><h4>The 24/7 Employee</h4><p>Mr. Hudson runs non-stop in a tmux session. Responds to Telegram in real time, generates images and videos, writes proposals, manages Google Drive, processes Stripe payments, runs scrapers, builds code — all without supervision. One Mac. One agent. Infinite output.</p></div>
-</div>
+<!-- ====== SECURITY ====== -->
+<section class="module-section fade-in" id="security">
+  <div class="module-header">
+    <span class="module-number">Security</span>
+    <h2 class="module-title">Lock It Down</h2>
+    <button class="audio-btn" onclick="toggleAudio('security')">&#9654;</button>
+  </div>
+  <h3 style="color:#ef4444;font-size:1.1rem;margin-bottom:24px;">&#9888; What NOT To Do</h3>
+  <div class="security-grid" id="security-dont"></div>
+  <h3 style="color:var(--success);font-size:1.1rem;margin:48px 0 24px;">&#9989; What TO Do</h3>
+  <div class="security-grid" id="security-do"></div>
+  <div class="emergency-box" id="emergency"></div>
+</section>
 
-<!-- SECURITY -->
-<div class="page" id="pg-security">
-<div class="section-header"><div class="section-title"><span>&#9632;</span> Cybersecurity Training</div></div>
-<div class="audio-bar"><button class="play-btn" onclick="playAudio(this,'audio/security.mp3')">&#9654;</button><div class="audio-label">Listen to security training</div></div>
-
-<div class="tip-card" style="border-color:#ff4444;margin-bottom:24px">
-<div class="tip-icon">&#9888;</div>
-<div><div class="tip-label" style="color:#ff4444">START HERE</div><div class="tip-text">Before you learn what TO do, you need to understand what NOT to do. Most people get hacked not because of sophisticated attacks, but because of simple mistakes they make every single day.</div></div>
+<!-- FOOTER -->
+<div class="footer">
+  Built with <span>&#9829;</span> using Claude Code Superpowers<br>
+  <span style="font-size:0.75rem;margin-top:8px;display:inline-block;">Press any skill card to expand. Complete skills to level up.</span>
 </div>
-
-<div class="section"><div class="section-header"><div class="section-title" style="color:#ff4444">&#9632; What NOT To Do <span style="color:#888">// The Hall of Shame</span></div></div>
-<div class="grid">
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Reuse Passwords</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
-<div class="card-desc">The Story: Fox used the same key for his house, his car, his office, and his vault. One day a raccoon found the key. The raccoon now owns everything Fox has. That is what happens when you reuse passwords. One breach on one random website and suddenly hackers have the key to your email, your bank, your business.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: Every account gets a unique password. Period. Use a password manager (1Password or Bitwarden) to remember them all. You only need to memorize one master password.</div>
-</div>
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Send API Keys in Plain Text</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
-<div class="card-desc">The Story: Fox wrote his vault combination on a postcard and mailed it across town. Everyone who touched that postcard could read it. That is what happens when you paste API keys in emails, Slack messages, or public repos. Bots scan GitHub constantly for leaked keys and drain accounts within minutes.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: API keys go in .env files on your local machine. Never commit them to GitHub. Never paste them in chat unless it is encrypted (Telegram is OK). Add .env to your .gitignore file always.</div>
-</div>
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Click Links in Emails Without Checking</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
-<div class="card-desc">The Story: Fox got a letter that looked exactly like it came from his bank. It said "click here to verify your account." Fox clicked. It was not his bank. Now the raccoons have his login. This is called phishing and it is how 90% of hacks start. The email looks real. The website looks real. But the URL is slightly different.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: Never click email links. Go directly to the website by typing the URL yourself. Hover over links to see where they actually go. If an email creates urgency ("your account will be locked!") it is almost always fake.</div>
-</div>
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Skip Software Updates</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
-<div class="card-desc">The Story: Fox's door had a broken lock but he kept saying "I will fix it tomorrow." The raccoons found the broken lock first. Software updates patch security holes. When you ignore them, you are leaving known broken locks on your doors that hackers already have the tools to open.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: Update your Mac, phone, browser, and apps immediately when updates are available. Enable auto-updates everywhere. Those annoying update notifications are your security team begging you to lock the door.</div>
-</div>
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Use Public WiFi Without a VPN</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
-<div class="card-desc">The Story: Fox was shouting his banking passwords in a crowded coffee shop. Everyone could hear. That is what public WiFi does - anyone on the same network can see your traffic. Coffee shops, airports, hotels - all of it is like shouting your secrets in a room full of strangers.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: Always use a VPN on public WiFi. NordVPN, ExpressVPN, or Proton VPN. It creates an encrypted tunnel so nobody can see what you are doing. At home you are fine without one.</div>
-</div>
-<div class="skill-card" style="border-color:#331111">
-<div class="card-top"><div class="card-title">Never Give Admin Access to Everyone</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
-<div class="card-desc">The Story: Fox gave every animal in the forest a master key to his house. Most of them were good friends. But one friend got tricked by a raccoon, and now the raccoon has a master key. This is the principle of least privilege - only give people the minimum access they need to do their job.</div>
-<div class="card-desc" style="color:#ff4444">THE RULE: Your VA does not need admin access to everything. Your contractor does not need your personal login. Create separate accounts with limited permissions. Remove access when people leave.</div>
-</div>
-</div></div>
-
-<div class="section" style="margin-top:32px"><div class="section-header"><div class="section-title" style="color:#00c896">&#9632; What TO Do <span style="color:#888">// The Fortress Protocol</span></div></div>
-<div class="grid">
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Enable 2FA on Everything</div><span class="pill pill-orange">ESSENTIAL</span></div>
-<div class="card-desc">Two-factor authentication means even if someone steals your password, they still cannot get in without your phone. It is like needing both a key AND a fingerprint to open the door.</div>
-<div class="card-desc" style="color:#00c896">HOW: Go to every important account (email, bank, social media, GitHub, Stripe, Anthropic) > Settings > Security > Enable Two-Factor Authentication. Use an authenticator app (Google Authenticator or Authy) not SMS - SIM swapping can steal your text messages.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Use a Password Manager</div><span class="pill pill-orange">ESSENTIAL</span></div>
-<div class="card-desc">A password manager generates and stores unique 30-character passwords for every account. You only memorize one master password. It auto-fills logins so you never type passwords where keyloggers can steal them.</div>
-<div class="card-desc" style="color:#00c896">RECOMMENDED: 1Password ($3/mo - best for individuals) or Bitwarden (free - best for budget). Install the browser extension and the phone app. Generate a new unique password for every account. Start with your email - that is the master key to everything else.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Secure Your .env Files</div><span class="pill pill-orange">ESSENTIAL</span></div>
-<div class="card-desc">Your .env files contain API keys, tokens, and passwords. They are the vault. If these leak, hackers can control your services, spend your money, and access your data.</div>
-<div class="card-desc" style="color:#00c896">HOW: 1) Always add .env to your .gitignore file so it never gets pushed to GitHub. 2) Never paste API keys in Slack, Discord, or email. 3) Use restricted API keys with minimum permissions when possible. 4) Rotate keys every 90 days. 5) If you think a key leaked, revoke it immediately and generate a new one.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Lock Down Your Mac</div><span class="pill pill-orange">ESSENTIAL</span></div>
-<div class="card-desc">Your Mac is running AI agents, holding API keys, and managing your businesses. It needs to be a fortress.</div>
-<div class="card-desc" style="color:#00c896">CHECKLIST: 1) Enable FileVault (System Settings > Privacy & Security > FileVault) - encrypts your entire drive. 2) Set a strong login password. 3) Enable the firewall (System Settings > Network > Firewall). 4) Enable Find My Mac. 5) Lock screen automatically after 1 minute of inactivity. 6) Keep macOS updated. 7) Only install apps from trusted sources.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Backup Everything</div><span class="pill pill-orange">ESSENTIAL</span></div>
-<div class="card-desc">Ransomware encrypts your files and demands payment. The only real protection is having a backup that the ransomware cannot reach.</div>
-<div class="card-desc" style="color:#00c896">HOW: 1) Time Machine backup to an external drive (plug in weekly). 2) iCloud backup for critical files. 3) Keep one backup disconnected from your computer at all times - ransomware cannot encrypt what it cannot reach. 4) Test your backup by restoring a file to make sure it works.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Use Restricted API Keys</div><span class="pill pill-orange">ADVANCED</span></div>
-<div class="card-desc">When connecting services, always create API keys with the minimum permissions needed. If a key only needs to read data, do not give it write access. If it only needs access to one project, do not give it access to everything.</div>
-<div class="card-desc" style="color:#00c896">EXAMPLES: Stripe - use restricted keys that can only create products, not access customer data. GitHub - use fine-grained tokens scoped to specific repos. Google - use service accounts with only the APIs enabled that you need. If a restricted key gets stolen, the damage is limited.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Monitor for Breaches</div><span class="pill pill-orange">ADVANCED</span></div>
-<div class="card-desc">Even with perfect security, the services you use get breached. When LinkedIn or Adobe or any other company gets hacked, your email and password from that site are now floating around the dark web.</div>
-<div class="card-desc" style="color:#00c896">HOW: 1) Go to haveibeenpwned.com and enter your email. It tells you which breaches your email appeared in. 2) Change passwords for any breached accounts immediately. 3) Sign up for alerts so you get notified of future breaches. 4) This is why unique passwords matter - if you reused the breached password, every account is compromised.</div>
-</div>
-<div class="skill-card">
-<div class="card-top"><div class="card-title">Secure Your Telegram Bots</div><span class="pill pill-orange">ADVANCED</span></div>
-<div class="card-desc">Your Telegram bots have access to your AI agents. If someone gets your bot token, they can send commands to your agent. That means they could potentially access your files, APIs, and services.</div>
-<div class="card-desc" style="color:#00c896">HOW: 1) Set ALLOWED_USER in your .env so only your Telegram ID can send commands. 2) Never share bot tokens publicly. 3) If a token leaks, revoke it with @BotFather immediately (/revoke). 4) Use separate bots for separate clients - never share a bot across businesses.</div>
-</div>
-</div></div>
-
-<div class="section" style="margin-top:32px"><div class="section-header"><div class="section-title">&#9632; Emergency Response <span style="color:#888">// If You Get Hacked</span></div></div>
-<div class="case-card" style="border-color:#ff4444">
-<h4 style="color:#ff4444">If You Think You Have Been Compromised</h4>
-<p>1. DO NOT PANIC. Panicking leads to mistakes.<br>
-2. Change your email password FIRST (email is the master key to everything).<br>
-3. Enable 2FA on your email if you have not already.<br>
-4. Revoke all API keys and tokens you think are compromised. Generate new ones.<br>
-5. Check your bank and Stripe for unauthorized transactions.<br>
-6. Change passwords on all financial accounts.<br>
-7. Check GitHub for any unauthorized commits or access.<br>
-8. Run a malware scan (Malwarebytes free scan).<br>
-9. If client data was accessed, notify them immediately - transparency builds trust.<br>
-10. After everything is secured, figure out HOW it happened so it does not happen again.</p>
-</div>
-</div>
-
-</div>
-
-</div><!-- container -->
 
 <script>
-const LEVELS=[{n:'ROOKIE',xp:0},{n:'APPRENTICE',xp:100},{n:'BUILDER',xp:250},{n:'ARCHITECT',xp:500},{n:'OPERATOR',xp:800},{n:'GOD TIER',xp:1200}];
-let done=JSON.parse(localStorage.getItem('ccos_done')||'{}');
-let activity=JSON.parse(localStorage.getItem('ccos_activity')||'[]');
+// ====== DATA ======
+const LEVELS = [
+  { name: 'Rookie', xp: 0, icon: '\uD83D\uDC33' },
+  { name: 'Apprentice', xp: 500, icon: '\uD83D\uDCDA' },
+  { name: 'Builder', xp: 1500, icon: '\uD83D\uDD27' },
+  { name: 'Architect', xp: 3000, icon: '\uD83C\uDFDF' },
+  { name: 'Operator', xp: 5000, icon: '\u26A1' },
+  { name: 'God Tier', xp: 8000, icon: '\uD83D\uDC51' }
+];
 
-function getXP(){return Object.values(done).reduce((a,b)=>a+b,0)}
-function getLvl(){let x=getXP();for(let i=LEVELS.length-1;i>=0;i--)if(x>=LEVELS[i].xp)return{...LEVELS[i],idx:i};return{...LEVELS[0],idx:0}}
-function getNext(){let l=getLvl();return LEVELS[l.idx+1]||LEVELS[LEVELS.length-1]}
-
-function updateUI(){
-let xp=getXP(),lv=getLvl(),nx=getNext(),total=document.querySelectorAll('.skill-card').length;
-let doneCount=Object.keys(done).length;
-document.getElementById('xpDisplay').textContent=xp;
-document.getElementById('lvlNum').textContent=lv.idx+1;
-document.getElementById('lvlName').textContent=lv.n;
-document.getElementById('pctDone').textContent=Math.round(doneCount/total*100);
-document.getElementById('mainBar').style.width=Math.round(doneCount/total*100)+'%';
-document.getElementById('skillsDone').textContent=doneCount+' / '+total+' SKILLS COMPLETE';
-document.getElementById('totalSkills').textContent=doneCount+' / '+total+' complete';
-let pctLvl=nx.xp>lv.xp?Math.round((xp-lv.xp)/(nx.xp-lv.xp)*100):100;
-document.getElementById('lvlBar').style.width=pctLvl+'%';
-document.getElementById('lvlSub').textContent=xp+' / '+nx.xp+' XP TO NEXT LEVEL';
-// Module counts
-['m1','m2','m3','m4','m5','m6'].forEach(m=>{
-let el=document.getElementById('cnt-'+m);if(!el)return;
-let sec=el.closest('.section');if(!sec)return;
-let cards=sec.querySelectorAll('.skill-card');
-let d=0;cards.forEach(c=>{if(done[c.dataset.id])d++});
-el.textContent=d+'/'+cards.length;
-});
-// Mark done buttons
-document.querySelectorAll('.skill-card').forEach(c=>{
-if(done[c.dataset.id]){let b=c.querySelector('.card-btn');if(b){b.classList.add('done');b.textContent='COMPLETE'}}
-});
-// Badges
-let badges=document.getElementById('badges');if(badges){
-let pills=badges.querySelectorAll('.pill');
-if(doneCount>=1)pills[0].className='pill pill-done';
-if(doneCount>=5)pills[1].className='pill pill-done';
-if(done['nanobanana']||done['imgedit'])pills[2].className='pill pill-done';
-if(done['elevenlabs']||done['edgetts'])pills[3].className='pill pill-done';
-if(done['cortexos']||done['multiagent'])pills[4].className='pill pill-done';
-if(done['stripe']||done['gdrive']||done['zapier'])pills[5].className='pill pill-done';
-if(xp>=1200)pills[6].className='pill pill-done';
-}
-// Activity
-let actEl=document.getElementById('activity');
-if(activity.length>0){actEl.innerHTML=activity.slice(-8).reverse().map(a=>'<div>// '+a+'</div>').join('')}
-// Next module
-let nm=document.getElementById('nextModule');
-if(doneCount>=31)nm.textContent='ALL MODULES COMPLETE';
-else if(doneCount>=27)nm.textContent='Module 6: Mastery';
-else if(doneCount>=20)nm.textContent='Module 5: Integration';
-else if(doneCount>=15)nm.textContent='Module 4: Automation';
-else if(doneCount>=9)nm.textContent='Module 3: Creator Powers';
-else if(doneCount>=4)nm.textContent='Module 2: Foundation';
-else nm.textContent='Module 1: How to Begin';
-}
-
-function complete(btn){
-let card=btn.closest('.skill-card'),id=card.dataset.id,xp=parseInt(card.dataset.xp);
-if(done[id])return;
-let oldLvl=getLvl();
-done[id]=xp;
-localStorage.setItem('ccos_done',JSON.stringify(done));
-activity.push(card.querySelector('.card-title').textContent+' completed (+'+xp+' XP)');
-localStorage.setItem('ccos_activity',JSON.stringify(activity));
-btn.classList.add('done');btn.textContent='COMPLETE';
-let newLvl=getLvl();
-if(newLvl.n!==oldLvl.n)showToast('LEVEL UP: '+newLvl.n);
-updateUI();
-}
-
-function copyCmd(btn){let c=btn.parentElement.querySelector('code').textContent;navigator.clipboard.writeText(c);btn.textContent='OK';setTimeout(()=>btn.textContent='COPY',1500)}
-function showPage(p){document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));document.getElementById('pg-'+p).classList.add('active');document.querySelectorAll('.nav-links a').forEach(a=>{a.classList.remove('active');if(a.dataset.page===p)a.classList.add('active')})}
-function showToast(msg){let t=document.createElement('div');t.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 28px;border-radius:8px;font-weight:700;font-size:13px;z-index:9999;letter-spacing:0.1em';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500)}
-
-// Skills page - clone all cards
-function buildSkillsPage(){
-let grid=document.getElementById('allSkillsGrid');
-document.querySelectorAll('#pg-modules .skill-card').forEach(c=>{let cl=c.cloneNode(true);cl.querySelector('.card-btn').onclick=function(){complete(this)};let cb=cl.querySelector('.cmd button');if(cb)cb.onclick=function(){copyCmd(this)};grid.appendChild(cl)});
-}
-function filterSkills(q){
-q=q.toLowerCase();
-document.querySelectorAll('#allSkillsGrid .skill-card').forEach(c=>{
-let t=(c.querySelector('.card-title').textContent+' '+c.querySelector('.card-desc').textContent).toLowerCase();
-c.style.display=t.includes(q)?'':'none';
-});
-}
-
-// Nav clicks
-document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.page)}));
-
-// Tips rotation
-const TIPS=["SYSTEM READY // All modules operational.","TIP // Skills are markdown files in ~/.claude/skills/","TIP // Use /loop 5m to automate recurring tasks","TIP // Nano Banana image gen is completely free","TIP // CLAUDE.md loads at every session start","TIP // Edge TTS gives you free unlimited voiceover","TIP // You can spawn multiple agents via Telegram bots","TIP // MCP servers extend Claude with new capabilities"];
-let tipIdx=0;setInterval(()=>{tipIdx=(tipIdx+1)%TIPS.length;document.getElementById('tipText').textContent=TIPS[tipIdx]},8000);
-
-// Audio player
-let currentAudio=null;
-function playAudio(btn,src){
-if(currentAudio){currentAudio.pause();document.querySelectorAll('.play-btn').forEach(b=>{b.innerHTML='&#9654;';b.style.background='var(--accent)'});}
-if(btn.dataset.playing==='true'){btn.dataset.playing='false';btn.innerHTML='&#9654;';currentAudio=null;return;}
-let a=new Audio(src);
-currentAudio=a;
-btn.dataset.playing='true';
-btn.innerHTML='&#9646;&#9646;';
-btn.style.background='#00c896';
-a.play();
-a.onended=function(){btn.innerHTML='&#9654;';btn.style.background='var(--accent)';btn.dataset.playing='false';currentAudio=null;};
-}
-
-buildSkillsPage();
-updateUI();
-
-// ============================================================
-// TUTORIAL MODAL SYSTEM
-// ============================================================
-
-const CONCEPTS = {
-  'Terminal': 'Texting your computer. Instead of clicking buttons, you type words and your computer does things.',
-  'API Key': 'A VIP wristband that lets you in. It proves you paid and gives you access.',
-  'GitHub': 'A free library where people share their code and tools. Anyone can download from it.',
-  'Git Clone': 'Download from the library. That is literally all it means.',
-  'npm': 'An app store for code tools. Developers use it to install useful packages.',
-  'Railway': 'A place to host your apps online - like renting a tiny computer in the cloud that runs 24/7.',
-  'Netlify': 'Free website hosting. Drag and drop your site files and it goes live on the internet.'
+const SKILLS = {
+  module1: [
+    {
+      id: 'install-claude',
+      icon: '\uD83D\uDCE5',
+      name: 'Install Claude Code',
+      desc: 'Get Claude Code running on your machine in under 5 minutes.',
+      difficulty: 'beginner',
+      xp: 50,
+      install: 'npm install -g @anthropic-ai/claude-code',
+      story: 'Every hero needs their weapon. Thor has Mjolnir, you have Claude Code. This is the moment you pick up the hammer for the first time.',
+      steps: ['Open your terminal', 'Run: npm install -g @anthropic-ai/claude-code', 'Authenticate with: claude login', 'Test with: claude "hello world"'],
+      tip: 'Make sure you have Node.js 18+ installed first. Run node --version to check.'
+    },
+    {
+      id: 'first-prompt',
+      icon: '\uD83D\uDCAC',
+      name: 'Your First Prompt',
+      desc: 'Learn the art of talking to Claude Code effectively.',
+      difficulty: 'beginner',
+      xp: 50,
+      install: 'claude',
+      story: 'Think of Claude Code as a brilliant intern on day one. The clearer your instructions, the more powerful the result. Vague gets vague. Specific gets magic.',
+      steps: ['Open a project folder in terminal', 'Run claude to start a session', 'Try: "Read this codebase and explain the architecture"', 'Try: "Find all TODO comments and list them"'],
+      tip: 'Be specific about what you want. "Fix the bug" is weak. "Fix the login timeout error in auth.js line 42" is powerful.'
+    },
+    {
+      id: 'understand-context',
+      icon: '\uD83E\uDDE0',
+      name: 'Understanding Context Windows',
+      desc: 'How Claude reads, remembers, and forgets during a session.',
+      difficulty: 'beginner',
+      xp: 75,
+      install: 'claude --print "explain your context window"',
+      story: 'Imagine Claude has a desk. Everything you say goes on the desk. Eventually the desk gets full and old papers fall off. Knowing the desk size is knowing your limits.',
+      steps: ['Understand that context = everything Claude can see at once', 'Know that Opus has ~200K tokens of context', 'Learn to be concise to preserve context', 'Use /clear to reset when context gets cluttered'],
+      tip: 'If Claude starts forgetting things you said earlier, your context is filling up. Start a new session or use /clear.'
+    },
+    {
+      id: 'navigate-cli',
+      icon: '\uD83D\uDDA5',
+      name: 'Navigate the CLI',
+      desc: 'Master slash commands, flags, and session management.',
+      difficulty: 'beginner',
+      xp: 75,
+      install: 'claude --help',
+      story: 'A pilot who only knows the throttle will crash. Learn all the controls in your cockpit before you attempt the mission.',
+      steps: ['Learn /help to see all commands', 'Use /model to switch models mid-session', 'Use /clear to reset context', 'Try claude -p "prompt" for one-shot mode', 'Use claude --continue to resume last session'],
+      tip: 'Use --output-format json for scripting and piping Claude output to other tools.'
+    }
+  ],
+  module2: [
+    {
+      id: 'claude-md',
+      icon: '\uD83D\uDCDD',
+      name: 'CLAUDE.md Mastery',
+      desc: 'Create project-level instructions that persist across sessions.',
+      difficulty: 'beginner',
+      xp: 100,
+      install: 'touch CLAUDE.md && claude',
+      story: 'CLAUDE.md is your spell book. Write the rules once, and every session starts with those rules loaded. It is the difference between training a new employee every day vs having a seasoned team member.',
+      steps: ['Create CLAUDE.md in your project root', 'Add project conventions and rules', 'Include file structure and architecture notes', 'Add common commands and workflows', 'Claude reads this automatically on session start'],
+      tip: 'Keep it under 500 lines. Put detailed docs in sub-files and reference them.'
+    },
+    {
+      id: 'memory-system',
+      icon: '\uD83E\uDDE0',
+      name: 'Memory Systems',
+      desc: 'Build persistent memory that survives across sessions.',
+      difficulty: 'intermediate',
+      xp: 150,
+      install: 'mkdir -p ~/.claude/projects && touch ~/.claude/CLAUDE.md',
+      story: 'Humans have long-term memory. Without it, you would relearn your name every morning. Memory systems give Claude the same superpower. It remembers your preferences, your bugs, your patterns.',
+      steps: ['Create ~/.claude/CLAUDE.md for global instructions', 'Create project-level memory/ directories', 'Use MEMORY.md as an index under 200 lines', 'Create topic files: debugging.md, patterns.md, gotchas.md', 'Tell Claude to "remember that" to trigger saves'],
+      tip: 'The first 200 lines of MEMORY.md load automatically. Keep it as an index with pointers.'
+    },
+    {
+      id: 'custom-skills',
+      icon: '\u2728',
+      name: 'Custom Skills',
+      desc: 'Create reusable skill files Claude can invoke with slash commands.',
+      difficulty: 'intermediate',
+      xp: 150,
+      install: 'mkdir -p ~/.claude/skills && claude',
+      story: 'Skills are like giving Claude a recipe book. Instead of explaining how to make pasta every time, you hand it the recipe and say "make pasta." Skills are reusable prompts on steroids.',
+      steps: ['Create a .md file in ~/.claude/skills/', 'Define trigger conditions and instructions', 'Skills appear as slash commands in Claude', 'Test with /your-skill-name', 'Share skills across projects'],
+      tip: 'Name your skill files descriptively. The filename becomes the slash command.'
+    },
+    {
+      id: 'hooks',
+      icon: '\uD83E\uDE9D',
+      name: 'Hooks & Automation',
+      desc: 'Set up pre/post command hooks that run automatically.',
+      difficulty: 'intermediate',
+      xp: 150,
+      install: 'cat ~/.claude/settings.json',
+      story: 'Hooks are tripwires. When Claude does something specific, your hook fires automatically. Linting on every save. Tests on every change. Security checks on every commit. Set it and forget it.',
+      steps: ['Edit ~/.claude/settings.json', 'Add hooks under the hooks array', 'Define trigger patterns and commands', 'Hooks run shell commands automatically', 'Use for linting, testing, security scanning'],
+      tip: 'Start with simple hooks like auto-formatting. Build complexity over time.'
+    },
+    {
+      id: 'mcp-servers',
+      icon: '\uD83D\uDD0C',
+      name: 'MCP Servers',
+      desc: 'Connect Claude to external tools and data sources via Model Context Protocol.',
+      difficulty: 'advanced',
+      xp: 200,
+      install: 'claude mcp list',
+      story: 'MCP servers are like USB ports for Claude\'s brain. Plug in a database, a file system, a web scraper, or any API. Claude can now read and write to the real world.',
+      steps: ['Understand MCP = Model Context Protocol', 'Configure servers in .claude/settings.json', 'Use claude mcp add to register servers', 'Popular: filesystem, postgres, brave-search', 'Each server gives Claude new tool capabilities'],
+      tip: 'Start with the filesystem MCP server to let Claude read/write files outside the project.'
+    }
+  ],
+  module3: [
+    {
+      id: 'nano-banana',
+      icon: '\uD83C\uDF4C',
+      name: 'Nano Banana Image Gen',
+      desc: 'Generate and edit images with Gemini Flash via the Nano Banana skill.',
+      difficulty: 'intermediate',
+      xp: 200,
+      install: '/nano-banana-2-skill "a golden fox mascot"',
+      story: 'Words create worlds, but sometimes you need to see the world. Nano Banana turns your text descriptions into stunning images, right from the command line. No Photoshop required.',
+      steps: ['Install the Nano Banana skill', 'Use /nano-banana-2-skill with a prompt', 'Supports text-to-image and image editing', 'Choose resolution: 0.5K to 4K', '14 aspect ratios available', 'Use --input-image for edits on existing images'],
+      tip: 'Be descriptive with prompts. "A photorealistic golden fox wearing a crown, cinematic lighting" beats "fox picture".'
+    },
+    {
+      id: 'elevenlabs',
+      icon: '\uD83C\uDFA4',
+      name: 'ElevenLabs Voice',
+      desc: 'Generate natural-sounding voiceovers from text.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install elevenlabs',
+      story: 'Your content needs a voice. ElevenLabs gives you studio-quality narration without a studio. Blog posts become podcasts. Scripts become videos. Text becomes audio gold.',
+      steps: ['Sign up at elevenlabs.io and get API key', 'Set ELEVENLABS_API_KEY in .env', 'Use the API to convert text to speech', 'Choose from dozens of natural voices', 'Export as MP3/WAV for any project'],
+      tip: 'Use the "turbo" model for fast generation and "multilingual_v2" for non-English content.'
+    },
+    {
+      id: 'edge-tts',
+      icon: '\uD83D\uDD0A',
+      name: 'Edge TTS (Free Voice)',
+      desc: 'Free text-to-speech using Microsoft Edge voices.',
+      difficulty: 'beginner',
+      xp: 100,
+      install: 'pip install edge-tts',
+      story: 'Not everything needs a premium voice. Edge TTS gives you solid, natural voices for free. Perfect for prototyping, drafts, and content where budget matters.',
+      steps: ['Install: pip install edge-tts', 'List voices: edge-tts --list-voices', 'Generate: edge-tts --text "Hello" --write-media out.mp3', 'Use in scripts for batch processing', 'Supports 300+ voices across 75+ languages'],
+      tip: 'Use "en-US-GuyNeural" for a professional male voice or "en-US-JennyNeural" for female.'
+    },
+    {
+      id: 'video-pipeline',
+      icon: '\uD83C\uDFAC',
+      name: 'Video Pipeline',
+      desc: 'Build automated video creation workflows end to end.',
+      difficulty: 'advanced',
+      xp: 250,
+      install: 'pip install moviepy Pillow',
+      story: 'One video takes a human 4 hours. A pipeline makes 10 videos overnight. Script, voice, images, captions, rendering - all automated. This is how agencies scale.',
+      steps: ['Generate script with Claude', 'Create voiceover with ElevenLabs or Edge TTS', 'Generate images with Nano Banana', 'Combine with moviepy or ffmpeg', 'Add captions with Whisper transcription', 'Render and export automatically'],
+      tip: 'Start simple: text on screen + voiceover. Add complexity once the pipeline works.'
+    },
+    {
+      id: 'youtube-transcription',
+      icon: '\uD83D\uDCFA',
+      name: 'YouTube Transcription',
+      desc: 'Extract and process transcripts from any YouTube video.',
+      difficulty: 'beginner',
+      xp: 100,
+      install: 'pip install youtube-transcript-api',
+      story: 'Every YouTube video is a goldmine of content. Transcription unlocks it. Turn a 1-hour podcast into blog posts, tweets, email sequences, and training data.',
+      steps: ['Install: pip install youtube-transcript-api', 'Extract transcript with video ID', 'Process with Claude for summaries', 'Repurpose into blog posts, tweets, emails', 'Build a content repurposing pipeline'],
+      tip: 'Combine with Claude to auto-generate blog posts from video transcripts. Content multiplication.'
+    },
+    {
+      id: 'social-media',
+      icon: '\uD83D\uDCF1',
+      name: 'Social Media Automation',
+      desc: 'Schedule and post content across platforms automatically.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install tweepy instagrapi',
+      story: 'Posting manually is like hand-washing clothes when you have a washing machine. Automate your content calendar and let Claude be your social media manager.',
+      steps: ['Set up API keys for each platform', 'Use Buffer or direct APIs for scheduling', 'Generate content batches with Claude', 'Create image assets with Nano Banana', 'Schedule posts with cron jobs', 'Monitor engagement and iterate'],
+      tip: 'Start with one platform. Master it. Then expand. Twitter/X API is the easiest to start with.'
+    },
+    {
+      id: 'image-editing',
+      icon: '\uD83D\uDDBC',
+      name: 'AI Image Editing',
+      desc: 'Edit, enhance, and transform images with AI tools.',
+      difficulty: 'intermediate',
+      xp: 150,
+      install: 'pip install Pillow replicate',
+      story: 'The camera captures reality. AI editing creates the reality you want. Background removal, style transfer, upscaling - all from the command line.',
+      steps: ['Use Pillow for basic edits (resize, crop, filter)', 'Use Replicate API for AI-powered edits', 'Remove backgrounds with remove.bg API', 'Upscale with Real-ESRGAN', 'Batch process entire folders', 'Combine with Nano Banana for creative edits'],
+      tip: 'Replicate offers hundreds of image models. Use their one-line API for any editing task.'
+    }
+  ],
+  module4: [
+    {
+      id: 'crons',
+      icon: '\u23F0',
+      name: 'Cron Jobs & Scheduling',
+      desc: 'Run tasks automatically on any schedule.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'crontab -e',
+      story: 'A cron job is an alarm clock for your code. Set it once and it runs forever. Daily reports, hourly checks, weekly backups - all happening while you sleep.',
+      steps: ['Understand cron syntax: minute hour day month weekday', 'Use crontab -e to edit your cron table', 'Schedule Claude scripts to run periodically', 'Log output: >> /path/to/log 2>&1', 'Use /loop in Claude for session-level crons'],
+      tip: 'Use crontab.guru to build and test cron expressions before deploying.'
+    },
+    {
+      id: 'multi-agent',
+      icon: '\uD83E\uDD16',
+      name: 'Multi-Agent Systems',
+      desc: 'Run multiple Claude agents that communicate and collaborate.',
+      difficulty: 'advanced',
+      xp: 250,
+      install: 'bash ../../enable-agent.sh <agent-name>',
+      story: 'One agent is powerful. A team of agents is unstoppable. A researcher feeds data to a writer, who passes to an editor, who publishes. Assembly line intelligence.',
+      steps: ['Set up Claude Remote Manager', 'Create agent instances with unique roles', 'Use message bus for inter-agent comms', 'Define agent specializations in CLAUDE.md', 'Coordinate workflows across agents', 'Monitor via Telegram integration'],
+      tip: 'Start with 2 agents: one for research, one for execution. Scale from there.'
+    },
+    {
+      id: 'cortexos',
+      icon: '\uD83E\uDDE0',
+      name: 'CortexOS Framework',
+      desc: 'Advanced AI orchestration system for complex workflows.',
+      difficulty: 'godtier',
+      xp: 350,
+      install: 'git clone https://github.com/your-org/cortexos',
+      story: 'CortexOS is the operating system for your AI workforce. It manages agents, routes tasks, handles errors, and scales automatically. This is enterprise-grade AI orchestration.',
+      steps: ['Install CortexOS framework', 'Define agent roles and capabilities', 'Create workflow graphs', 'Set up error handling and retries', 'Monitor with the dashboard', 'Scale horizontally as needed'],
+      tip: 'CortexOS is for when you have 5+ agents doing complex work. Overkill for simple tasks.'
+    },
+    {
+      id: 'playwright',
+      icon: '\uD83C\uDFAD',
+      name: 'Playwright Browser Automation',
+      desc: 'Automate web browsers for testing, scraping, and workflows.',
+      difficulty: 'intermediate',
+      xp: 200,
+      install: 'pip install playwright && playwright install',
+      story: 'Playwright gives Claude hands and eyes on the web. Fill forms, click buttons, take screenshots, scrape data. If a human can do it in a browser, Playwright can automate it.',
+      steps: ['Install Playwright and browser binaries', 'Write automation scripts in Python', 'Navigate pages, fill forms, click buttons', 'Take screenshots and extract data', 'Handle authentication and sessions', 'Run headless for server environments'],
+      tip: 'Use playwright codegen to record your actions and auto-generate the script.'
+    },
+    {
+      id: 'telegram-bot',
+      icon: '\uD83D\uDCE8',
+      name: 'Telegram Bot Integration',
+      desc: 'Control Claude and receive notifications via Telegram.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install python-telegram-bot',
+      story: 'Telegram becomes your remote control. Send commands from your phone, get notifications about completed tasks, check status - all from anywhere in the world.',
+      steps: ['Create a bot via @BotFather on Telegram', 'Get your bot token and chat ID', 'Set up send/receive message scripts', 'Configure in .env file', 'Use for notifications, commands, and monitoring', 'Integrate with Claude Remote Manager'],
+      tip: 'Set ALLOWED_USER to restrict your bot to only your Telegram account.'
+    }
+  ],
+  module5: [
+    {
+      id: 'stripe',
+      icon: '\uD83D\uDCB3',
+      name: 'Stripe Payments',
+      desc: 'Accept payments and manage billing with Stripe API.',
+      difficulty: 'advanced',
+      xp: 250,
+      install: 'pip install stripe',
+      story: 'Money is the lifeblood of business. Stripe is the heart that pumps it. Accept payments, manage subscriptions, handle invoices - all programmatically.',
+      steps: ['Create Stripe account and get API keys', 'Install Stripe SDK', 'Create products and prices', 'Build checkout sessions', 'Handle webhooks for payment events', 'Set up recurring subscriptions'],
+      tip: 'Always use test mode (sk_test_) keys during development. Switch to live keys only for production.'
+    },
+    {
+      id: 'perplexity',
+      icon: '\uD83D\uDD0D',
+      name: 'Perplexity Research',
+      desc: 'Real-time web research and fact-checking via Perplexity API.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install openai  # Perplexity uses OpenAI-compatible API',
+      story: 'Claude knows a lot, but the web knows everything happening right now. Perplexity bridges the gap. Real-time research, fact-checking, and trend monitoring.',
+      steps: ['Get API key from perplexity.ai', 'Use OpenAI-compatible client', 'Set base_url to Perplexity endpoint', 'Query for real-time web information', 'Combine with Claude for analysis', 'Build research pipelines'],
+      tip: 'Use Perplexity for current events and real-time data. Use Claude for analysis and synthesis.'
+    },
+    {
+      id: 'twilio',
+      icon: '\uD83D\uDCDE',
+      name: 'Twilio SMS & Calls',
+      desc: 'Send SMS messages and make phone calls programmatically.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install twilio',
+      story: 'Text messages have a 98% open rate. Twilio lets Claude send them. Appointment reminders, alerts, verification codes, sales follow-ups - all automated.',
+      steps: ['Create Twilio account and get credentials', 'Buy a phone number', 'Send SMS with the Twilio API', 'Set up webhooks for incoming messages', 'Make voice calls with TwiML', 'Build notification systems'],
+      tip: 'Start with SMS - it is the simplest. Voice calls require TwiML markup for call flow.'
+    },
+    {
+      id: 'zapier',
+      icon: '\u26A1',
+      name: 'Zapier Webhooks',
+      desc: 'Connect Claude to 5000+ apps via Zapier automations.',
+      difficulty: 'beginner',
+      xp: 125,
+      install: 'curl -X POST https://hooks.zapier.com/hooks/catch/YOUR_HOOK',
+      story: 'Zapier is the universal translator. It connects everything to everything. Claude to Slack, Stripe to Google Sheets, forms to CRM. If it exists, Zapier connects it.',
+      steps: ['Create a Zapier account', 'Set up a webhook trigger Zap', 'Get your webhook URL', 'Send data from Claude via curl', 'Map fields in Zapier', 'Connect to any of 5000+ apps'],
+      tip: 'Use Zapier for quick integrations. Build custom API integrations for high-volume or complex workflows.'
+    },
+    {
+      id: 'airtable',
+      icon: '\uD83D\uDCCA',
+      name: 'Airtable Database',
+      desc: 'Use Airtable as a flexible database for any project.',
+      difficulty: 'beginner',
+      xp: 125,
+      install: 'pip install pyairtable',
+      story: 'Airtable is a database that does not feel like one. Spreadsheet simplicity with database power. Track leads, manage content, organize projects - all with a beautiful UI and powerful API.',
+      steps: ['Create Airtable base and tables', 'Generate a personal access token', 'Install pyairtable SDK', 'Create, read, update, delete records', 'Build views and filters', 'Automate data entry with Claude'],
+      tip: 'Design your table schema carefully upfront. Changing it later is painful with live data.'
+    },
+    {
+      id: 'google-drive',
+      icon: '\uD83D\uDCC1',
+      name: 'Google Drive Integration',
+      desc: 'Read, write, and manage files in Google Drive.',
+      difficulty: 'intermediate',
+      xp: 150,
+      install: 'pip install google-api-python-client google-auth',
+      story: 'Google Drive is where businesses live. Reports, proposals, spreadsheets - all in the cloud. Claude can read them, create them, and organize them automatically.',
+      steps: ['Set up Google Cloud project', 'Enable Drive API', 'Create service account or OAuth credentials', 'Install Google API client', 'Upload, download, and search files', 'Manage permissions and sharing'],
+      tip: 'Service accounts are easier for automation. OAuth is needed for user-specific access.'
+    },
+    {
+      id: 'whisper',
+      icon: '\uD83C\uDF99',
+      name: 'Whisper Transcription',
+      desc: 'Transcribe audio and video files with OpenAI Whisper.',
+      difficulty: 'intermediate',
+      xp: 175,
+      install: 'pip install openai-whisper',
+      story: 'Every meeting, podcast, and voice note contains valuable information locked in audio. Whisper is the key. Transcribe anything with near-human accuracy.',
+      steps: ['Install Whisper: pip install openai-whisper', 'Transcribe: whisper audio.mp3 --model medium', 'Choose model size: tiny to large', 'Output formats: txt, srt, vtt, json', 'Batch process multiple files', 'Use with Claude for meeting summaries'],
+      tip: 'Use "medium" model for best accuracy/speed balance. "large" is slower but most accurate.'
+    }
+  ],
+  module6: [
+    {
+      id: 'vector-db',
+      icon: '\uD83E\uDDF2',
+      name: 'Vector Database & RAG',
+      desc: 'Build retrieval-augmented generation systems for any knowledge base.',
+      difficulty: 'advanced',
+      xp: 300,
+      install: 'pip install chromadb langchain',
+      story: 'Imagine Claude could search through 10,000 documents in milliseconds and find exactly the right paragraph. That is what vector databases do. They give Claude perfect memory at any scale.',
+      steps: ['Install ChromaDB or Pinecone', 'Embed documents into vectors', 'Store embeddings in the vector DB', 'Query with semantic similarity search', 'Feed relevant context to Claude', 'Build RAG pipelines for production'],
+      tip: 'Start with ChromaDB locally. Move to Pinecone or Weaviate when you need cloud scale.'
+    },
+    {
+      id: 'production-pipelines',
+      icon: '\uD83C\uDFED',
+      name: 'Production Pipelines',
+      desc: 'Deploy Claude-powered systems that run 24/7 in production.',
+      difficulty: 'godtier',
+      xp: 350,
+      install: 'docker build -t my-pipeline .',
+      story: 'Prototypes impress. Production systems make money. This is where you cross the bridge from experimenting to deploying real systems that handle real traffic.',
+      steps: ['Containerize with Docker', 'Set up CI/CD with GitHub Actions', 'Deploy to Railway, Fly.io, or AWS', 'Implement error handling and retries', 'Add monitoring and alerting', 'Scale with load balancing'],
+      tip: 'Railway is the fastest path to production. Fly.io for more control. AWS for enterprise scale.'
+    },
+    {
+      id: 'selling-ai',
+      icon: '\uD83D\uDCB0',
+      name: 'Selling AI Services',
+      desc: 'Package and sell your Claude Code skills as a business.',
+      difficulty: 'godtier',
+      xp: 400,
+      install: 'claude "help me write a proposal for an AI automation service"',
+      story: 'You have built the skills. Now monetize them. Businesses will pay premium prices for the automation you can build in hours. This is the endgame: turning superpowers into income.',
+      steps: ['Identify high-value automation opportunities', 'Build a portfolio of case studies', 'Create service packages with clear pricing', 'Use NEPQ sales methodology', 'Deliver results that justify premium pricing', 'Scale with templates and playbooks'],
+      tip: 'Start with one niche. Become the expert. Then expand. Generalists compete on price. Specialists compete on value.'
+    },
+    {
+      id: 'custom-skill-dev',
+      icon: '\uD83D\uDEE0',
+      name: 'Custom Skill Development',
+      desc: 'Build advanced custom skills and share them with the community.',
+      difficulty: 'advanced',
+      xp: 300,
+      install: 'mkdir -p ~/.claude/skills && code ~/.claude/skills/my-skill.md',
+      story: 'The master does not just use tools. The master creates them. Custom skills let you package your expertise into reusable, shareable power-ups.',
+      steps: ['Study existing skill file formats', 'Define clear trigger conditions', 'Write comprehensive instructions', 'Include examples and edge cases', 'Test thoroughly across scenarios', 'Share with the community'],
+      tip: 'The best skills solve one problem extremely well. Avoid kitchen-sink skills that try to do everything.'
+    }
+  ]
 };
 
-const tutorials = {
-  install: {
-    title: 'Install Claude Code',
-    subtitle: 'Your first step into a larger world',
-    story: 'Fox wanted a magical assistant but didn\'t know how to invite one home. He searched high and low, asked Rabbit and Turtle, and they all shrugged. Turns out, all he had to do was knock on the right door. One magic word in the right place, and the assistant appeared, ready to help with anything Fox could dream up...',
-    explain: [
-      {term: 'Terminal', def: 'Terminal is like texting your computer. Instead of tapping buttons and clicking things, you type words and your computer does things. Think of it as a chat window between you and your Mac.'}
-    ],
-    steps: [
-      'Click the magnifying glass icon at the top right of your Mac (or press <code>Command+Space</code>)',
-      'Type <code>Terminal</code> and press Enter',
-      'A black or white window opens - this is Terminal. Do not be scared of it. It is just a text box.',
-      'Copy this command: <code>curl -fsSL https://claude.ai/install | sh</code>',
-      'Paste it in Terminal (<code>Command+V</code>) and press Enter',
-      'Wait for it to finish. You will see some text scrolling by. When you see your username again with a blinking cursor, it is done.'
-    ],
-    tip: 'Take a screenshot of your Terminal and send it to Claude on your phone if you get stuck. It can read your screen and tell you exactly what to do next.'
+const CASE_STUDIES = [
+  {
+    label: 'Case Study #1',
+    title: 'The CyberFOX Proposal',
+    body: 'A full cybersecurity proposal generated in 45 minutes instead of 3 days. Claude researched the client, analyzed their tech stack, identified vulnerabilities, wrote the executive summary, technical assessment, remediation plan, and pricing. The client signed within 24 hours. Total billable value: $18,000.'
   },
-  apikey: {
-    title: 'Get Your API Key',
-    subtitle: 'The golden key that unlocks everything',
-    story: 'The fox got his magical door installed, but it was locked tight. No matter how hard he knocked, nothing happened. He needed a special golden key that only the Anthropic Kingdom could give him. So he journeyed to their website, signed up as a citizen, and they handed him a shiny key that started with "sk-ant-". He rushed home, whispered the key to his door, and it swung wide open...',
-    explain: [
-      {term: 'API Key', def: 'An API key is like a VIP wristband at a concert. It proves you paid and lets you through the door. Without it, Claude Code cannot talk to the AI brain in the cloud. It is just a long string of letters and numbers.'},
-      {term: 'console.anthropic.com', def: 'This is the website where you manage your Claude account, create API keys, and add payment credits. Think of it as your backstage pass office.'}
-    ],
-    steps: [
-      'Open your browser (Safari, Chrome, whatever you use) and go to <code>console.anthropic.com</code>',
-      'Click Sign Up or Log In (use your email and create a password)',
-      'Once inside the dashboard, look for <code>API Keys</code> in the left sidebar and click it',
-      'Click the <code>Create Key</code> button',
-      'Give it a name like "my-mac" and click Create',
-      'Copy the key immediately (it starts with <code>sk-ant-</code>). You will only see it once!',
-      'Go back to Terminal and type: <code>export ANTHROPIC_API_KEY=sk-ant-your-key-here</code>',
-      'Replace <code>sk-ant-your-key-here</code> with the actual key you just copied, then press Enter'
-    ],
-    tip: 'Save this key somewhere safe like your Notes app. You will need it again if you restart your computer. If you lose it, just create a new one on the website.'
+  {
+    label: 'Case Study #2',
+    title: 'The Peptide Bible',
+    body: 'A 200-page comprehensive peptide research guide created in one weekend. Claude processed 50+ research papers, organized them by peptide category, wrote plain-English summaries, added dosing protocols, and formatted the entire document. What would take a research team weeks was done by one person with Claude Code.'
   },
-  firstrun: {
-    title: 'First Run',
-    subtitle: 'Say hello to your new AI assistant',
-    story: 'Fox took a deep breath, knocked on the door, and whispered "claude". The door opened with a gentle glow. And for the first time in his life, he had someone who could help him build anything he could imagine. Rabbit peeked over the fence and said "What is THAT?" Fox grinned and said "The future, buddy."',
-    explain: [
-      {term: 'Claude Code', def: 'Claude Code is an AI assistant that lives in your Terminal. You talk to it by typing, and it can create files, write code, edit things, search the internet, and automate tasks for you. It is like having a genius intern who never sleeps.'}
-    ],
-    steps: [
-      'Open Terminal (magnifying glass at top right > type <code>Terminal</code> > press Enter)',
-      'Type the word: <code>claude</code>',
-      'Press Enter',
-      'Claude will say hello and introduce itself! You are now talking to AI in your terminal.',
-      'Try asking it something fun: type <code>Create a file called hello.txt that says this is my first file</code>',
-      'Watch it create the file for you on your computer. That is the power. You just told your computer what to do in plain English and it did it.'
-    ],
-    tip: 'You can ask Claude anything in plain English. No special syntax needed. Just talk to it like a person.'
+  {
+    label: 'Case Study #3',
+    title: '10 Videos Overnight',
+    body: 'Using the video pipeline: Claude wrote 10 scripts, generated voiceovers with ElevenLabs, created images with Nano Banana, assembled everything with moviepy, and added auto-generated captions. By morning, 10 polished videos were ready for upload. The client thought a team of 5 produced them.'
   },
-  claudemd: {
-    title: 'Create CLAUDE.md',
-    subtitle: 'Teach your AI who you are',
-    story: 'Fox realized his assistant was brilliant at following orders but had absolutely no idea who Fox was or what he cared about. Every conversation started from scratch. So Fox sat down and wrote a letter - his name, his business, his goals, what he liked and hated. He placed it by the front door. Now every morning when the assistant wakes up, it reads the letter first and knows exactly who it is working for...',
-    explain: [
-      {term: 'CLAUDE.md', def: 'CLAUDE.md is a special file that Claude reads automatically at the start of every conversation. It is your AI\'s instruction manual. You write who you are, what your business does, your preferences, and how you want Claude to behave. It is the single most important file in this entire system.'},
-      {term: '.md file', def: 'A markdown file. It is just a plain text file with a special extension. You can write in it like a normal document.'}
-    ],
-    steps: [
-      'Open Terminal and navigate to your project folder (or just your home directory to start)',
-      'Type: <code>claude</code> to start a session',
-      'Tell Claude: <code>Help me create a CLAUDE.md file for my business. Ask me questions about who I am and what I do.</code>',
-      'Answer its questions honestly - your name, your business, your goals, your preferences',
-      'Claude will create the CLAUDE.md file for you based on your answers',
-      'From now on, every time you start Claude in that folder, it reads this file first and already knows you'
-    ],
-    tip: 'The better your CLAUDE.md, the better Claude performs. Spend 10 minutes making it great and it saves you hours forever.'
-  },
-  memory: {
-    title: 'Memory System',
-    subtitle: 'How Claude remembers you across conversations',
-    story: 'Fox\'s assistant was brilliant but had goldfish memory. Every single morning it forgot everything from yesterday - the client names, the project details, the lessons learned. Fox was going crazy repeating himself. So Turtle, the wise old engineer, showed Fox how to build a little journal. The assistant could write down important things, and every morning it would read its own notes. Now it never forgets. "Why didn\'t you tell me sooner?" Fox groaned. Turtle smiled. "You never asked."',
-    explain: [
-      {term: 'Memory Files', def: 'Memory files are notes that Claude saves about you and your projects. They live in a special folder (~/.claude/) and get loaded every time you start a new conversation. Claude can save things like your preferences, past decisions, and important context.'},
-      {term: '~/.claude/', def: 'This is a hidden folder on your Mac where Claude stores its configuration and memory. The ~ means your home folder. The dot at the start means it is hidden (you will not see it in Finder normally).'}
-    ],
-    steps: [
-      'Start a Claude session by typing <code>claude</code> in Terminal',
-      'Tell Claude something you want it to remember: <code>Remember that my business is called [your business name] and we focus on [what you do]</code>',
-      'Claude will save this to its memory files',
-      'End the session and start a new one',
-      'Ask Claude: <code>What do you know about my business?</code> - it will remember!'
-    ],
-    tip: 'Tell Claude to "remember" important things as you work. It builds up a profile of you over time.'
-  },
-  skills: {
-    title: 'Understanding Skills',
-    subtitle: 'Download new superpowers for your AI',
-    story: 'One day Fox discovered a hidden library deep in the forest. Inside, other foxes had written spell books - each one teaching the assistant a brand new superpower. One book taught it to paint pictures out of thin air. Another taught it to make videos. Another let it search the entire internet. Fox\'s eyes went wide. "You mean I can just... take these?" Rabbit nodded. "They are free. All of them." Fox loaded up his backpack and ran home...',
-    explain: [
-      {term: 'Skills', def: 'Skills are like recipe cards you download from the internet. You drop them in a special folder and suddenly Claude knows how to do new things it could not do before. Want image generation? Download that skill. Want video production? Download that skill. Each skill is just a text file with instructions.'},
-      {term: 'GitHub', def: 'GitHub is like a massive free library where people share their code, tools, and skills. When someone says "git clone" that just means "download this thing from the library." You do not need an account to download.'},
-      {term: '~/.claude/skills/', def: 'This is the folder where skills live on your Mac. Drop a skill folder in here and Claude automatically learns it.'}
-    ],
-    steps: [
-      'Open Terminal and check if you have a skills folder: <code>ls ~/.claude/skills/</code>',
-      'If it does not exist, create it: <code>mkdir -p ~/.claude/skills/</code>',
-      'Find a skill on GitHub (like the Nano Banana image gen skill)',
-      'Clone it into your skills folder: <code>git clone [url] ~/.claude/skills/[name]</code>',
-      'Start a new Claude session and the skill is automatically available',
-      'Ask Claude to use the skill - for example: <code>Generate an image of a sunset</code>'
-    ],
-    tip: 'Skills are the secret weapon. Each one you install makes Claude dramatically more powerful. Start with Nano Banana for image generation.'
-  },
-  nanobanana: {
-    title: 'Nano Banana (Image Gen)',
-    subtitle: 'Unlimited free AI images from your Terminal',
-    story: 'Fox had heard legends of foxes who could conjure paintings from thin air, but he always thought it was a myth. Then one day he downloaded his first spell book, opened it, and whispered "make me a sunset over the ocean." BOOM - a beautiful painting appeared right there on his desk, still warm. For free. Unlimited paintings. Fox giggled like a kid on Christmas morning. Rabbit walked in and dropped his carrot. "Is that... did you just..." Fox was already whispering his next request.',
-    explain: [
-      {term: 'Nano Banana', def: 'This is a skill that lets Claude generate images using Google\'s free Gemini AI. You describe what you want and it creates a real image file on your computer. No Photoshop needed. No design skills needed.'},
-      {term: 'Gemini API Key', def: 'Google gives you free access to their image-making AI. You just need a free key from their website. It costs nothing and gives you unlimited image generation.'},
-      {term: 'Git Clone', def: 'Just means "download this from the library." One command and the skill is installed.'}
-    ],
-    steps: [
-      'First, get a free Gemini API key: go to <code>aistudio.google.com/apikey</code> in your browser',
-      'Click <code>Create API Key</code> and copy it',
-      'In Terminal, save the key: <code>export GEMINI_API_KEY=your-key-here</code>',
-      'Install the skill: <code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code>',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Generate an image of a sunset over the ocean</code>',
-      'Watch it create a real image file on your computer. Magic.'
-    ],
-    tip: 'This is completely free and unlimited. You can generate product photos, social media graphics, logos, anything. Just describe what you want in plain English.'
-  },
-  hooks: {
-    title: 'Hooks',
-    subtitle: 'Automatic triggers that fire on events',
-    story: 'Fox was tired of manually checking things every time something happened. "What if," Turtle suggested, "we set up tripwires? When something happens, the right action fires automatically." Fox set up his first hook - every time he saved a file, it automatically ran a quality check. He never had to remember again...',
-    explain: [
-      {term: 'Hooks', def: 'Hooks are automatic triggers. They are shell commands that fire when specific events happen - like before Claude runs a command, after it edits a file, or when a session starts. Think of them as "if THIS happens, then DO THAT" rules.'},
-      {term: 'settings.json', def: 'The configuration file where you define your hooks. Claude reads this to know which automatic actions to take.'}
-    ],
-    steps: [
-      'Open Claude and ask: <code>Show me how to set up a hook in settings.json</code>',
-      'Claude will help you create or edit the settings file',
-      'Choose what event you want to hook into (pre-command, post-edit, session start, etc.)',
-      'Define the shell command that should run when that event fires',
-      'Test it by triggering the event and watching the hook fire automatically'
-    ],
-    tip: 'Start with a simple hook like auto-formatting code on save. Once you see how it works, you will want hooks everywhere.'
-  },
-  mcp: {
-    title: 'MCP Servers',
-    subtitle: 'Give Claude new tools and integrations',
-    story: 'Fox realized his assistant was powerful but trapped in a box. It could not see the internet, could not check his email, could not search GitHub. Then Rabbit showed him a secret passage - MCP servers. Each one was like plugging in a new sense. Suddenly the assistant could see the web, feel the database, hear the API responses. Fox whispered "search GitHub for image generation tools" and got results in seconds...',
-    explain: [
-      {term: 'MCP', def: 'Model Context Protocol. It is a way to give Claude new tools by connecting it to external services. Each MCP server is like plugging in a new USB accessory - it gives Claude a new capability.'},
-      {term: 'MCP Server', def: 'A small program that runs in the background and gives Claude access to something external - like GitHub, a database, a browser, or an API. You configure them and Claude can use them automatically.'}
-    ],
-    steps: [
-      'Start Claude and ask: <code>Help me set up an MCP server</code>',
-      'Choose which MCP server you want (GitHub, filesystem, browser, etc.)',
-      'Claude will guide you through the configuration',
-      'The MCP server gets added to your settings file',
-      'Restart Claude and the new tool is available',
-      'Ask Claude to use it: <code>Search GitHub for Claude Code skills</code>'
-    ],
-    tip: 'MCP servers are what turn Claude from a text assistant into a fully connected AI agent. Start with the GitHub MCP server.'
-  },
-  imgedit: {
-    title: 'Image Editing & Face Swap',
-    subtitle: 'Transform photos while keeping the face',
-    story: 'Fox wanted to put his face on a movie poster. "Impossible," said Rabbit. Fox smiled, sent Claude a selfie and said "Put me on the cover of a sci-fi movie." Thirty seconds later, there he was - fur gleaming, standing on an alien planet, looking heroic. Same face. New universe. Rabbit fainted.',
-    explain: [
-      {term: 'Image-to-Image', def: 'You give Claude an existing photo and tell it how to change it. It keeps what you want (like the face) and transforms the rest. No Photoshop skills needed.'},
-      {term: 'Reference Image', def: 'The original photo you want to work from. Claude uses it as a starting point and modifies it based on your instructions.'}
-    ],
-    steps: [
-      'Make sure you have the Nano Banana skill installed first',
-      'Place a reference photo somewhere Claude can access it (like your Desktop)',
-      'Start Claude and tell it: <code>Edit this image [path to photo] and change the background to a tropical beach</code>',
-      'Claude will generate a new image with the modifications',
-      'Experiment with different prompts to get the look you want'
-    ],
-    tip: 'The more specific your description, the better the result. Instead of "make it cool" say "golden hour lighting, cinematic composition, warm tones."'
-  },
-  elevenlabs: {
-    title: 'ElevenLabs Voiceover',
-    subtitle: 'Professional AI voices that sound real',
-    story: 'Fox needed a voice for his marketing video but could not afford a voice actor. Then he discovered a magical megaphone that could speak in hundreds of different voices - deep, smooth, energetic, calm. He typed his script, picked a voice, and out came audio so good that Rabbit thought a real person recorded it...',
-    explain: [
-      {term: 'ElevenLabs', def: 'A service that turns text into incredibly realistic speech. You type words, pick a voice, and it creates an audio file. Some features are free, premium plans give you more.'},
-      {term: 'Voice Cloning', def: 'You can upload a recording of someone\'s voice and ElevenLabs will learn to speak in that exact voice. Great for creating consistent brand voices.'}
-    ],
-    steps: [
-      'Go to <code>elevenlabs.io</code> and create a free account',
-      'Get your API key from your account settings',
-      'In Terminal: <code>export ELEVENLABS_API_KEY=your-key-here</code>',
-      'Start Claude and tell it: <code>Create a voiceover that says "Welcome to our brand" using ElevenLabs</code>',
-      'Claude will generate an audio file on your computer',
-      'Try different voices by telling Claude which voice style you want'
-    ],
-    tip: 'ElevenLabs free tier gives you enough to test with. For production work, their paid plans are very reasonable.'
-  },
-  edgetts: {
-    title: 'Edge TTS (Free Voice)',
-    subtitle: 'Unlimited free voiceovers that sound great',
-    story: 'Fox loved ElevenLabs but his wallet did not. Then Turtle whispered a secret: "Microsoft gives away free voices. Unlimited. Forever." Fox installed one package and suddenly had access to dozens of professional voices in every language. "Why doesn\'t everyone know about this?" he asked. Turtle shrugged. "They do not ask Turtles enough questions."',
-    explain: [
-      {term: 'Edge TTS', def: 'Microsoft\'s free text-to-speech engine. The same voices used in Microsoft Edge browser. They sound surprisingly good and are 100% free with no limits.'},
-      {term: 'pip3 install', def: 'This is how you install Python packages. pip3 is like an app store for Python tools. You type the command and it downloads and installs the tool for you.'}
-    ],
-    steps: [
-      'In Terminal, install it: <code>pip3 install edge-tts</code>',
-      'That is it. No API key needed. No account needed.',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Create a voiceover using Edge TTS that says "Welcome to our channel" and save it as welcome.mp3</code>',
-      'Claude will generate the audio file for free',
-      'Try different voices: <code>List available Edge TTS voices</code>'
-    ],
-    tip: 'Edge TTS is the ultimate budget move. Use it for drafts and testing, then upgrade to ElevenLabs for final production if you want premium quality.'
-  },
-  vidpipe: {
-    title: 'Video Production Pipeline',
-    subtitle: 'One prompt creates an entire video package',
-    story: 'Fox had images, voices, and an idea. But putting them together into a video felt impossible. Then he discovered he could chain all his superpowers together: generate the image, animate it with Kling, add a voiceover, and deliver the final video. One prompt. One pipeline. He told Claude "make me a 30-second ad" and went to make coffee. When he came back, the video was done...',
-    explain: [
-      {term: 'Pipeline', def: 'A series of steps that happen automatically one after another. Image gets created, then animated, then voice gets added, then everything gets combined into a final video.'},
-      {term: 'Kling 3.0', def: 'An AI video generation tool that takes a still image and animates it into a video clip. Your image literally comes to life.'}
-    ],
-    steps: [
-      'First make sure you have: Nano Banana (images), a voiceover tool (Edge TTS or ElevenLabs), and Kling access',
-      'Start Claude: <code>claude</code>',
-      'Give it a video brief: <code>Create a video package: generate an image of [scene], create a voiceover saying [script], and organize everything in a folder called my-video</code>',
-      'Claude will execute each step in sequence',
-      'Check the output folder for your completed video assets',
-      'For animation, you can upload the generated images to Kling separately'
-    ],
-    tip: 'Start simple with image + voiceover. Once that works, add animation. Build your pipeline one piece at a time.'
-  },
-  yttranscript: {
-    title: 'YouTube Transcription',
-    subtitle: 'Extract knowledge from any video',
-    story: 'Fox found a YouTube channel with 200 videos of pure gold - sales training, techniques, scripts. But watching 200 videos would take months. So he pointed Claude at the channel and said "get me every word." In minutes he had 238,000 words of transcript. Then he said "turn this into a training manual." Claude distilled it into a 15,000-word masterpiece. Rabbit spent 3 months watching those videos. Fox did it in 10 minutes.',
-    explain: [
-      {term: 'Transcript', def: 'A written version of everything said in a video. YouTube auto-generates these for most videos. Claude can grab them automatically.'},
-      {term: 'youtube-transcript-api', def: 'A free Python tool that downloads YouTube video transcripts. No YouTube account needed. Just give it a video URL.'}
-    ],
-    steps: [
-      'Install the tool: <code>pip3 install youtube-transcript-api</code>',
-      'Start Claude: <code>claude</code>',
-      'Give it a YouTube URL: <code>Get the transcript from this video: [paste URL]</code>',
-      'Claude will download and display the full transcript',
-      'Ask it to analyze: <code>Summarize the key points from this transcript</code>',
-      'For whole channels: <code>Get transcripts from all videos on this channel</code>'
-    ],
-    tip: 'This is insanely powerful for research. Find an expert on YouTube, pull all their transcripts, and have Claude create a condensed knowledge base.'
-  },
-  social: {
-    title: 'Social Media Content',
-    subtitle: 'Content that sounds human, not AI',
-    story: 'Fox was posting every day but everything sounded like a robot wrote it. "Make it engaging!" he kept telling AI tools, and they kept adding exclamation points. Then he configured Claude with his voice, his style, his audience. Now every caption sounds like Fox actually wrote it. Because technically, he did - he just had help.',
-    explain: [
-      {term: 'Content Calendar', def: 'A schedule of what to post and when. Claude can create weekly or monthly calendars with post ideas, captions, and optimal posting times.'},
-      {term: 'Brand Voice', def: 'The consistent tone and style of your communication. Put this in your CLAUDE.md so every piece of content matches your brand.'}
-    ],
-    steps: [
-      'Make sure your CLAUDE.md describes your brand voice and target audience',
-      'Start Claude: <code>claude</code>',
-      'Ask it: <code>Create 5 Instagram captions for [your business] about [topic]</code>',
-      'Review and adjust: <code>Make #3 more casual and add a call to action</code>',
-      'Generate a content calendar: <code>Create a 2-week content calendar for my Instagram</code>',
-      'Ask for hashtag research: <code>Find the best hashtags for [your niche]</code>'
-    ],
-    tip: 'The secret is your CLAUDE.md. The better you describe your voice and audience, the more human the content sounds.'
-  },
-  crons: {
-    title: 'Cron Jobs & /loop',
-    subtitle: 'Schedule tasks that run automatically',
-    story: 'Fox was waking up every morning to manually check his emails, scrape a website, and generate a report. Same thing, every day. Turtle watched this for a week and finally said: "You know you can schedule that, right? Set it once, and it runs forever." Fox felt silly. But also free.',
-    explain: [
-      {term: 'Cron Job', def: 'A task that runs automatically on a schedule. Like setting an alarm, but instead of waking you up, it runs a command. Every 5 minutes, every hour, every day - you choose.'},
-      {term: '/loop', def: 'A Claude Code command that repeats a task on an interval. /loop 5m means "do this every 5 minutes." It is the simplest way to automate recurring tasks.'}
-    ],
-    steps: [
-      'Start Claude: <code>claude</code>',
-      'Set up a loop: type <code>/loop 10m Check my inbox and summarize new messages</code>',
-      'Claude will now run that task every 10 minutes automatically',
-      'Try different intervals: <code>/loop 1h Generate a daily report</code>',
-      'To see active loops: ask Claude <code>What loops are currently running?</code>',
-      'To stop a loop: ask Claude to cancel it'
-    ],
-    tip: 'Start with something simple like a 30-minute check. Once you trust it, add more automated tasks.'
-  },
-  multiagent: {
-    title: 'Multi-Agent Architecture',
-    subtitle: 'One Mac, many AI employees',
-    story: 'Fox realized one assistant was not enough. He needed a sales agent, a content agent, a research agent. Each one with its own personality, its own instructions, its own Telegram bot. So he set up a little village of agents on his Mac. Each one in its own room, doing its own job, talking to him through its own phone number. One Mac. Ten employees. Zero salaries.',
-    explain: [
-      {term: 'Agent', def: 'A separate Claude instance with its own instructions, memory, and communication channel. Like hiring a new employee who specializes in one thing.'},
-      {term: 'Telegram Bot', def: 'Each agent gets its own Telegram bot so you can message it from your phone. It is like giving each employee their own phone number.'}
-    ],
-    steps: [
-      'Set up your first agent using the CortexOS system (install that first)',
-      'Create a new Telegram bot via @BotFather in Telegram',
-      'Copy the bot token you receive',
-      'Use the agent creation commands to spawn a new agent',
-      'Give it a CLAUDE.md with specific instructions for its role',
-      'Message it on Telegram and watch it respond independently'
-    ],
-    tip: 'Start with 2 agents - one general purpose and one specialized. Once you understand the pattern, scale up.'
-  },
-  cortexos: {
-    title: 'CortexOS (24/7 Agents)',
-    subtitle: 'Your AI never goes offline',
-    story: 'Fox was devastated every time he closed his laptop and his assistant disappeared. All that context, gone. Then he found CortexOS - a magical spell that kept his assistant alive forever. Crash recovery, auto-restart, persistent memory. Fox closed his laptop, went to bed, and woke up to find his assistant had completed three tasks overnight. It never sleeps. It never quits. It never forgets.',
-    explain: [
-      {term: 'CortexOS', def: 'A system that keeps Claude running 24/7 on your Mac. It automatically restarts if Claude crashes, preserves conversation history, and lets you control everything via Telegram from your phone.'},
-      {term: 'tmux', def: 'A terminal multiplexer. It lets programs run in the background even when you close Terminal. Your Claude session lives inside tmux so it survives everything.'},
-      {term: 'launchd', def: 'The Mac\'s built-in service manager. CortexOS uses it to make sure your agents start automatically when your Mac boots up.'}
-    ],
-    steps: [
-      'Clone the repo: <code>git clone https://github.com/grandaenium/claude-remote-manager.git</code>',
-      'Follow the setup instructions in the repo\'s README',
-      'Create a Telegram bot and configure your agent',
-      'Enable the agent using the provided scripts',
-      'Your agent is now running 24/7 in the background',
-      'Message it on Telegram from anywhere - your phone, another computer, anywhere'
-    ],
-    tip: 'This is the endgame setup. Once CortexOS is running, you have a full-time AI employee on your Mac that you control from your phone.'
-  },
-  telegram: {
-    title: 'Remote Control (Telegram)',
-    subtitle: 'Control your AI from your phone',
-    story: 'Fox was at a coffee shop when a client asked for an urgent deliverable. His Mac was at home. Panic. Then he remembered - he could just text his agent on Telegram. He pulled out his phone, typed "generate the proposal and send it to the client," and put his phone down. Two minutes later, done. Fox sipped his latte and smiled.',
-    explain: [
-      {term: 'Telegram', def: 'A messaging app (like WhatsApp but with more features). Your AI agent gets its own Telegram bot that you can message anytime, anywhere.'},
-      {term: '@BotFather', def: 'The official Telegram bot that creates other bots. You message it, it gives you a new bot with a token. Free and takes 30 seconds.'}
-    ],
-    steps: [
-      'Download Telegram on your phone if you do not have it',
-      'Open Telegram and search for <code>@BotFather</code>',
-      'Send it: <code>/newbot</code>',
-      'Follow the prompts to name your bot',
-      'Copy the bot token it gives you',
-      'Configure your CortexOS agent with this token',
-      'Message your bot and your AI agent responds!'
-    ],
-    tip: 'You can send photos, files, and voice messages to your agent through Telegram. It can respond with images, files, and formatted text.'
-  },
-  playwright: {
-    title: 'Browser Automation',
-    subtitle: 'Control a real web browser with code',
-    story: 'Fox needed to fill out the same form on a website 50 times. "There has to be a better way," he muttered. Turtle introduced him to Playwright - a invisible browser that Claude could control. "Click this button, fill that field, screenshot the result." Fox automated his entire web workflow in one afternoon.',
-    explain: [
-      {term: 'Playwright', def: 'A tool that lets you control a web browser automatically. It can click buttons, fill forms, take screenshots, and navigate websites - all without you touching the mouse.'},
-      {term: 'Headless Browser', def: 'A web browser that runs invisibly in the background. No window opens. It just does its thing and gives you the results.'}
-    ],
-    steps: [
-      'Install Playwright: <code>pip3 install playwright && playwright install</code>',
-      'This downloads the browser engines (takes a minute)',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Use Playwright to go to [website] and take a screenshot</code>',
-      'Claude will open a hidden browser, visit the site, and save the screenshot',
-      'Try more complex tasks: <code>Fill out the form at [url] with this data</code>'
-    ],
-    tip: 'Playwright is incredibly powerful for scraping data from websites that require JavaScript, or automating repetitive web tasks.'
-  },
-  gdrive: {
-    title: 'Google Drive API',
-    subtitle: 'Organize files and deliverables automatically',
-    story: 'Fox was emailing files to clients manually. "Here is the image. Here is the document. Here is the video." Turtle face-palmed. "Just put them in a shared Drive folder automatically." Fox set it up and now every deliverable lands in the right client folder, organized by date, without Fox lifting a finger.',
-    explain: [
-      {term: 'Google Drive API', def: 'A way for Claude to directly create folders, upload files, and organize your Google Drive. It is like giving Claude the keys to your file cabinet.'},
-      {term: 'Service Account', def: 'A special Google account for apps (not humans). You create one, share your Drive folder with it, and Claude can access your files through it.'}
-    ],
-    steps: [
-      'Go to <code>console.cloud.google.com</code> and create a project',
-      'Enable the Google Drive API for your project',
-      'Create a Service Account and download the credentials JSON file',
-      'Share your Google Drive folder with the service account email',
-      'Start Claude and ask it to set up Google Drive integration',
-      'Tell it: <code>Upload this file to my Google Drive in the [folder name] folder</code>'
-    ],
-    tip: 'Set up one shared folder per client. Then Claude can auto-organize deliverables by project and date.'
-  },
-  stripe: {
-    title: 'Stripe (Payments)',
-    subtitle: 'Your AI becomes your billing department',
-    story: 'Fox was copying and pasting Stripe payment links into emails manually. For every client. For every invoice. Then he told Claude his Stripe API key and said "create a payment link for $500 for the Jones project." Three seconds later, link in hand. Fox forwarded it. Payment received within the hour.',
-    explain: [
-      {term: 'Stripe', def: 'The internet\'s payment processor. It handles credit cards, invoicing, subscriptions, and payouts. Most online businesses use it.'},
-      {term: 'Stripe API', def: 'A way for Claude to create products, generate payment links, and check payment status directly - without you logging into the Stripe dashboard.'}
-    ],
-    steps: [
-      'Sign up at <code>stripe.com</code> if you do not have an account',
-      'Get your API key from the Stripe dashboard (Developers > API Keys)',
-      'In Terminal: <code>export STRIPE_API_KEY=sk_live_your-key</code>',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Create a Stripe payment link for $100 for "Consulting Session"</code>',
-      'Claude will create the product and give you a payment link to share'
-    ],
-    tip: 'Use test mode keys first (they start with sk_test_) to practice without real money involved.'
-  },
-  perplexity: {
-    title: 'Perplexity (Live Search)',
-    subtitle: 'Real-time internet search with sources',
-    story: 'Fox needed to research a competitor but Claude only knew things up to its training date. "What about NOW?" Fox asked. Then he plugged in Perplexity - suddenly Claude could search the live internet, cite real sources, and bring back fresh information. It was like giving Claude a window to the outside world.',
-    explain: [
-      {term: 'Perplexity', def: 'An AI-powered search engine that returns answers with citations. When connected to Claude, it gives Claude the ability to search the live internet and get current information.'},
-      {term: 'Citations', def: 'Links to the actual sources where the information came from. So you can verify everything Claude finds.'}
-    ],
-    steps: [
-      'Sign up at <code>perplexity.ai</code>',
-      'Get your API key from account settings',
-      'In Terminal: <code>export PERPLEXITY_API_KEY=your-key</code>',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Search the internet for the latest news about [topic]</code>',
-      'Claude will return current results with source links'
-    ],
-    tip: 'Perplexity is especially useful for competitive research, market analysis, and staying current on industry news.'
-  },
-  twilio: {
-    title: 'Twilio (SMS & Calls)',
-    subtitle: 'Your AI can literally call people',
-    story: 'Fox needed to send an appointment reminder to 50 clients. Manually texting each one? No way. He gave Claude his Twilio credentials and said "send a reminder to everyone on this list." Fifty personalized texts went out in under a minute. Then he discovered Claude could make phone calls too. Rabbit got a call from Fox\'s AI and nearly dropped his phone.',
-    explain: [
-      {term: 'Twilio', def: 'A service that lets you send text messages and make phone calls using code. You get a real phone number that Claude can use to contact people.'},
-      {term: 'SMS API', def: 'A way for Claude to send text messages programmatically. You provide the phone number and message, and Twilio delivers it.'}
-    ],
-    steps: [
-      'Sign up at <code>twilio.com</code> (free trial includes some credits)',
-      'Get your Account SID, Auth Token, and a phone number',
-      'Set up the credentials: <code>export TWILIO_ACCOUNT_SID=your-sid</code> and <code>export TWILIO_AUTH_TOKEN=your-token</code>',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Send an SMS to [phone number] saying "Hello from my AI assistant"</code>',
-      'Check your phone - the message arrives!'
-    ],
-    tip: 'Always test with your own phone number first. Twilio free trial only lets you send to verified numbers.'
-  },
-  zapier: {
-    title: 'Zapier / Make Webhooks',
-    subtitle: 'Connect Claude to 5,000+ apps',
-    story: 'Fox wanted Claude to add a row to his Google Sheet every time a payment came in on Stripe. "That is two different apps," said Rabbit. "How?" Fox set up a webhook - a magic URL that triggers actions in other apps. Now when Claude sees a payment, it pings the webhook, and the spreadsheet updates itself. Fox connected 12 more apps that week.',
-    explain: [
-      {term: 'Webhook', def: 'A URL that triggers an action when you send data to it. Think of it as a doorbell - when Claude rings it (sends data), something happens on the other end (like adding a row to a spreadsheet).'},
-      {term: 'Zapier/Make', def: 'Services that connect different apps together. They give you webhook URLs that trigger automated workflows across thousands of apps.'}
-    ],
-    steps: [
-      'Sign up at <code>zapier.com</code> or <code>make.com</code> (both have free tiers)',
-      'Create a new Zap/Scenario and choose "Webhooks" as the trigger',
-      'Copy the webhook URL it gives you',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Send a POST request to [webhook URL] with this data: {"name": "Test", "status": "success"}</code>',
-      'Check Zapier/Make - your webhook received the data and the automation ran'
-    ],
-    tip: 'Webhooks are the glue between Claude and the rest of your tools. Learn this and you can connect Claude to literally anything.'
-  },
-  airtable: {
-    title: 'Airtable (Database)',
-    subtitle: 'A real database Claude can read and write',
-    story: 'Fox was keeping client information in random text files. "I need a real database," he told Turtle. "But databases are scary." Turtle showed him Airtable - it looks like a spreadsheet but works like a database. Claude could read rows, add new ones, update existing ones. Suddenly Fox had a CRM, a project tracker, and an inventory system. All in one place.',
-    explain: [
-      {term: 'Airtable', def: 'A database that looks like a spreadsheet. Easy to use, but powerful enough for real applications. Claude can read and write to it through the API.'},
-      {term: 'Database', def: 'An organized collection of information. Like a spreadsheet with superpowers - it can handle relationships between tables, filters, and thousands of records.'}
-    ],
-    steps: [
-      'Sign up at <code>airtable.com</code> (free tier is generous)',
-      'Create a new base (that is what Airtable calls a database)',
-      'Get your API key from <code>airtable.com/account</code>',
-      'In Terminal: <code>export AIRTABLE_API_KEY=your-key</code>',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Connect to my Airtable base and list all records in the [table name] table</code>',
-      'Try adding data: <code>Add a new record with name "John" and email "john@email.com"</code>'
-    ],
-    tip: 'Airtable is the easiest database for non-technical people. Use it for client tracking, project management, or any structured data.'
-  },
-  whisper: {
-    title: 'Whisper (Transcription)',
-    subtitle: 'Turn any audio into searchable text',
-    story: 'Fox had 50 hours of recorded meetings and no idea what was said in any of them. He could not search audio. He could not skim audio. Then he ran Whisper on the recordings and suddenly every word was searchable text. He found the exact moment a client said "yes" to a deal buried in hour 37. Game changer.',
-    explain: [
-      {term: 'Whisper', def: 'OpenAI\'s free speech-to-text AI that runs on your own computer. It turns audio files into written text. No internet needed, no cost, runs locally.'},
-      {term: 'Transcription', def: 'Converting spoken words into written text. Whisper does this automatically for any audio or video file.'}
-    ],
-    steps: [
-      'Install Whisper: <code>pip3 install openai-whisper</code>',
-      'This may take a few minutes as it downloads the AI model',
-      'Start Claude: <code>claude</code>',
-      'Tell it: <code>Transcribe this audio file: [path to your audio file]</code>',
-      'Claude will run Whisper and give you the full text transcription',
-      'Ask it to summarize: <code>Summarize the key points from this transcription</code>'
-    ],
-    tip: 'Whisper runs completely offline on your Mac. Your audio never leaves your computer. Great for confidential meetings.'
-  },
-  customskills: {
-    title: 'Build Custom Skills',
-    subtitle: 'Create and share your own superpowers',
-    story: 'Fox had mastered all the existing skills and wanted more. "What if I could CREATE my own?" Turtle nodded. "A skill is just a text file with instructions. Write what you want Claude to do, save it in the skills folder, and it becomes a new ability." Fox wrote his first skill that night. Then he shared it with all the other foxes. Now they all had his superpower.',
-    explain: [
-      {term: 'Custom Skill', def: 'A markdown file you write that teaches Claude a new ability. It contains instructions, examples, and rules that Claude follows when the skill is triggered.'},
-      {term: 'Skill Format', def: 'Just a markdown (.md) file in ~/.claude/skills/. It can include trigger conditions, step-by-step instructions, and example prompts. Claude reads these automatically.'}
-    ],
-    steps: [
-      'Look at existing skills in <code>~/.claude/skills/</code> for inspiration',
-      'Create a new folder: <code>mkdir ~/.claude/skills/my-skill</code>',
-      'Create the skill file: start Claude and tell it <code>Help me create a custom skill that [does whatever you want]</code>',
-      'Claude will write the skill file for you based on your description',
-      'Test it by starting a new Claude session and triggering the skill',
-      'Share it by pushing the folder to GitHub for others to download'
-    ],
-    tip: 'The best skills are specific. Instead of "help with marketing," make "create Instagram carousel posts for fitness brands." Specificity is power.'
-  },
-  vectordb: {
-    title: 'Vector DB + RAG Memory',
-    subtitle: 'Infinite semantic memory',
-    story: 'Fox had been using Claude for months and had thousands of conversations worth of knowledge. But Claude could only remember what was in its memory files. Then Fox discovered vector databases - a way to store EVERYTHING and search it by meaning, not just keywords. "Find everything I have ever said about pricing strategy" returned results from 47 different conversations. Fox had built himself a second brain.',
-    explain: [
-      {term: 'Vector Database', def: 'A special kind of database that understands meaning. Instead of matching exact words, it finds things that are similar in concept. Search for "revenue growth" and it also finds "increasing sales" and "scaling income."'},
-      {term: 'RAG', def: 'Retrieval Augmented Generation. It means Claude searches your database before answering, so it can reference your actual data and history instead of making things up.'}
-    ],
-    steps: [
-      'Clone the memory system: <code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code>',
-      'Follow the setup instructions in the repo',
-      'Start Claude and it will automatically use the vector memory',
-      'As you have conversations, important information gets stored',
-      'Try searching: <code>Search my memory for everything about [topic]</code>',
-      'Claude will find semantically related information across all your history'
-    ],
-    tip: 'This is advanced but incredibly powerful. It turns Claude from an assistant into a second brain that remembers everything you have ever discussed.'
-  },
-  prodpipe: {
-    title: 'Production Pipelines',
-    subtitle: 'Batch processing at industrial scale',
-    story: 'A client needed 60 images, 60 videos, and 10 voiceovers. By Wednesday. Fox did not panic. He wrote one prompt describing the batch job, hit enter, and went to sleep. By morning, every asset was generated, organized in labeled folders, and ready for delivery. The client thought Fox had a team of 10 people.',
-    explain: [
-      {term: 'Batch Processing', def: 'Running the same task many times automatically. Instead of generating one image at a time, you tell Claude to generate 60 in sequence while you do something else.'},
-      {term: 'Pipeline', def: 'A multi-step workflow where the output of one step feeds into the next. Generate image > animate it > add voiceover > organize in folder. All automated.'}
-    ],
-    steps: [
-      'Make sure all your creative tools are set up (Nano Banana, Edge TTS, etc.)',
-      'Start Claude: <code>claude</code>',
-      'Describe the batch job: <code>Generate 10 product images for [topic], each with a different style, and save them in a folder called output/images</code>',
-      'Claude will work through each one sequentially',
-      'Scale up: add voiceovers, captions, and organization to the pipeline',
-      'For large batches, use CortexOS so the agent runs overnight'
-    ],
-    tip: 'Always start with a batch of 3 to test your pipeline. Once the quality is right, scale to any number.'
-  },
-  selling: {
-    title: 'Sell AI Services',
-    subtitle: 'Build agents for clients and charge $10K each',
-    story: 'Fox realized something wild. Everything he had learned - the agents, the pipelines, the integrations - other businesses would PAY for this. A lot. He built his first client agent in a weekend: custom CLAUDE.md, Telegram control, image gen, voiceover, Google Drive delivery. He charged $10K. The client said it was cheap. Fox had found his business model.',
-    explain: [
-      {term: 'AI Agent Service', def: 'You build and configure a Claude agent for a client\'s specific needs. They get a 24/7 AI employee controlled via Telegram. You charge for the setup and ongoing management.'},
-      {term: 'Recurring Revenue', def: 'Monthly fees for maintaining, updating, and improving the client\'s agent. Once built, it costs you almost nothing to maintain but the client pays monthly.'}
-    ],
-    steps: [
-      'Master the core skills first (CortexOS, Telegram, at least 3 integrations)',
-      'Pick a niche: content creation, operations, sales automation, etc.',
-      'Build a demo agent that showcases your capabilities',
-      'Create a proposal template showing what the agent does and the ROI',
-      'Price at $5K-$15K setup + $500-$2K/month management',
-      'Deliver by cloning your template and customizing the CLAUDE.md for each client'
-    ],
-    tip: 'The hardest part is not building it - it is convincing businesses that a $10K AI agent saves them $100K in labor. Lead with ROI numbers.'
+  {
+    label: 'Case Study #4',
+    title: 'The 24/7 Employee',
+    body: 'A Claude Remote Manager setup running 3 agents: one monitoring client inboxes and flagging urgent emails, one generating daily social media content, and one running nightly data backups and reports. Total cost: under $100/month. Equivalent human labor cost: $4,000+/month. It never sleeps, never calls in sick, never misses a deadline.'
   }
-};
+];
 
-// Build and render the tutorial modal
-function renderTutorial(id) {
-  const t = tutorials[id];
-  if (!t) return;
-  let modal = document.getElementById('tutorialModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'tutorialModal';
-    modal.className = 'tutorial-modal';
-    modal.addEventListener('click', function(e) { if (e.target === modal) closeTutorial(); });
-    document.body.appendChild(modal);
+const SECURITY_DONT = [
+  { title: 'Password Reuse', desc: 'Never use the same password across services. One breach compromises everything.' },
+  { title: 'API Key Leaks', desc: 'Never commit API keys to git repos. Never paste them in public channels or screenshots.' },
+  { title: 'Phishing Links', desc: 'Never click links from unknown senders. Verify URLs before entering credentials.' },
+  { title: 'Skipping Updates', desc: 'Never delay OS and software updates. Patches fix known vulnerabilities.' },
+  { title: 'Public WiFi', desc: 'Never access sensitive accounts on public WiFi without a VPN.' },
+  { title: 'Admin Access', desc: 'Never give admin/root access to scripts or services that do not need it. Principle of least privilege.' }
+];
+
+const SECURITY_DO = [
+  { title: 'Enable 2FA Everywhere', desc: 'Use authenticator apps (not SMS) for two-factor authentication on all critical accounts.' },
+  { title: 'Password Manager', desc: 'Use 1Password, Bitwarden, or similar. Generate unique 20+ char passwords for every service.' },
+  { title: '.env Security', desc: 'Store all secrets in .env files. Add .env to .gitignore. Never commit secrets to version control.' },
+  { title: 'Mac Lockdown', desc: 'Enable FileVault, set screen lock timeout to 1 minute, disable remote login unless needed.' },
+  { title: 'Regular Backups', desc: 'Use Time Machine + cloud backup. Test your restore process quarterly.' },
+  { title: 'Restricted API Keys', desc: 'Scope API keys to minimum required permissions. Rotate keys every 90 days.' },
+  { title: 'Breach Monitoring', desc: 'Use haveibeenpwned.com alerts. Monitor your domains and email addresses for leaks.' },
+  { title: 'Telegram Bot Security', desc: 'Restrict bot to your chat ID only. Never share bot tokens. Rotate tokens if compromised.' }
+];
+
+// ====== STATE ======
+let xp = parseInt(localStorage.getItem('ccs-xp') || '0');
+let completedSkills = JSON.parse(localStorage.getItem('ccs-completed') || '[]');
+let currentAudio = null;
+let currentAudioModule = null;
+
+// ====== FUNCTIONS ======
+function getLevel(xp) {
+  let level = 0;
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].xp) { level = i; break; }
   }
-
-  let conceptChips = Object.entries(CONCEPTS).map(([term, def]) =>
-    '<span class="concept-chip" title="' + def.replace(/"/g,'&quot;') + '"><span class="chip-term">' + term + '</span> = ' + def.split('.')[0] + '</span>'
-  ).join('');
-
-  let explainHTML = '';
-  if (t.explain && t.explain.length) {
-    explainHTML = '<div class="tutorial-section"><div class="tutorial-section-label">Key Concepts</div>';
-    t.explain.forEach(function(e) {
-      explainHTML += '<div class="tutorial-explain-box"><div class="explain-term">' + e.term + '</div><div class="explain-def">' + e.def + '</div></div>';
-    });
-    explainHTML += '</div>';
-  }
-
-  let stepsHTML = '';
-  if (t.steps && t.steps.length) {
-    stepsHTML = '<div class="tutorial-section"><div class="tutorial-section-label">Step-by-Step Instructions</div><ol class="tutorial-steps">';
-    t.steps.forEach(function(s) {
-      stepsHTML += '<li><span>' + s + '</span></li>';
-    });
-    stepsHTML += '</ol></div>';
-  }
-
-  let tipHTML = '';
-  if (t.tip) {
-    tipHTML = '<div class="tutorial-tip-box"><div class="tip-title">Remember</div><div class="tip-body">' + t.tip + '</div></div>';
-  }
-
-  modal.innerHTML =
-    '<div class="tutorial-panel">' +
-      '<div class="tutorial-close"><button onclick="closeTutorial()">CLOSE &times;</button></div>' +
-      '<div class="tutorial-body">' +
-        '<div class="tutorial-title">' + t.title + '</div>' +
-        '<div class="tutorial-subtitle">' + (t.subtitle || '') + '</div>' +
-        '<div class="tutorial-protip"><div class="protip-badge">PRO TIP</div><div class="protip-text">Stuck? Take a screenshot of your screen and send it to Claude on your phone. It can see your screen and tell you exactly what to do next.</div></div>' +
-        '<div class="tutorial-section"><div class="tutorial-section-label">The Story</div><div class="tutorial-story">' + t.story + '</div></div>' +
-        explainHTML +
-        stepsHTML +
-        tipHTML +
-        '<div class="tutorial-section"><div class="tutorial-section-label">Quick Reference</div><div class="concept-tooltips">' + conceptChips + '</div></div>' +
-      '</div>' +
-    '</div>';
-
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  return level;
 }
 
-function closeTutorial() {
-  var modal = document.getElementById('tutorialModal');
-  if (modal) { modal.classList.remove('open'); }
-  document.body.style.overflow = '';
+function getNextLevelXP(level) {
+  return level < LEVELS.length - 1 ? LEVELS[level + 1].xp : LEVELS[LEVELS.length - 1].xp;
 }
 
-// Close on Escape key
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeTutorial(); });
+function updateUI() {
+  const level = getLevel(xp);
+  const nextXP = getNextLevelXP(level);
+  const prevXP = LEVELS[level].xp;
+  const progress = level >= LEVELS.length - 1 ? 100 : ((xp - prevXP) / (nextXP - prevXP)) * 100;
 
-// Attach click handlers to all skill cards (open tutorial on card click, but not on button/copy clicks)
-function attachTutorialClicks() {
-  document.querySelectorAll('.skill-card[data-tutorial]').forEach(function(card) {
-    card.addEventListener('click', function(e) {
-      // Don't open tutorial if clicking a button (MARK DONE, COPY, etc.)
-      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-      var tid = card.getAttribute('data-tutorial');
-      if (tid && tutorials[tid]) renderTutorial(tid);
-    });
+  document.getElementById('levelBadge').innerHTML = `&#9734; ${LEVELS[level].name}`;
+  document.getElementById('xpCount').textContent = xp;
+  document.getElementById('xpMax').textContent = nextXP;
+  document.getElementById('xpBar').style.width = `${Math.min(progress, 100)}%`;
+
+  // Achievements
+  document.querySelectorAll('.achievement').forEach(el => {
+    const lvl = parseInt(el.dataset.level);
+    if (lvl <= level) el.classList.add('unlocked');
+    else el.classList.remove('unlocked');
+  });
+
+  // Completed states
+  completedSkills.forEach(id => {
+    const card = document.querySelector(`[data-skill-id="${id}"]`);
+    if (card) {
+      card.classList.add('completed');
+      const btn = card.querySelector('.complete-btn');
+      if (btn) { btn.textContent = 'Completed'; btn.classList.add('done'); }
+    }
+  });
+
+  localStorage.setItem('ccs-xp', xp);
+  localStorage.setItem('ccs-completed', JSON.stringify(completedSkills));
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function completeSkill(id, xpVal, e) {
+  e.stopPropagation();
+  if (completedSkills.includes(id)) return;
+
+  const prevLevel = getLevel(xp);
+  completedSkills.push(id);
+  xp += xpVal;
+  const newLevel = getLevel(xp);
+
+  updateUI();
+  showToast(`+${xpVal} XP earned!`);
+
+  if (newLevel > prevLevel) {
+    setTimeout(() => showToast(`LEVEL UP: ${LEVELS[newLevel].name}!`), 1500);
+  }
+}
+
+function copyInstall(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
   });
 }
-attachTutorialClicks();
 
-// Re-attach to cloned cards in Skills page
-(function() {
-  var obs = new MutationObserver(function() { attachTutorialClicks(); });
-  var grid = document.getElementById('allSkillsGrid');
-  if (grid) obs.observe(grid, {childList: true});
-})();
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+function toggleAudio(module) {
+  const audioMap = {
+    module1: 'audio/module1.mp3',
+    module2: 'audio/module2.mp3',
+    module3: 'audio/module3.mp3',
+    module4: 'audio/module4.mp3',
+    module5: 'audio/module5.mp3',
+    module6: 'audio/module6.mp3',
+    cases: 'audio/cases.mp3',
+    security: 'audio/security.mp3'
+  };
+
+  const btn = document.querySelector(`#${module} .audio-btn`);
+
+  if (currentAudioModule === module && currentAudio && !currentAudio.paused) {
+    currentAudio.pause();
+    btn.classList.remove('playing');
+    btn.innerHTML = '&#9654;';
+    return;
+  }
+
+  if (currentAudio) {
+    currentAudio.pause();
+    if (currentAudioModule) {
+      const prevBtn = document.querySelector(`#${currentAudioModule} .audio-btn`);
+      if (prevBtn) { prevBtn.classList.remove('playing'); prevBtn.innerHTML = '&#9654;'; }
+    }
+  }
+
+  currentAudio = new Audio(audioMap[module]);
+  currentAudioModule = module;
+  currentAudio.play();
+  btn.classList.add('playing');
+  btn.innerHTML = '&#9646;&#9646;';
+
+  currentAudio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    btn.innerHTML = '&#9654;';
+    currentAudioModule = null;
+  });
+}
+
+// ====== RENDER ======
+function renderSkillCard(skill) {
+  const diffClass = skill.difficulty === 'godtier' ? 'badge-godtier' : `badge-${skill.difficulty}`;
+  const diffLabel = skill.difficulty === 'godtier' ? 'God Tier' : skill.difficulty.charAt(0).toUpperCase() + skill.difficulty.slice(1);
+  const isCompleted = completedSkills.includes(skill.id);
+
+  return `
+    <div class="skill-card ${isCompleted ? 'completed' : ''}" data-skill-id="${skill.id}" onclick="toggleCard(this)">
+      <div class="skill-top">
+        <span class="skill-icon">${skill.icon}</span>
+        <div class="skill-badges">
+          <span class="badge ${diffClass}">${diffLabel}</span>
+          <span class="badge badge-xp">${skill.xp} XP</span>
+        </div>
+      </div>
+      <div class="skill-name">${skill.name}</div>
+      <div class="skill-desc">${skill.desc}</div>
+      <div class="skill-expanded">
+        <div class="skill-expanded-inner">
+          <div class="skill-story">${skill.story}</div>
+          <div class="skill-steps">
+            <h4>Step by Step</h4>
+            <ol>${skill.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+          </div>
+          <div class="skill-tip">${skill.tip}</div>
+          <div class="install-row">
+            <div class="install-cmd">${skill.install}</div>
+            <button class="copy-btn" onclick="event.stopPropagation(); copyInstall('${skill.install.replace(/'/g, "\\'")}', this)">Copy</button>
+          </div>
+          <button class="complete-btn ${isCompleted ? 'done' : ''}" onclick="completeSkill('${skill.id}', ${skill.xp}, event)">${isCompleted ? 'Completed' : 'Mark Complete'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCaseStudies() {
+  return CASE_STUDIES.map(c => `
+    <div class="case-card">
+      <div class="case-label">${c.label}</div>
+      <div class="case-title">${c.title}</div>
+      <div class="case-body">${c.body}</div>
+    </div>
+  `).join('');
+}
+
+function renderSecurityItems(items, type) {
+  return items.map(item => `
+    <div class="security-item ${type}">
+      <h4>${item.title}</h4>
+      <p>${item.desc}</p>
+    </div>
+  `).join('');
+}
+
+// ====== INIT ======
+function init() {
+  // Render skill grids
+  Object.keys(SKILLS).forEach(mod => {
+    const container = document.getElementById(`skills-${mod}`);
+    if (container) {
+      container.innerHTML = SKILLS[mod].map(renderSkillCard).join('');
+    }
+  });
+
+  // Render case studies
+  document.getElementById('case-studies').innerHTML = renderCaseStudies();
+
+  // Render security
+  document.getElementById('security-dont').innerHTML = renderSecurityItems(SECURITY_DONT, 'danger');
+  document.getElementById('security-do').innerHTML = renderSecurityItems(SECURITY_DO, 'safe');
+
+  // Emergency protocol
+  document.getElementById('emergency').innerHTML = `
+    <h3>&#128680; Emergency Response Protocol</h3>
+    <ol>
+      <li><strong>Disconnect:</strong> Take the compromised system offline immediately</li>
+      <li><strong>Assess:</strong> Determine what was accessed - API keys, databases, personal data</li>
+      <li><strong>Rotate:</strong> Change all API keys, passwords, and tokens that may be compromised</li>
+      <li><strong>Audit:</strong> Check logs for unauthorized access patterns and data exfiltration</li>
+      <li><strong>Notify:</strong> Inform affected parties - clients, team members, service providers</li>
+      <li><strong>Patch:</strong> Fix the vulnerability that was exploited</li>
+      <li><strong>Document:</strong> Record the incident, timeline, response, and lessons learned</li>
+      <li><strong>Harden:</strong> Implement additional security measures to prevent recurrence</li>
+    </ol>
+  `;
+
+  // Update XP display
+  updateUI();
+
+  // Intersection observer for fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
