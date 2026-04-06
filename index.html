@@ -81,6 +81,39 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .page{display:none}
 .page.active{display:block}
 
+/* TUTORIAL MODAL */
+.tutorial-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9000;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tutorial-modal.open{display:flex;justify-content:center;align-items:flex-start}
+.tutorial-panel{width:100%;max-width:720px;margin:40px 20px;background:#141414;border:1px solid var(--border);border-radius:16px;padding:0;animation:modalIn 0.25s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.tutorial-close{position:sticky;top:0;display:flex;justify-content:flex-end;padding:16px 20px 0;z-index:2}
+.tutorial-close button{background:none;border:1px solid var(--border);color:var(--dim);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 18px;border-radius:6px;cursor:pointer;transition:all 0.2s}
+.tutorial-close button:hover{border-color:var(--accent);color:var(--accent)}
+.tutorial-body{padding:0 32px 40px}
+.tutorial-title{font-size:26px;font-weight:800;margin-bottom:4px}
+.tutorial-subtitle{font-size:13px;color:var(--dim);margin-bottom:24px}
+.tutorial-protip{background:rgba(232,122,46,0.1);border:1px solid rgba(232,122,46,0.3);border-radius:10px;padding:14px 18px;margin-bottom:28px;display:flex;align-items:flex-start;gap:12px}
+.tutorial-protip .protip-badge{font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);white-space:nowrap;padding-top:2px}
+.tutorial-protip .protip-text{font-size:13px;color:#ccc;line-height:1.6}
+.tutorial-section{margin-bottom:28px}
+.tutorial-section-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.tutorial-story{font-size:14px;color:#bbb;line-height:1.8;font-style:italic;background:#0f0f0f;border:1px solid #1e1e1e;border-radius:10px;padding:18px 20px;margin-bottom:28px}
+.tutorial-explain-box{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:10px;padding:16px 20px;margin-bottom:14px}
+.tutorial-explain-box .explain-term{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px}
+.tutorial-explain-box .explain-def{font-size:13px;color:#bbb;line-height:1.6}
+.tutorial-steps{list-style:none;padding:0;counter-reset:steps}
+.tutorial-steps li{counter-increment:steps;display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+.tutorial-steps li::before{content:counter(steps);flex-shrink:0;width:28px;height:28px;background:var(--accent);color:#0d0d0d;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:1px}
+.tutorial-steps li span{font-size:14px;color:#ccc;line-height:1.7}
+.tutorial-steps li code{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)}
+.tutorial-tip-box{background:rgba(0,200,150,0.08);border:1px solid rgba(0,200,150,0.25);border-radius:10px;padding:14px 18px;margin-top:8px}
+.tutorial-tip-box .tip-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#00c896;margin-bottom:4px}
+.tutorial-tip-box .tip-body{font-size:13px;color:#aaa;line-height:1.6}
+.concept-tooltips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.concept-chip{background:#1a1a1a;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;color:var(--dim);cursor:default;transition:all 0.2s;position:relative}
+.concept-chip:hover{border-color:var(--accent);color:var(--text)}
+.concept-chip .chip-term{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:600}
+
 /* RESPONSIVE */
 @media(max-width:768px){
 .top-bar{grid-template-columns:1fr}
@@ -88,6 +121,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .nav{padding:12px 16px;flex-wrap:wrap;gap:10px}
 .nav-links{overflow-x:auto;flex-wrap:nowrap}
 .container{padding:16px}
+.tutorial-panel{margin:20px 10px}
+.tutorial-body{padding:0 20px 30px}
+.tutorial-title{font-size:22px}
 }
 </style>
 </head>
@@ -158,67 +194,67 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <div class="section">
 <div class="section-header"><div class="section-title">Module 1 // <span>How to Begin</span></div><div class="section-count" id="cnt-m1">0/4</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="10" data-id="install"><div class="card-top"><div class="card-title">Install Claude Code</div><span class="pill pill-orange">START</span></div><div class="card-desc">One command to install the most powerful AI coding assistant on your machine.</div><div class="cmd"><code>curl -fsSL https://claude.ai/install | sh</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="10" data-id="apikey"><div class="card-top"><div class="card-title">Get Your API Key</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Sign up at console.anthropic.com, create an API key, and add credits.</div><div class="cmd"><code>https://console.anthropic.com</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="10" data-id="firstrun"><div class="card-top"><div class="card-title">First Run</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Open Terminal, type claude, and have your first conversation. Feel the power.</div><div class="cmd"><code>claude</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="claudemd"><div class="card-top"><div class="card-title">Create CLAUDE.md</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Your AI's instruction manual. It reads this at every session start. This is where the magic begins.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="10" data-id="install" data-tutorial="install"><div class="card-top"><div class="card-title">Install Claude Code</div><span class="pill pill-orange">START</span></div><div class="card-desc">One command to install the most powerful AI coding assistant on your machine.</div><div class="cmd"><code>curl -fsSL https://claude.ai/install | sh</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="10" data-id="apikey" data-tutorial="apikey"><div class="card-top"><div class="card-title">Get Your API Key</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Sign up at console.anthropic.com, create an API key, and add credits.</div><div class="cmd"><code>https://console.anthropic.com</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="10" data-id="firstrun" data-tutorial="firstrun"><div class="card-top"><div class="card-title">First Run</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Open Terminal, type claude, and have your first conversation. Feel the power.</div><div class="cmd"><code>claude</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="claudemd" data-tutorial="claudemd"><div class="card-top"><div class="card-title">Create CLAUDE.md</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Your AI's instruction manual. It reads this at every session start. This is where the magic begins.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 2 // <span>Foundation</span></div><div class="section-count" id="cnt-m2">0/5</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="15" data-id="memory"><div class="card-top"><div class="card-title">Memory System</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">How Claude remembers across sessions. User prefs, project context, feedback - it all persists.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="skills"><div class="card-top"><div class="card-title">Understanding Skills</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Downloadable instruction sets that teach Claude new abilities. Drop in ~/.claude/skills/ and go.</div><div class="cmd"><code>ls ~/.claude/skills/</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="hooks"><div class="card-top"><div class="card-title">Hooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Shell commands that fire automatically on events. Pre-commit checks, auto-formatting, permission controls.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="15" data-id="mcp"><div class="card-top"><div class="card-title">MCP Servers</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Model Context Protocol servers give Claude new tools. Search GitHub, query databases, control browsers.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="nanobanana"><div class="card-top"><div class="card-title">Nano Banana (Image Gen)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Generate unlimited images from text for free using Google Gemini. Your first real superpower.</div><div class="cmd"><code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="memory" data-tutorial="memory"><div class="card-top"><div class="card-title">Memory System</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">How Claude remembers across sessions. User prefs, project context, feedback - it all persists.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="skills" data-tutorial="skills"><div class="card-top"><div class="card-title">Understanding Skills</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Downloadable instruction sets that teach Claude new abilities. Drop in ~/.claude/skills/ and go.</div><div class="cmd"><code>ls ~/.claude/skills/</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="hooks" data-tutorial="hooks"><div class="card-top"><div class="card-title">Hooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Shell commands that fire automatically on events. Pre-commit checks, auto-formatting, permission controls.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="mcp" data-tutorial="mcp"><div class="card-top"><div class="card-title">MCP Servers</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Model Context Protocol servers give Claude new tools. Search GitHub, query databases, control browsers.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="nanobanana" data-tutorial="nanobanana"><div class="card-top"><div class="card-title">Nano Banana (Image Gen)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Generate unlimited images from text for free using Google Gemini. Your first real superpower.</div><div class="cmd"><code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 3 // <span>Creator Powers</span></div><div class="section-count" id="cnt-m3">0/6</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="20" data-id="imgedit"><div class="card-top"><div class="card-title">Image Editing & Face Swap</div><span class="pill pill-outline">CREATIVE</span></div><div class="card-desc">Take a reference photo and transform it into any scene while keeping their exact face.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="elevenlabs"><div class="card-top"><div class="card-title">ElevenLabs Voiceover</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Professional AI voiceovers. Hundreds of voices or clone your own.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="edgetts"><div class="card-top"><div class="card-title">Edge TTS (Free Voice)</div><span class="pill pill-orange">FREE</span></div><div class="card-desc">Microsoft Edge TTS. Completely free, unlimited, great quality. The budget voiceover move.</div><div class="cmd"><code>pip3 install edge-tts</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="vidpipe"><div class="card-top"><div class="card-title">Video Production Pipeline</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Image → Kling 3.0 animation → voiceover → deliver. One prompt produces an entire video package.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="yttranscript"><div class="card-top"><div class="card-title">YouTube Transcription</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">Pull transcripts from any video or entire channel. 238K words became a 15K word sales bible.</div><div class="cmd"><code>pip3 install youtube-transcript-api</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="20" data-id="social"><div class="card-top"><div class="card-title">Social Media Content</div><span class="pill pill-outline">CONTENT</span></div><div class="card-desc">Captions, carousels, hashtags, posting schedules. Content that sounds human, not AI.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="imgedit" data-tutorial="imgedit"><div class="card-top"><div class="card-title">Image Editing & Face Swap</div><span class="pill pill-outline">CREATIVE</span></div><div class="card-desc">Take a reference photo and transform it into any scene while keeping their exact face.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="elevenlabs" data-tutorial="elevenlabs"><div class="card-top"><div class="card-title">ElevenLabs Voiceover</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Professional AI voiceovers. Hundreds of voices or clone your own.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="edgetts" data-tutorial="edgetts"><div class="card-top"><div class="card-title">Edge TTS (Free Voice)</div><span class="pill pill-orange">FREE</span></div><div class="card-desc">Microsoft Edge TTS. Completely free, unlimited, great quality. The budget voiceover move.</div><div class="cmd"><code>pip3 install edge-tts</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="vidpipe" data-tutorial="vidpipe"><div class="card-top"><div class="card-title">Video Production Pipeline</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Image → Kling 3.0 animation → voiceover → deliver. One prompt produces an entire video package.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="yttranscript" data-tutorial="yttranscript"><div class="card-top"><div class="card-title">YouTube Transcription</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">Pull transcripts from any video or entire channel. 238K words became a 15K word sales bible.</div><div class="cmd"><code>pip3 install youtube-transcript-api</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="social" data-tutorial="social"><div class="card-top"><div class="card-title">Social Media Content</div><span class="pill pill-outline">CONTENT</span></div><div class="card-desc">Captions, carousels, hashtags, posting schedules. Content that sounds human, not AI.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 4 // <span>Automation</span></div><div class="section-count" id="cnt-m4">0/5</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="25" data-id="crons"><div class="card-top"><div class="card-title">Cron Jobs & /loop</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Schedule recurring tasks. Check APIs every 5 minutes, run scrapers daily, send reports weekly.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="multiagent"><div class="card-top"><div class="card-title">Multi-Agent Architecture</div><span class="pill pill-orange">ADVANCED</span></div><div class="card-desc">Spawn separate agents with their own Telegram bots, instructions, and skills. One Mac, 10 AI employees.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="40" data-id="cortexos"><div class="card-top"><div class="card-title">CortexOS (24/7 Agents)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Persistent sessions, crash recovery, auto-restart, Telegram control. Your AI never goes offline.</div><div class="cmd"><code>git clone https://github.com/grandaenium/claude-remote-manager.git</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="telegram"><div class="card-top"><div class="card-title">Remote Control (Telegram)</div><span class="pill pill-outline">CONTROL</span></div><div class="card-desc">Message your agent from your phone. Send tasks, receive results, get alerts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="playwright"><div class="card-top"><div class="card-title">Browser Automation</div><span class="pill pill-outline">ADVANCED</span></div><div class="card-desc">Control a real browser with Playwright. Automate web UIs, fill forms, scrape JS-heavy sites.</div><div class="cmd"><code>pip3 install playwright && playwright install</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="crons" data-tutorial="crons"><div class="card-top"><div class="card-title">Cron Jobs & /loop</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Schedule recurring tasks. Check APIs every 5 minutes, run scrapers daily, send reports weekly.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="multiagent" data-tutorial="multiagent"><div class="card-top"><div class="card-title">Multi-Agent Architecture</div><span class="pill pill-orange">ADVANCED</span></div><div class="card-desc">Spawn separate agents with their own Telegram bots, instructions, and skills. One Mac, 10 AI employees.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="40" data-id="cortexos" data-tutorial="cortexos"><div class="card-top"><div class="card-title">CortexOS (24/7 Agents)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Persistent sessions, crash recovery, auto-restart, Telegram control. Your AI never goes offline.</div><div class="cmd"><code>git clone https://github.com/grandaenium/claude-remote-manager.git</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="telegram" data-tutorial="telegram"><div class="card-top"><div class="card-title">Remote Control (Telegram)</div><span class="pill pill-outline">CONTROL</span></div><div class="card-desc">Message your agent from your phone. Send tasks, receive results, get alerts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="playwright" data-tutorial="playwright"><div class="card-top"><div class="card-title">Browser Automation</div><span class="pill pill-outline">ADVANCED</span></div><div class="card-desc">Control a real browser with Playwright. Automate web UIs, fill forms, scrape JS-heavy sites.</div><div class="cmd"><code>pip3 install playwright && playwright install</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 5 // <span>Integration</span></div><div class="section-count" id="cnt-m5">0/7</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="25" data-id="gdrive"><div class="card-top"><div class="card-title">Google Drive API</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Create folders, upload files, organize deliverables automatically.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="stripe"><div class="card-top"><div class="card-title">Stripe (Payments)</div><span class="pill pill-outline">REVENUE</span></div><div class="card-desc">Create products, generate payment links, process transactions. Claude becomes billing.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="perplexity"><div class="card-top"><div class="card-title">Perplexity (Live Search)</div><span class="pill pill-orange">INTELLIGENCE</span></div><div class="card-desc">Real-time web search with citations. The internet at Claude's fingertips.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="twilio"><div class="card-top"><div class="card-title">Twilio (SMS & Calls)</div><span class="pill pill-outline">COMMS</span></div><div class="card-desc">Send texts, make phone calls, auto-respond. Claude can literally call your clients.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="zapier"><div class="card-top"><div class="card-title">Zapier / Make Webhooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Connect to 5,000+ apps. Triggers fire, Claude acts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="25" data-id="airtable"><div class="card-top"><div class="card-title">Airtable (Database)</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">A real database Claude reads and writes. Track clients, manage projects, persist data forever.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="30" data-id="whisper"><div class="card-top"><div class="card-title">Whisper (Transcription)</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Transcribe any audio or video locally. Podcasts, meetings, voice memos to searchable text.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="gdrive" data-tutorial="gdrive"><div class="card-top"><div class="card-title">Google Drive API</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Create folders, upload files, organize deliverables automatically.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="stripe" data-tutorial="stripe"><div class="card-top"><div class="card-title">Stripe (Payments)</div><span class="pill pill-outline">REVENUE</span></div><div class="card-desc">Create products, generate payment links, process transactions. Claude becomes billing.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="perplexity" data-tutorial="perplexity"><div class="card-top"><div class="card-title">Perplexity (Live Search)</div><span class="pill pill-orange">INTELLIGENCE</span></div><div class="card-desc">Real-time web search with citations. The internet at Claude's fingertips.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="twilio" data-tutorial="twilio"><div class="card-top"><div class="card-title">Twilio (SMS & Calls)</div><span class="pill pill-outline">COMMS</span></div><div class="card-desc">Send texts, make phone calls, auto-respond. Claude can literally call your clients.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="zapier" data-tutorial="zapier"><div class="card-top"><div class="card-title">Zapier / Make Webhooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Connect to 5,000+ apps. Triggers fire, Claude acts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="airtable" data-tutorial="airtable"><div class="card-top"><div class="card-title">Airtable (Database)</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">A real database Claude reads and writes. Track clients, manage projects, persist data forever.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="whisper" data-tutorial="whisper"><div class="card-top"><div class="card-title">Whisper (Transcription)</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Transcribe any audio or video locally. Podcasts, meetings, voice memos to searchable text.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
 <div class="section">
 <div class="section-header"><div class="section-title">Module 6 // <span>Mastery</span></div><div class="section-count" id="cnt-m6">0/4</div></div>
 <div class="grid">
-<div class="skill-card" data-xp="40" data-id="customskills"><div class="card-top"><div class="card-title">Build Custom Skills</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Write your own skills. Package them for others. Every workflow becomes a downloadable superpower.</div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="40" data-id="vectordb"><div class="card-top"><div class="card-title">Vector DB + RAG Memory</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">True semantic search across everything. Infinite memory with local SQLite vectors.</div><div class="cmd"><code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="50" data-id="prodpipe"><div class="card-top"><div class="card-title">Production Pipelines</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Batch processing at scale. 60 images, 60 videos, 10 voiceovers, organized and delivered. One prompt.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
-<div class="skill-card" data-xp="50" data-id="selling"><div class="card-top"><div class="card-title">Sell AI Services</div><span class="pill pill-orange">REVENUE</span></div><div class="card-desc">Build agents for clients at $10K each. Your Claude builds their Claude. Recurring revenue.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="40" data-id="customskills" data-tutorial="customskills"><div class="card-top"><div class="card-title">Build Custom Skills</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Write your own skills. Package them for others. Every workflow becomes a downloadable superpower.</div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="40" data-id="vectordb" data-tutorial="vectordb"><div class="card-top"><div class="card-title">Vector DB + RAG Memory</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">True semantic search across everything. Infinite memory with local SQLite vectors.</div><div class="cmd"><code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="50" data-id="prodpipe" data-tutorial="prodpipe"><div class="card-top"><div class="card-title">Production Pipelines</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Batch processing at scale. 60 images, 60 videos, 10 voiceovers, organized and delivered. One prompt.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="50" data-id="selling" data-tutorial="selling"><div class="card-top"><div class="card-title">Sell AI Services</div><span class="pill pill-orange">REVENUE</span></div><div class="card-desc">Build agents for clients at $10K each. Your Claude builds their Claude. Recurring revenue.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
 </div>
 </div>
 
@@ -341,6 +377,672 @@ let tipIdx=0;setInterval(()=>{tipIdx=(tipIdx+1)%TIPS.length;document.getElementB
 
 buildSkillsPage();
 updateUI();
+
+// ============================================================
+// TUTORIAL MODAL SYSTEM
+// ============================================================
+
+const CONCEPTS = {
+  'Terminal': 'Texting your computer. Instead of clicking buttons, you type words and your computer does things.',
+  'API Key': 'A VIP wristband that lets you in. It proves you paid and gives you access.',
+  'GitHub': 'A free library where people share their code and tools. Anyone can download from it.',
+  'Git Clone': 'Download from the library. That is literally all it means.',
+  'npm': 'An app store for code tools. Developers use it to install useful packages.',
+  'Railway': 'A place to host your apps online - like renting a tiny computer in the cloud that runs 24/7.',
+  'Netlify': 'Free website hosting. Drag and drop your site files and it goes live on the internet.'
+};
+
+const tutorials = {
+  install: {
+    title: 'Install Claude Code',
+    subtitle: 'Your first step into a larger world',
+    story: 'Fox wanted a magical assistant but didn\'t know how to invite one home. He searched high and low, asked Rabbit and Turtle, and they all shrugged. Turns out, all he had to do was knock on the right door. One magic word in the right place, and the assistant appeared, ready to help with anything Fox could dream up...',
+    explain: [
+      {term: 'Terminal', def: 'Terminal is like texting your computer. Instead of tapping buttons and clicking things, you type words and your computer does things. Think of it as a chat window between you and your Mac.'}
+    ],
+    steps: [
+      'Click the magnifying glass icon at the top right of your Mac (or press <code>Command+Space</code>)',
+      'Type <code>Terminal</code> and press Enter',
+      'A black or white window opens - this is Terminal. Do not be scared of it. It is just a text box.',
+      'Copy this command: <code>curl -fsSL https://claude.ai/install | sh</code>',
+      'Paste it in Terminal (<code>Command+V</code>) and press Enter',
+      'Wait for it to finish. You will see some text scrolling by. When you see your username again with a blinking cursor, it is done.'
+    ],
+    tip: 'Take a screenshot of your Terminal and send it to Claude on your phone if you get stuck. It can read your screen and tell you exactly what to do next.'
+  },
+  apikey: {
+    title: 'Get Your API Key',
+    subtitle: 'The golden key that unlocks everything',
+    story: 'The fox got his magical door installed, but it was locked tight. No matter how hard he knocked, nothing happened. He needed a special golden key that only the Anthropic Kingdom could give him. So he journeyed to their website, signed up as a citizen, and they handed him a shiny key that started with "sk-ant-". He rushed home, whispered the key to his door, and it swung wide open...',
+    explain: [
+      {term: 'API Key', def: 'An API key is like a VIP wristband at a concert. It proves you paid and lets you through the door. Without it, Claude Code cannot talk to the AI brain in the cloud. It is just a long string of letters and numbers.'},
+      {term: 'console.anthropic.com', def: 'This is the website where you manage your Claude account, create API keys, and add payment credits. Think of it as your backstage pass office.'}
+    ],
+    steps: [
+      'Open your browser (Safari, Chrome, whatever you use) and go to <code>console.anthropic.com</code>',
+      'Click Sign Up or Log In (use your email and create a password)',
+      'Once inside the dashboard, look for <code>API Keys</code> in the left sidebar and click it',
+      'Click the <code>Create Key</code> button',
+      'Give it a name like "my-mac" and click Create',
+      'Copy the key immediately (it starts with <code>sk-ant-</code>). You will only see it once!',
+      'Go back to Terminal and type: <code>export ANTHROPIC_API_KEY=sk-ant-your-key-here</code>',
+      'Replace <code>sk-ant-your-key-here</code> with the actual key you just copied, then press Enter'
+    ],
+    tip: 'Save this key somewhere safe like your Notes app. You will need it again if you restart your computer. If you lose it, just create a new one on the website.'
+  },
+  firstrun: {
+    title: 'First Run',
+    subtitle: 'Say hello to your new AI assistant',
+    story: 'Fox took a deep breath, knocked on the door, and whispered "claude". The door opened with a gentle glow. And for the first time in his life, he had someone who could help him build anything he could imagine. Rabbit peeked over the fence and said "What is THAT?" Fox grinned and said "The future, buddy."',
+    explain: [
+      {term: 'Claude Code', def: 'Claude Code is an AI assistant that lives in your Terminal. You talk to it by typing, and it can create files, write code, edit things, search the internet, and automate tasks for you. It is like having a genius intern who never sleeps.'}
+    ],
+    steps: [
+      'Open Terminal (magnifying glass at top right > type <code>Terminal</code> > press Enter)',
+      'Type the word: <code>claude</code>',
+      'Press Enter',
+      'Claude will say hello and introduce itself! You are now talking to AI in your terminal.',
+      'Try asking it something fun: type <code>Create a file called hello.txt that says this is my first file</code>',
+      'Watch it create the file for you on your computer. That is the power. You just told your computer what to do in plain English and it did it.'
+    ],
+    tip: 'You can ask Claude anything in plain English. No special syntax needed. Just talk to it like a person.'
+  },
+  claudemd: {
+    title: 'Create CLAUDE.md',
+    subtitle: 'Teach your AI who you are',
+    story: 'Fox realized his assistant was brilliant at following orders but had absolutely no idea who Fox was or what he cared about. Every conversation started from scratch. So Fox sat down and wrote a letter - his name, his business, his goals, what he liked and hated. He placed it by the front door. Now every morning when the assistant wakes up, it reads the letter first and knows exactly who it is working for...',
+    explain: [
+      {term: 'CLAUDE.md', def: 'CLAUDE.md is a special file that Claude reads automatically at the start of every conversation. It is your AI\'s instruction manual. You write who you are, what your business does, your preferences, and how you want Claude to behave. It is the single most important file in this entire system.'},
+      {term: '.md file', def: 'A markdown file. It is just a plain text file with a special extension. You can write in it like a normal document.'}
+    ],
+    steps: [
+      'Open Terminal and navigate to your project folder (or just your home directory to start)',
+      'Type: <code>claude</code> to start a session',
+      'Tell Claude: <code>Help me create a CLAUDE.md file for my business. Ask me questions about who I am and what I do.</code>',
+      'Answer its questions honestly - your name, your business, your goals, your preferences',
+      'Claude will create the CLAUDE.md file for you based on your answers',
+      'From now on, every time you start Claude in that folder, it reads this file first and already knows you'
+    ],
+    tip: 'The better your CLAUDE.md, the better Claude performs. Spend 10 minutes making it great and it saves you hours forever.'
+  },
+  memory: {
+    title: 'Memory System',
+    subtitle: 'How Claude remembers you across conversations',
+    story: 'Fox\'s assistant was brilliant but had goldfish memory. Every single morning it forgot everything from yesterday - the client names, the project details, the lessons learned. Fox was going crazy repeating himself. So Turtle, the wise old engineer, showed Fox how to build a little journal. The assistant could write down important things, and every morning it would read its own notes. Now it never forgets. "Why didn\'t you tell me sooner?" Fox groaned. Turtle smiled. "You never asked."',
+    explain: [
+      {term: 'Memory Files', def: 'Memory files are notes that Claude saves about you and your projects. They live in a special folder (~/.claude/) and get loaded every time you start a new conversation. Claude can save things like your preferences, past decisions, and important context.'},
+      {term: '~/.claude/', def: 'This is a hidden folder on your Mac where Claude stores its configuration and memory. The ~ means your home folder. The dot at the start means it is hidden (you will not see it in Finder normally).'}
+    ],
+    steps: [
+      'Start a Claude session by typing <code>claude</code> in Terminal',
+      'Tell Claude something you want it to remember: <code>Remember that my business is called [your business name] and we focus on [what you do]</code>',
+      'Claude will save this to its memory files',
+      'End the session and start a new one',
+      'Ask Claude: <code>What do you know about my business?</code> - it will remember!'
+    ],
+    tip: 'Tell Claude to "remember" important things as you work. It builds up a profile of you over time.'
+  },
+  skills: {
+    title: 'Understanding Skills',
+    subtitle: 'Download new superpowers for your AI',
+    story: 'One day Fox discovered a hidden library deep in the forest. Inside, other foxes had written spell books - each one teaching the assistant a brand new superpower. One book taught it to paint pictures out of thin air. Another taught it to make videos. Another let it search the entire internet. Fox\'s eyes went wide. "You mean I can just... take these?" Rabbit nodded. "They are free. All of them." Fox loaded up his backpack and ran home...',
+    explain: [
+      {term: 'Skills', def: 'Skills are like recipe cards you download from the internet. You drop them in a special folder and suddenly Claude knows how to do new things it could not do before. Want image generation? Download that skill. Want video production? Download that skill. Each skill is just a text file with instructions.'},
+      {term: 'GitHub', def: 'GitHub is like a massive free library where people share their code, tools, and skills. When someone says "git clone" that just means "download this thing from the library." You do not need an account to download.'},
+      {term: '~/.claude/skills/', def: 'This is the folder where skills live on your Mac. Drop a skill folder in here and Claude automatically learns it.'}
+    ],
+    steps: [
+      'Open Terminal and check if you have a skills folder: <code>ls ~/.claude/skills/</code>',
+      'If it does not exist, create it: <code>mkdir -p ~/.claude/skills/</code>',
+      'Find a skill on GitHub (like the Nano Banana image gen skill)',
+      'Clone it into your skills folder: <code>git clone [url] ~/.claude/skills/[name]</code>',
+      'Start a new Claude session and the skill is automatically available',
+      'Ask Claude to use the skill - for example: <code>Generate an image of a sunset</code>'
+    ],
+    tip: 'Skills are the secret weapon. Each one you install makes Claude dramatically more powerful. Start with Nano Banana for image generation.'
+  },
+  nanobanana: {
+    title: 'Nano Banana (Image Gen)',
+    subtitle: 'Unlimited free AI images from your Terminal',
+    story: 'Fox had heard legends of foxes who could conjure paintings from thin air, but he always thought it was a myth. Then one day he downloaded his first spell book, opened it, and whispered "make me a sunset over the ocean." BOOM - a beautiful painting appeared right there on his desk, still warm. For free. Unlimited paintings. Fox giggled like a kid on Christmas morning. Rabbit walked in and dropped his carrot. "Is that... did you just..." Fox was already whispering his next request.',
+    explain: [
+      {term: 'Nano Banana', def: 'This is a skill that lets Claude generate images using Google\'s free Gemini AI. You describe what you want and it creates a real image file on your computer. No Photoshop needed. No design skills needed.'},
+      {term: 'Gemini API Key', def: 'Google gives you free access to their image-making AI. You just need a free key from their website. It costs nothing and gives you unlimited image generation.'},
+      {term: 'Git Clone', def: 'Just means "download this from the library." One command and the skill is installed.'}
+    ],
+    steps: [
+      'First, get a free Gemini API key: go to <code>aistudio.google.com/apikey</code> in your browser',
+      'Click <code>Create API Key</code> and copy it',
+      'In Terminal, save the key: <code>export GEMINI_API_KEY=your-key-here</code>',
+      'Install the skill: <code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code>',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Generate an image of a sunset over the ocean</code>',
+      'Watch it create a real image file on your computer. Magic.'
+    ],
+    tip: 'This is completely free and unlimited. You can generate product photos, social media graphics, logos, anything. Just describe what you want in plain English.'
+  },
+  hooks: {
+    title: 'Hooks',
+    subtitle: 'Automatic triggers that fire on events',
+    story: 'Fox was tired of manually checking things every time something happened. "What if," Turtle suggested, "we set up tripwires? When something happens, the right action fires automatically." Fox set up his first hook - every time he saved a file, it automatically ran a quality check. He never had to remember again...',
+    explain: [
+      {term: 'Hooks', def: 'Hooks are automatic triggers. They are shell commands that fire when specific events happen - like before Claude runs a command, after it edits a file, or when a session starts. Think of them as "if THIS happens, then DO THAT" rules.'},
+      {term: 'settings.json', def: 'The configuration file where you define your hooks. Claude reads this to know which automatic actions to take.'}
+    ],
+    steps: [
+      'Open Claude and ask: <code>Show me how to set up a hook in settings.json</code>',
+      'Claude will help you create or edit the settings file',
+      'Choose what event you want to hook into (pre-command, post-edit, session start, etc.)',
+      'Define the shell command that should run when that event fires',
+      'Test it by triggering the event and watching the hook fire automatically'
+    ],
+    tip: 'Start with a simple hook like auto-formatting code on save. Once you see how it works, you will want hooks everywhere.'
+  },
+  mcp: {
+    title: 'MCP Servers',
+    subtitle: 'Give Claude new tools and integrations',
+    story: 'Fox realized his assistant was powerful but trapped in a box. It could not see the internet, could not check his email, could not search GitHub. Then Rabbit showed him a secret passage - MCP servers. Each one was like plugging in a new sense. Suddenly the assistant could see the web, feel the database, hear the API responses. Fox whispered "search GitHub for image generation tools" and got results in seconds...',
+    explain: [
+      {term: 'MCP', def: 'Model Context Protocol. It is a way to give Claude new tools by connecting it to external services. Each MCP server is like plugging in a new USB accessory - it gives Claude a new capability.'},
+      {term: 'MCP Server', def: 'A small program that runs in the background and gives Claude access to something external - like GitHub, a database, a browser, or an API. You configure them and Claude can use them automatically.'}
+    ],
+    steps: [
+      'Start Claude and ask: <code>Help me set up an MCP server</code>',
+      'Choose which MCP server you want (GitHub, filesystem, browser, etc.)',
+      'Claude will guide you through the configuration',
+      'The MCP server gets added to your settings file',
+      'Restart Claude and the new tool is available',
+      'Ask Claude to use it: <code>Search GitHub for Claude Code skills</code>'
+    ],
+    tip: 'MCP servers are what turn Claude from a text assistant into a fully connected AI agent. Start with the GitHub MCP server.'
+  },
+  imgedit: {
+    title: 'Image Editing & Face Swap',
+    subtitle: 'Transform photos while keeping the face',
+    story: 'Fox wanted to put his face on a movie poster. "Impossible," said Rabbit. Fox smiled, sent Claude a selfie and said "Put me on the cover of a sci-fi movie." Thirty seconds later, there he was - fur gleaming, standing on an alien planet, looking heroic. Same face. New universe. Rabbit fainted.',
+    explain: [
+      {term: 'Image-to-Image', def: 'You give Claude an existing photo and tell it how to change it. It keeps what you want (like the face) and transforms the rest. No Photoshop skills needed.'},
+      {term: 'Reference Image', def: 'The original photo you want to work from. Claude uses it as a starting point and modifies it based on your instructions.'}
+    ],
+    steps: [
+      'Make sure you have the Nano Banana skill installed first',
+      'Place a reference photo somewhere Claude can access it (like your Desktop)',
+      'Start Claude and tell it: <code>Edit this image [path to photo] and change the background to a tropical beach</code>',
+      'Claude will generate a new image with the modifications',
+      'Experiment with different prompts to get the look you want'
+    ],
+    tip: 'The more specific your description, the better the result. Instead of "make it cool" say "golden hour lighting, cinematic composition, warm tones."'
+  },
+  elevenlabs: {
+    title: 'ElevenLabs Voiceover',
+    subtitle: 'Professional AI voices that sound real',
+    story: 'Fox needed a voice for his marketing video but could not afford a voice actor. Then he discovered a magical megaphone that could speak in hundreds of different voices - deep, smooth, energetic, calm. He typed his script, picked a voice, and out came audio so good that Rabbit thought a real person recorded it...',
+    explain: [
+      {term: 'ElevenLabs', def: 'A service that turns text into incredibly realistic speech. You type words, pick a voice, and it creates an audio file. Some features are free, premium plans give you more.'},
+      {term: 'Voice Cloning', def: 'You can upload a recording of someone\'s voice and ElevenLabs will learn to speak in that exact voice. Great for creating consistent brand voices.'}
+    ],
+    steps: [
+      'Go to <code>elevenlabs.io</code> and create a free account',
+      'Get your API key from your account settings',
+      'In Terminal: <code>export ELEVENLABS_API_KEY=your-key-here</code>',
+      'Start Claude and tell it: <code>Create a voiceover that says "Welcome to our brand" using ElevenLabs</code>',
+      'Claude will generate an audio file on your computer',
+      'Try different voices by telling Claude which voice style you want'
+    ],
+    tip: 'ElevenLabs free tier gives you enough to test with. For production work, their paid plans are very reasonable.'
+  },
+  edgetts: {
+    title: 'Edge TTS (Free Voice)',
+    subtitle: 'Unlimited free voiceovers that sound great',
+    story: 'Fox loved ElevenLabs but his wallet did not. Then Turtle whispered a secret: "Microsoft gives away free voices. Unlimited. Forever." Fox installed one package and suddenly had access to dozens of professional voices in every language. "Why doesn\'t everyone know about this?" he asked. Turtle shrugged. "They do not ask Turtles enough questions."',
+    explain: [
+      {term: 'Edge TTS', def: 'Microsoft\'s free text-to-speech engine. The same voices used in Microsoft Edge browser. They sound surprisingly good and are 100% free with no limits.'},
+      {term: 'pip3 install', def: 'This is how you install Python packages. pip3 is like an app store for Python tools. You type the command and it downloads and installs the tool for you.'}
+    ],
+    steps: [
+      'In Terminal, install it: <code>pip3 install edge-tts</code>',
+      'That is it. No API key needed. No account needed.',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Create a voiceover using Edge TTS that says "Welcome to our channel" and save it as welcome.mp3</code>',
+      'Claude will generate the audio file for free',
+      'Try different voices: <code>List available Edge TTS voices</code>'
+    ],
+    tip: 'Edge TTS is the ultimate budget move. Use it for drafts and testing, then upgrade to ElevenLabs for final production if you want premium quality.'
+  },
+  vidpipe: {
+    title: 'Video Production Pipeline',
+    subtitle: 'One prompt creates an entire video package',
+    story: 'Fox had images, voices, and an idea. But putting them together into a video felt impossible. Then he discovered he could chain all his superpowers together: generate the image, animate it with Kling, add a voiceover, and deliver the final video. One prompt. One pipeline. He told Claude "make me a 30-second ad" and went to make coffee. When he came back, the video was done...',
+    explain: [
+      {term: 'Pipeline', def: 'A series of steps that happen automatically one after another. Image gets created, then animated, then voice gets added, then everything gets combined into a final video.'},
+      {term: 'Kling 3.0', def: 'An AI video generation tool that takes a still image and animates it into a video clip. Your image literally comes to life.'}
+    ],
+    steps: [
+      'First make sure you have: Nano Banana (images), a voiceover tool (Edge TTS or ElevenLabs), and Kling access',
+      'Start Claude: <code>claude</code>',
+      'Give it a video brief: <code>Create a video package: generate an image of [scene], create a voiceover saying [script], and organize everything in a folder called my-video</code>',
+      'Claude will execute each step in sequence',
+      'Check the output folder for your completed video assets',
+      'For animation, you can upload the generated images to Kling separately'
+    ],
+    tip: 'Start simple with image + voiceover. Once that works, add animation. Build your pipeline one piece at a time.'
+  },
+  yttranscript: {
+    title: 'YouTube Transcription',
+    subtitle: 'Extract knowledge from any video',
+    story: 'Fox found a YouTube channel with 200 videos of pure gold - sales training, techniques, scripts. But watching 200 videos would take months. So he pointed Claude at the channel and said "get me every word." In minutes he had 238,000 words of transcript. Then he said "turn this into a training manual." Claude distilled it into a 15,000-word masterpiece. Rabbit spent 3 months watching those videos. Fox did it in 10 minutes.',
+    explain: [
+      {term: 'Transcript', def: 'A written version of everything said in a video. YouTube auto-generates these for most videos. Claude can grab them automatically.'},
+      {term: 'youtube-transcript-api', def: 'A free Python tool that downloads YouTube video transcripts. No YouTube account needed. Just give it a video URL.'}
+    ],
+    steps: [
+      'Install the tool: <code>pip3 install youtube-transcript-api</code>',
+      'Start Claude: <code>claude</code>',
+      'Give it a YouTube URL: <code>Get the transcript from this video: [paste URL]</code>',
+      'Claude will download and display the full transcript',
+      'Ask it to analyze: <code>Summarize the key points from this transcript</code>',
+      'For whole channels: <code>Get transcripts from all videos on this channel</code>'
+    ],
+    tip: 'This is insanely powerful for research. Find an expert on YouTube, pull all their transcripts, and have Claude create a condensed knowledge base.'
+  },
+  social: {
+    title: 'Social Media Content',
+    subtitle: 'Content that sounds human, not AI',
+    story: 'Fox was posting every day but everything sounded like a robot wrote it. "Make it engaging!" he kept telling AI tools, and they kept adding exclamation points. Then he configured Claude with his voice, his style, his audience. Now every caption sounds like Fox actually wrote it. Because technically, he did - he just had help.',
+    explain: [
+      {term: 'Content Calendar', def: 'A schedule of what to post and when. Claude can create weekly or monthly calendars with post ideas, captions, and optimal posting times.'},
+      {term: 'Brand Voice', def: 'The consistent tone and style of your communication. Put this in your CLAUDE.md so every piece of content matches your brand.'}
+    ],
+    steps: [
+      'Make sure your CLAUDE.md describes your brand voice and target audience',
+      'Start Claude: <code>claude</code>',
+      'Ask it: <code>Create 5 Instagram captions for [your business] about [topic]</code>',
+      'Review and adjust: <code>Make #3 more casual and add a call to action</code>',
+      'Generate a content calendar: <code>Create a 2-week content calendar for my Instagram</code>',
+      'Ask for hashtag research: <code>Find the best hashtags for [your niche]</code>'
+    ],
+    tip: 'The secret is your CLAUDE.md. The better you describe your voice and audience, the more human the content sounds.'
+  },
+  crons: {
+    title: 'Cron Jobs & /loop',
+    subtitle: 'Schedule tasks that run automatically',
+    story: 'Fox was waking up every morning to manually check his emails, scrape a website, and generate a report. Same thing, every day. Turtle watched this for a week and finally said: "You know you can schedule that, right? Set it once, and it runs forever." Fox felt silly. But also free.',
+    explain: [
+      {term: 'Cron Job', def: 'A task that runs automatically on a schedule. Like setting an alarm, but instead of waking you up, it runs a command. Every 5 minutes, every hour, every day - you choose.'},
+      {term: '/loop', def: 'A Claude Code command that repeats a task on an interval. /loop 5m means "do this every 5 minutes." It is the simplest way to automate recurring tasks.'}
+    ],
+    steps: [
+      'Start Claude: <code>claude</code>',
+      'Set up a loop: type <code>/loop 10m Check my inbox and summarize new messages</code>',
+      'Claude will now run that task every 10 minutes automatically',
+      'Try different intervals: <code>/loop 1h Generate a daily report</code>',
+      'To see active loops: ask Claude <code>What loops are currently running?</code>',
+      'To stop a loop: ask Claude to cancel it'
+    ],
+    tip: 'Start with something simple like a 30-minute check. Once you trust it, add more automated tasks.'
+  },
+  multiagent: {
+    title: 'Multi-Agent Architecture',
+    subtitle: 'One Mac, many AI employees',
+    story: 'Fox realized one assistant was not enough. He needed a sales agent, a content agent, a research agent. Each one with its own personality, its own instructions, its own Telegram bot. So he set up a little village of agents on his Mac. Each one in its own room, doing its own job, talking to him through its own phone number. One Mac. Ten employees. Zero salaries.',
+    explain: [
+      {term: 'Agent', def: 'A separate Claude instance with its own instructions, memory, and communication channel. Like hiring a new employee who specializes in one thing.'},
+      {term: 'Telegram Bot', def: 'Each agent gets its own Telegram bot so you can message it from your phone. It is like giving each employee their own phone number.'}
+    ],
+    steps: [
+      'Set up your first agent using the CortexOS system (install that first)',
+      'Create a new Telegram bot via @BotFather in Telegram',
+      'Copy the bot token you receive',
+      'Use the agent creation commands to spawn a new agent',
+      'Give it a CLAUDE.md with specific instructions for its role',
+      'Message it on Telegram and watch it respond independently'
+    ],
+    tip: 'Start with 2 agents - one general purpose and one specialized. Once you understand the pattern, scale up.'
+  },
+  cortexos: {
+    title: 'CortexOS (24/7 Agents)',
+    subtitle: 'Your AI never goes offline',
+    story: 'Fox was devastated every time he closed his laptop and his assistant disappeared. All that context, gone. Then he found CortexOS - a magical spell that kept his assistant alive forever. Crash recovery, auto-restart, persistent memory. Fox closed his laptop, went to bed, and woke up to find his assistant had completed three tasks overnight. It never sleeps. It never quits. It never forgets.',
+    explain: [
+      {term: 'CortexOS', def: 'A system that keeps Claude running 24/7 on your Mac. It automatically restarts if Claude crashes, preserves conversation history, and lets you control everything via Telegram from your phone.'},
+      {term: 'tmux', def: 'A terminal multiplexer. It lets programs run in the background even when you close Terminal. Your Claude session lives inside tmux so it survives everything.'},
+      {term: 'launchd', def: 'The Mac\'s built-in service manager. CortexOS uses it to make sure your agents start automatically when your Mac boots up.'}
+    ],
+    steps: [
+      'Clone the repo: <code>git clone https://github.com/grandaenium/claude-remote-manager.git</code>',
+      'Follow the setup instructions in the repo\'s README',
+      'Create a Telegram bot and configure your agent',
+      'Enable the agent using the provided scripts',
+      'Your agent is now running 24/7 in the background',
+      'Message it on Telegram from anywhere - your phone, another computer, anywhere'
+    ],
+    tip: 'This is the endgame setup. Once CortexOS is running, you have a full-time AI employee on your Mac that you control from your phone.'
+  },
+  telegram: {
+    title: 'Remote Control (Telegram)',
+    subtitle: 'Control your AI from your phone',
+    story: 'Fox was at a coffee shop when a client asked for an urgent deliverable. His Mac was at home. Panic. Then he remembered - he could just text his agent on Telegram. He pulled out his phone, typed "generate the proposal and send it to the client," and put his phone down. Two minutes later, done. Fox sipped his latte and smiled.',
+    explain: [
+      {term: 'Telegram', def: 'A messaging app (like WhatsApp but with more features). Your AI agent gets its own Telegram bot that you can message anytime, anywhere.'},
+      {term: '@BotFather', def: 'The official Telegram bot that creates other bots. You message it, it gives you a new bot with a token. Free and takes 30 seconds.'}
+    ],
+    steps: [
+      'Download Telegram on your phone if you do not have it',
+      'Open Telegram and search for <code>@BotFather</code>',
+      'Send it: <code>/newbot</code>',
+      'Follow the prompts to name your bot',
+      'Copy the bot token it gives you',
+      'Configure your CortexOS agent with this token',
+      'Message your bot and your AI agent responds!'
+    ],
+    tip: 'You can send photos, files, and voice messages to your agent through Telegram. It can respond with images, files, and formatted text.'
+  },
+  playwright: {
+    title: 'Browser Automation',
+    subtitle: 'Control a real web browser with code',
+    story: 'Fox needed to fill out the same form on a website 50 times. "There has to be a better way," he muttered. Turtle introduced him to Playwright - a invisible browser that Claude could control. "Click this button, fill that field, screenshot the result." Fox automated his entire web workflow in one afternoon.',
+    explain: [
+      {term: 'Playwright', def: 'A tool that lets you control a web browser automatically. It can click buttons, fill forms, take screenshots, and navigate websites - all without you touching the mouse.'},
+      {term: 'Headless Browser', def: 'A web browser that runs invisibly in the background. No window opens. It just does its thing and gives you the results.'}
+    ],
+    steps: [
+      'Install Playwright: <code>pip3 install playwright && playwright install</code>',
+      'This downloads the browser engines (takes a minute)',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Use Playwright to go to [website] and take a screenshot</code>',
+      'Claude will open a hidden browser, visit the site, and save the screenshot',
+      'Try more complex tasks: <code>Fill out the form at [url] with this data</code>'
+    ],
+    tip: 'Playwright is incredibly powerful for scraping data from websites that require JavaScript, or automating repetitive web tasks.'
+  },
+  gdrive: {
+    title: 'Google Drive API',
+    subtitle: 'Organize files and deliverables automatically',
+    story: 'Fox was emailing files to clients manually. "Here is the image. Here is the document. Here is the video." Turtle face-palmed. "Just put them in a shared Drive folder automatically." Fox set it up and now every deliverable lands in the right client folder, organized by date, without Fox lifting a finger.',
+    explain: [
+      {term: 'Google Drive API', def: 'A way for Claude to directly create folders, upload files, and organize your Google Drive. It is like giving Claude the keys to your file cabinet.'},
+      {term: 'Service Account', def: 'A special Google account for apps (not humans). You create one, share your Drive folder with it, and Claude can access your files through it.'}
+    ],
+    steps: [
+      'Go to <code>console.cloud.google.com</code> and create a project',
+      'Enable the Google Drive API for your project',
+      'Create a Service Account and download the credentials JSON file',
+      'Share your Google Drive folder with the service account email',
+      'Start Claude and ask it to set up Google Drive integration',
+      'Tell it: <code>Upload this file to my Google Drive in the [folder name] folder</code>'
+    ],
+    tip: 'Set up one shared folder per client. Then Claude can auto-organize deliverables by project and date.'
+  },
+  stripe: {
+    title: 'Stripe (Payments)',
+    subtitle: 'Your AI becomes your billing department',
+    story: 'Fox was copying and pasting Stripe payment links into emails manually. For every client. For every invoice. Then he told Claude his Stripe API key and said "create a payment link for $500 for the Jones project." Three seconds later, link in hand. Fox forwarded it. Payment received within the hour.',
+    explain: [
+      {term: 'Stripe', def: 'The internet\'s payment processor. It handles credit cards, invoicing, subscriptions, and payouts. Most online businesses use it.'},
+      {term: 'Stripe API', def: 'A way for Claude to create products, generate payment links, and check payment status directly - without you logging into the Stripe dashboard.'}
+    ],
+    steps: [
+      'Sign up at <code>stripe.com</code> if you do not have an account',
+      'Get your API key from the Stripe dashboard (Developers > API Keys)',
+      'In Terminal: <code>export STRIPE_API_KEY=sk_live_your-key</code>',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Create a Stripe payment link for $100 for "Consulting Session"</code>',
+      'Claude will create the product and give you a payment link to share'
+    ],
+    tip: 'Use test mode keys first (they start with sk_test_) to practice without real money involved.'
+  },
+  perplexity: {
+    title: 'Perplexity (Live Search)',
+    subtitle: 'Real-time internet search with sources',
+    story: 'Fox needed to research a competitor but Claude only knew things up to its training date. "What about NOW?" Fox asked. Then he plugged in Perplexity - suddenly Claude could search the live internet, cite real sources, and bring back fresh information. It was like giving Claude a window to the outside world.',
+    explain: [
+      {term: 'Perplexity', def: 'An AI-powered search engine that returns answers with citations. When connected to Claude, it gives Claude the ability to search the live internet and get current information.'},
+      {term: 'Citations', def: 'Links to the actual sources where the information came from. So you can verify everything Claude finds.'}
+    ],
+    steps: [
+      'Sign up at <code>perplexity.ai</code>',
+      'Get your API key from account settings',
+      'In Terminal: <code>export PERPLEXITY_API_KEY=your-key</code>',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Search the internet for the latest news about [topic]</code>',
+      'Claude will return current results with source links'
+    ],
+    tip: 'Perplexity is especially useful for competitive research, market analysis, and staying current on industry news.'
+  },
+  twilio: {
+    title: 'Twilio (SMS & Calls)',
+    subtitle: 'Your AI can literally call people',
+    story: 'Fox needed to send an appointment reminder to 50 clients. Manually texting each one? No way. He gave Claude his Twilio credentials and said "send a reminder to everyone on this list." Fifty personalized texts went out in under a minute. Then he discovered Claude could make phone calls too. Rabbit got a call from Fox\'s AI and nearly dropped his phone.',
+    explain: [
+      {term: 'Twilio', def: 'A service that lets you send text messages and make phone calls using code. You get a real phone number that Claude can use to contact people.'},
+      {term: 'SMS API', def: 'A way for Claude to send text messages programmatically. You provide the phone number and message, and Twilio delivers it.'}
+    ],
+    steps: [
+      'Sign up at <code>twilio.com</code> (free trial includes some credits)',
+      'Get your Account SID, Auth Token, and a phone number',
+      'Set up the credentials: <code>export TWILIO_ACCOUNT_SID=your-sid</code> and <code>export TWILIO_AUTH_TOKEN=your-token</code>',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Send an SMS to [phone number] saying "Hello from my AI assistant"</code>',
+      'Check your phone - the message arrives!'
+    ],
+    tip: 'Always test with your own phone number first. Twilio free trial only lets you send to verified numbers.'
+  },
+  zapier: {
+    title: 'Zapier / Make Webhooks',
+    subtitle: 'Connect Claude to 5,000+ apps',
+    story: 'Fox wanted Claude to add a row to his Google Sheet every time a payment came in on Stripe. "That is two different apps," said Rabbit. "How?" Fox set up a webhook - a magic URL that triggers actions in other apps. Now when Claude sees a payment, it pings the webhook, and the spreadsheet updates itself. Fox connected 12 more apps that week.',
+    explain: [
+      {term: 'Webhook', def: 'A URL that triggers an action when you send data to it. Think of it as a doorbell - when Claude rings it (sends data), something happens on the other end (like adding a row to a spreadsheet).'},
+      {term: 'Zapier/Make', def: 'Services that connect different apps together. They give you webhook URLs that trigger automated workflows across thousands of apps.'}
+    ],
+    steps: [
+      'Sign up at <code>zapier.com</code> or <code>make.com</code> (both have free tiers)',
+      'Create a new Zap/Scenario and choose "Webhooks" as the trigger',
+      'Copy the webhook URL it gives you',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Send a POST request to [webhook URL] with this data: {"name": "Test", "status": "success"}</code>',
+      'Check Zapier/Make - your webhook received the data and the automation ran'
+    ],
+    tip: 'Webhooks are the glue between Claude and the rest of your tools. Learn this and you can connect Claude to literally anything.'
+  },
+  airtable: {
+    title: 'Airtable (Database)',
+    subtitle: 'A real database Claude can read and write',
+    story: 'Fox was keeping client information in random text files. "I need a real database," he told Turtle. "But databases are scary." Turtle showed him Airtable - it looks like a spreadsheet but works like a database. Claude could read rows, add new ones, update existing ones. Suddenly Fox had a CRM, a project tracker, and an inventory system. All in one place.',
+    explain: [
+      {term: 'Airtable', def: 'A database that looks like a spreadsheet. Easy to use, but powerful enough for real applications. Claude can read and write to it through the API.'},
+      {term: 'Database', def: 'An organized collection of information. Like a spreadsheet with superpowers - it can handle relationships between tables, filters, and thousands of records.'}
+    ],
+    steps: [
+      'Sign up at <code>airtable.com</code> (free tier is generous)',
+      'Create a new base (that is what Airtable calls a database)',
+      'Get your API key from <code>airtable.com/account</code>',
+      'In Terminal: <code>export AIRTABLE_API_KEY=your-key</code>',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Connect to my Airtable base and list all records in the [table name] table</code>',
+      'Try adding data: <code>Add a new record with name "John" and email "john@email.com"</code>'
+    ],
+    tip: 'Airtable is the easiest database for non-technical people. Use it for client tracking, project management, or any structured data.'
+  },
+  whisper: {
+    title: 'Whisper (Transcription)',
+    subtitle: 'Turn any audio into searchable text',
+    story: 'Fox had 50 hours of recorded meetings and no idea what was said in any of them. He could not search audio. He could not skim audio. Then he ran Whisper on the recordings and suddenly every word was searchable text. He found the exact moment a client said "yes" to a deal buried in hour 37. Game changer.',
+    explain: [
+      {term: 'Whisper', def: 'OpenAI\'s free speech-to-text AI that runs on your own computer. It turns audio files into written text. No internet needed, no cost, runs locally.'},
+      {term: 'Transcription', def: 'Converting spoken words into written text. Whisper does this automatically for any audio or video file.'}
+    ],
+    steps: [
+      'Install Whisper: <code>pip3 install openai-whisper</code>',
+      'This may take a few minutes as it downloads the AI model',
+      'Start Claude: <code>claude</code>',
+      'Tell it: <code>Transcribe this audio file: [path to your audio file]</code>',
+      'Claude will run Whisper and give you the full text transcription',
+      'Ask it to summarize: <code>Summarize the key points from this transcription</code>'
+    ],
+    tip: 'Whisper runs completely offline on your Mac. Your audio never leaves your computer. Great for confidential meetings.'
+  },
+  customskills: {
+    title: 'Build Custom Skills',
+    subtitle: 'Create and share your own superpowers',
+    story: 'Fox had mastered all the existing skills and wanted more. "What if I could CREATE my own?" Turtle nodded. "A skill is just a text file with instructions. Write what you want Claude to do, save it in the skills folder, and it becomes a new ability." Fox wrote his first skill that night. Then he shared it with all the other foxes. Now they all had his superpower.',
+    explain: [
+      {term: 'Custom Skill', def: 'A markdown file you write that teaches Claude a new ability. It contains instructions, examples, and rules that Claude follows when the skill is triggered.'},
+      {term: 'Skill Format', def: 'Just a markdown (.md) file in ~/.claude/skills/. It can include trigger conditions, step-by-step instructions, and example prompts. Claude reads these automatically.'}
+    ],
+    steps: [
+      'Look at existing skills in <code>~/.claude/skills/</code> for inspiration',
+      'Create a new folder: <code>mkdir ~/.claude/skills/my-skill</code>',
+      'Create the skill file: start Claude and tell it <code>Help me create a custom skill that [does whatever you want]</code>',
+      'Claude will write the skill file for you based on your description',
+      'Test it by starting a new Claude session and triggering the skill',
+      'Share it by pushing the folder to GitHub for others to download'
+    ],
+    tip: 'The best skills are specific. Instead of "help with marketing," make "create Instagram carousel posts for fitness brands." Specificity is power.'
+  },
+  vectordb: {
+    title: 'Vector DB + RAG Memory',
+    subtitle: 'Infinite semantic memory',
+    story: 'Fox had been using Claude for months and had thousands of conversations worth of knowledge. But Claude could only remember what was in its memory files. Then Fox discovered vector databases - a way to store EVERYTHING and search it by meaning, not just keywords. "Find everything I have ever said about pricing strategy" returned results from 47 different conversations. Fox had built himself a second brain.',
+    explain: [
+      {term: 'Vector Database', def: 'A special kind of database that understands meaning. Instead of matching exact words, it finds things that are similar in concept. Search for "revenue growth" and it also finds "increasing sales" and "scaling income."'},
+      {term: 'RAG', def: 'Retrieval Augmented Generation. It means Claude searches your database before answering, so it can reference your actual data and history instead of making things up.'}
+    ],
+    steps: [
+      'Clone the memory system: <code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code>',
+      'Follow the setup instructions in the repo',
+      'Start Claude and it will automatically use the vector memory',
+      'As you have conversations, important information gets stored',
+      'Try searching: <code>Search my memory for everything about [topic]</code>',
+      'Claude will find semantically related information across all your history'
+    ],
+    tip: 'This is advanced but incredibly powerful. It turns Claude from an assistant into a second brain that remembers everything you have ever discussed.'
+  },
+  prodpipe: {
+    title: 'Production Pipelines',
+    subtitle: 'Batch processing at industrial scale',
+    story: 'A client needed 60 images, 60 videos, and 10 voiceovers. By Wednesday. Fox did not panic. He wrote one prompt describing the batch job, hit enter, and went to sleep. By morning, every asset was generated, organized in labeled folders, and ready for delivery. The client thought Fox had a team of 10 people.',
+    explain: [
+      {term: 'Batch Processing', def: 'Running the same task many times automatically. Instead of generating one image at a time, you tell Claude to generate 60 in sequence while you do something else.'},
+      {term: 'Pipeline', def: 'A multi-step workflow where the output of one step feeds into the next. Generate image > animate it > add voiceover > organize in folder. All automated.'}
+    ],
+    steps: [
+      'Make sure all your creative tools are set up (Nano Banana, Edge TTS, etc.)',
+      'Start Claude: <code>claude</code>',
+      'Describe the batch job: <code>Generate 10 product images for [topic], each with a different style, and save them in a folder called output/images</code>',
+      'Claude will work through each one sequentially',
+      'Scale up: add voiceovers, captions, and organization to the pipeline',
+      'For large batches, use CortexOS so the agent runs overnight'
+    ],
+    tip: 'Always start with a batch of 3 to test your pipeline. Once the quality is right, scale to any number.'
+  },
+  selling: {
+    title: 'Sell AI Services',
+    subtitle: 'Build agents for clients and charge $10K each',
+    story: 'Fox realized something wild. Everything he had learned - the agents, the pipelines, the integrations - other businesses would PAY for this. A lot. He built his first client agent in a weekend: custom CLAUDE.md, Telegram control, image gen, voiceover, Google Drive delivery. He charged $10K. The client said it was cheap. Fox had found his business model.',
+    explain: [
+      {term: 'AI Agent Service', def: 'You build and configure a Claude agent for a client\'s specific needs. They get a 24/7 AI employee controlled via Telegram. You charge for the setup and ongoing management.'},
+      {term: 'Recurring Revenue', def: 'Monthly fees for maintaining, updating, and improving the client\'s agent. Once built, it costs you almost nothing to maintain but the client pays monthly.'}
+    ],
+    steps: [
+      'Master the core skills first (CortexOS, Telegram, at least 3 integrations)',
+      'Pick a niche: content creation, operations, sales automation, etc.',
+      'Build a demo agent that showcases your capabilities',
+      'Create a proposal template showing what the agent does and the ROI',
+      'Price at $5K-$15K setup + $500-$2K/month management',
+      'Deliver by cloning your template and customizing the CLAUDE.md for each client'
+    ],
+    tip: 'The hardest part is not building it - it is convincing businesses that a $10K AI agent saves them $100K in labor. Lead with ROI numbers.'
+  }
+};
+
+// Build and render the tutorial modal
+function renderTutorial(id) {
+  const t = tutorials[id];
+  if (!t) return;
+  let modal = document.getElementById('tutorialModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'tutorialModal';
+    modal.className = 'tutorial-modal';
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeTutorial(); });
+    document.body.appendChild(modal);
+  }
+
+  let conceptChips = Object.entries(CONCEPTS).map(([term, def]) =>
+    '<span class="concept-chip" title="' + def.replace(/"/g,'&quot;') + '"><span class="chip-term">' + term + '</span> = ' + def.split('.')[0] + '</span>'
+  ).join('');
+
+  let explainHTML = '';
+  if (t.explain && t.explain.length) {
+    explainHTML = '<div class="tutorial-section"><div class="tutorial-section-label">Key Concepts</div>';
+    t.explain.forEach(function(e) {
+      explainHTML += '<div class="tutorial-explain-box"><div class="explain-term">' + e.term + '</div><div class="explain-def">' + e.def + '</div></div>';
+    });
+    explainHTML += '</div>';
+  }
+
+  let stepsHTML = '';
+  if (t.steps && t.steps.length) {
+    stepsHTML = '<div class="tutorial-section"><div class="tutorial-section-label">Step-by-Step Instructions</div><ol class="tutorial-steps">';
+    t.steps.forEach(function(s) {
+      stepsHTML += '<li><span>' + s + '</span></li>';
+    });
+    stepsHTML += '</ol></div>';
+  }
+
+  let tipHTML = '';
+  if (t.tip) {
+    tipHTML = '<div class="tutorial-tip-box"><div class="tip-title">Remember</div><div class="tip-body">' + t.tip + '</div></div>';
+  }
+
+  modal.innerHTML =
+    '<div class="tutorial-panel">' +
+      '<div class="tutorial-close"><button onclick="closeTutorial()">CLOSE &times;</button></div>' +
+      '<div class="tutorial-body">' +
+        '<div class="tutorial-title">' + t.title + '</div>' +
+        '<div class="tutorial-subtitle">' + (t.subtitle || '') + '</div>' +
+        '<div class="tutorial-protip"><div class="protip-badge">PRO TIP</div><div class="protip-text">Stuck? Take a screenshot of your screen and send it to Claude on your phone. It can see your screen and tell you exactly what to do next.</div></div>' +
+        '<div class="tutorial-section"><div class="tutorial-section-label">The Story</div><div class="tutorial-story">' + t.story + '</div></div>' +
+        explainHTML +
+        stepsHTML +
+        tipHTML +
+        '<div class="tutorial-section"><div class="tutorial-section-label">Quick Reference</div><div class="concept-tooltips">' + conceptChips + '</div></div>' +
+      '</div>' +
+    '</div>';
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTutorial() {
+  var modal = document.getElementById('tutorialModal');
+  if (modal) { modal.classList.remove('open'); }
+  document.body.style.overflow = '';
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeTutorial(); });
+
+// Attach click handlers to all skill cards (open tutorial on card click, but not on button/copy clicks)
+function attachTutorialClicks() {
+  document.querySelectorAll('.skill-card[data-tutorial]').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      // Don't open tutorial if clicking a button (MARK DONE, COPY, etc.)
+      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+      var tid = card.getAttribute('data-tutorial');
+      if (tid && tutorials[tid]) renderTutorial(tid);
+    });
+  });
+}
+attachTutorialClicks();
+
+// Re-attach to cloned cards in Skills page
+(function() {
+  var obs = new MutationObserver(function() { attachTutorialClicks(); });
+  var grid = document.getElementById('allSkillsGrid');
+  if (grid) obs.observe(grid, {childList: true});
+})();
 </script>
 </body>
 </html>
