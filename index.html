@@ -136,6 +136,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <a href="#" data-page="modules">Modules</a>
 <a href="#" data-page="skills">Skills</a>
 <a href="#" data-page="cases">Case Studies</a>
+<a href="#" data-page="security">Security</a>
 </div>
 <div class="nav-level">LEVEL <span id="lvlNum">1</span> // <span id="xpDisplay">0</span> XP</div>
 </nav>
@@ -274,6 +275,111 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">CONTENT</span></div><h4>The Peptide Bible</h4><p>28 YouTube video transcripts (238,000 words) from a peptide expert were processed, voice-analyzed, and synthesized into a 15,685-word sales training manual — written in the expert's exact voice. 16 peptide chapters, dosing protocols, objection handlers, and a sales rep cheat sheet.</p></div>
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">VIDEO</span></div><h4>10 Videos Overnight</h4><p>10 cinematic video scripts, 60 source images (Nano Banana), 60 video clips (Kling 3.0), 10 voiceovers (ElevenLabs), 10 Instagram captions, all organized in labeled folders. Produced autonomously while the client slept.</p></div>
 <div class="case-card"><div class="case-tag"><span class="pill pill-orange">OPERATIONS</span></div><h4>The 24/7 Employee</h4><p>Mr. Hudson runs non-stop in a tmux session. Responds to Telegram in real time, generates images and videos, writes proposals, manages Google Drive, processes Stripe payments, runs scrapers, builds code — all without supervision. One Mac. One agent. Infinite output.</p></div>
+</div>
+
+<!-- SECURITY -->
+<div class="page" id="pg-security">
+<div class="section-header"><div class="section-title"><span>&#9632;</span> Cybersecurity Training</div></div>
+
+<div class="tip-card" style="border-color:#ff4444;margin-bottom:24px">
+<div class="tip-icon">&#9888;</div>
+<div><div class="tip-label" style="color:#ff4444">START HERE</div><div class="tip-text">Before you learn what TO do, you need to understand what NOT to do. Most people get hacked not because of sophisticated attacks, but because of simple mistakes they make every single day.</div></div>
+</div>
+
+<div class="section"><div class="section-header"><div class="section-title" style="color:#ff4444">&#9632; What NOT To Do <span style="color:#888">// The Hall of Shame</span></div></div>
+<div class="grid">
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Reuse Passwords</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
+<div class="card-desc">The Story: Fox used the same key for his house, his car, his office, and his vault. One day a raccoon found the key. The raccoon now owns everything Fox has. That is what happens when you reuse passwords. One breach on one random website and suddenly hackers have the key to your email, your bank, your business.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: Every account gets a unique password. Period. Use a password manager (1Password or Bitwarden) to remember them all. You only need to memorize one master password.</div>
+</div>
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Send API Keys in Plain Text</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
+<div class="card-desc">The Story: Fox wrote his vault combination on a postcard and mailed it across town. Everyone who touched that postcard could read it. That is what happens when you paste API keys in emails, Slack messages, or public repos. Bots scan GitHub constantly for leaked keys and drain accounts within minutes.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: API keys go in .env files on your local machine. Never commit them to GitHub. Never paste them in chat unless it is encrypted (Telegram is OK). Add .env to your .gitignore file always.</div>
+</div>
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Click Links in Emails Without Checking</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">CRITICAL</span></div>
+<div class="card-desc">The Story: Fox got a letter that looked exactly like it came from his bank. It said "click here to verify your account." Fox clicked. It was not his bank. Now the raccoons have his login. This is called phishing and it is how 90% of hacks start. The email looks real. The website looks real. But the URL is slightly different.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: Never click email links. Go directly to the website by typing the URL yourself. Hover over links to see where they actually go. If an email creates urgency ("your account will be locked!") it is almost always fake.</div>
+</div>
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Skip Software Updates</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
+<div class="card-desc">The Story: Fox's door had a broken lock but he kept saying "I will fix it tomorrow." The raccoons found the broken lock first. Software updates patch security holes. When you ignore them, you are leaving known broken locks on your doors that hackers already have the tools to open.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: Update your Mac, phone, browser, and apps immediately when updates are available. Enable auto-updates everywhere. Those annoying update notifications are your security team begging you to lock the door.</div>
+</div>
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Use Public WiFi Without a VPN</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
+<div class="card-desc">The Story: Fox was shouting his banking passwords in a crowded coffee shop. Everyone could hear. That is what public WiFi does - anyone on the same network can see your traffic. Coffee shops, airports, hotels - all of it is like shouting your secrets in a room full of strangers.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: Always use a VPN on public WiFi. NordVPN, ExpressVPN, or Proton VPN. It creates an encrypted tunnel so nobody can see what you are doing. At home you are fine without one.</div>
+</div>
+<div class="skill-card" style="border-color:#331111">
+<div class="card-top"><div class="card-title">Never Give Admin Access to Everyone</div><span class="pill" style="background:rgba(255,50,50,0.15);color:#ff4444">WARNING</span></div>
+<div class="card-desc">The Story: Fox gave every animal in the forest a master key to his house. Most of them were good friends. But one friend got tricked by a raccoon, and now the raccoon has a master key. This is the principle of least privilege - only give people the minimum access they need to do their job.</div>
+<div class="card-desc" style="color:#ff4444">THE RULE: Your VA does not need admin access to everything. Your contractor does not need your personal login. Create separate accounts with limited permissions. Remove access when people leave.</div>
+</div>
+</div></div>
+
+<div class="section" style="margin-top:32px"><div class="section-header"><div class="section-title" style="color:#00c896">&#9632; What TO Do <span style="color:#888">// The Fortress Protocol</span></div></div>
+<div class="grid">
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Enable 2FA on Everything</div><span class="pill pill-orange">ESSENTIAL</span></div>
+<div class="card-desc">Two-factor authentication means even if someone steals your password, they still cannot get in without your phone. It is like needing both a key AND a fingerprint to open the door.</div>
+<div class="card-desc" style="color:#00c896">HOW: Go to every important account (email, bank, social media, GitHub, Stripe, Anthropic) > Settings > Security > Enable Two-Factor Authentication. Use an authenticator app (Google Authenticator or Authy) not SMS - SIM swapping can steal your text messages.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Use a Password Manager</div><span class="pill pill-orange">ESSENTIAL</span></div>
+<div class="card-desc">A password manager generates and stores unique 30-character passwords for every account. You only memorize one master password. It auto-fills logins so you never type passwords where keyloggers can steal them.</div>
+<div class="card-desc" style="color:#00c896">RECOMMENDED: 1Password ($3/mo - best for individuals) or Bitwarden (free - best for budget). Install the browser extension and the phone app. Generate a new unique password for every account. Start with your email - that is the master key to everything else.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Secure Your .env Files</div><span class="pill pill-orange">ESSENTIAL</span></div>
+<div class="card-desc">Your .env files contain API keys, tokens, and passwords. They are the vault. If these leak, hackers can control your services, spend your money, and access your data.</div>
+<div class="card-desc" style="color:#00c896">HOW: 1) Always add .env to your .gitignore file so it never gets pushed to GitHub. 2) Never paste API keys in Slack, Discord, or email. 3) Use restricted API keys with minimum permissions when possible. 4) Rotate keys every 90 days. 5) If you think a key leaked, revoke it immediately and generate a new one.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Lock Down Your Mac</div><span class="pill pill-orange">ESSENTIAL</span></div>
+<div class="card-desc">Your Mac is running AI agents, holding API keys, and managing your businesses. It needs to be a fortress.</div>
+<div class="card-desc" style="color:#00c896">CHECKLIST: 1) Enable FileVault (System Settings > Privacy & Security > FileVault) - encrypts your entire drive. 2) Set a strong login password. 3) Enable the firewall (System Settings > Network > Firewall). 4) Enable Find My Mac. 5) Lock screen automatically after 1 minute of inactivity. 6) Keep macOS updated. 7) Only install apps from trusted sources.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Backup Everything</div><span class="pill pill-orange">ESSENTIAL</span></div>
+<div class="card-desc">Ransomware encrypts your files and demands payment. The only real protection is having a backup that the ransomware cannot reach.</div>
+<div class="card-desc" style="color:#00c896">HOW: 1) Time Machine backup to an external drive (plug in weekly). 2) iCloud backup for critical files. 3) Keep one backup disconnected from your computer at all times - ransomware cannot encrypt what it cannot reach. 4) Test your backup by restoring a file to make sure it works.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Use Restricted API Keys</div><span class="pill pill-orange">ADVANCED</span></div>
+<div class="card-desc">When connecting services, always create API keys with the minimum permissions needed. If a key only needs to read data, do not give it write access. If it only needs access to one project, do not give it access to everything.</div>
+<div class="card-desc" style="color:#00c896">EXAMPLES: Stripe - use restricted keys that can only create products, not access customer data. GitHub - use fine-grained tokens scoped to specific repos. Google - use service accounts with only the APIs enabled that you need. If a restricted key gets stolen, the damage is limited.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Monitor for Breaches</div><span class="pill pill-orange">ADVANCED</span></div>
+<div class="card-desc">Even with perfect security, the services you use get breached. When LinkedIn or Adobe or any other company gets hacked, your email and password from that site are now floating around the dark web.</div>
+<div class="card-desc" style="color:#00c896">HOW: 1) Go to haveibeenpwned.com and enter your email. It tells you which breaches your email appeared in. 2) Change passwords for any breached accounts immediately. 3) Sign up for alerts so you get notified of future breaches. 4) This is why unique passwords matter - if you reused the breached password, every account is compromised.</div>
+</div>
+<div class="skill-card">
+<div class="card-top"><div class="card-title">Secure Your Telegram Bots</div><span class="pill pill-orange">ADVANCED</span></div>
+<div class="card-desc">Your Telegram bots have access to your AI agents. If someone gets your bot token, they can send commands to your agent. That means they could potentially access your files, APIs, and services.</div>
+<div class="card-desc" style="color:#00c896">HOW: 1) Set ALLOWED_USER in your .env so only your Telegram ID can send commands. 2) Never share bot tokens publicly. 3) If a token leaks, revoke it with @BotFather immediately (/revoke). 4) Use separate bots for separate clients - never share a bot across businesses.</div>
+</div>
+</div></div>
+
+<div class="section" style="margin-top:32px"><div class="section-header"><div class="section-title">&#9632; Emergency Response <span style="color:#888">// If You Get Hacked</span></div></div>
+<div class="case-card" style="border-color:#ff4444">
+<h4 style="color:#ff4444">If You Think You Have Been Compromised</h4>
+<p>1. DO NOT PANIC. Panicking leads to mistakes.<br>
+2. Change your email password FIRST (email is the master key to everything).<br>
+3. Enable 2FA on your email if you have not already.<br>
+4. Revoke all API keys and tokens you think are compromised. Generate new ones.<br>
+5. Check your bank and Stripe for unauthorized transactions.<br>
+6. Change passwords on all financial accounts.<br>
+7. Check GitHub for any unauthorized commits or access.<br>
+8. Run a malware scan (Malwarebytes free scan).<br>
+9. If client data was accessed, notify them immediately - transparency builds trust.<br>
+10. After everything is secured, figure out HOW it happened so it does not happen again.</p>
+</div>
+</div>
+
 </div>
 
 </div><!-- container -->
