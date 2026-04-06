@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d0d0d;--card:#141414;--card2:#1a1a1a;--border:#2a2a2a;--accent:#e87a2e;--text:#ffffff;--dim:#888888;--dimmer:#555555}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
+.nav-brand span{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+.nav-links{display:flex;gap:6px}
+.nav-links a{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:8px 16px;border-radius:6px;transition:all 0.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{color:var(--accent);background:rgba(232,122,46,0.1)}
+.nav-level{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
+.nav-level span{color:var(--accent)}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:24px 32px}
+
+/* TOP BAR */
+.top-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px}
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.status-card .label{font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.status-card .value{font-size:22px;font-weight:800}
+.status-card .value span{color:var(--accent)}
+.status-card .bar-track{height:4px;background:#222;border-radius:2px;margin-top:10px;overflow:hidden}
+.status-card .bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s}
+.status-card .sub{font-size:11px;color:var(--dimmer);margin-top:6px;font-family:'JetBrains Mono',monospace}
+
+/* PILLS */
+.pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.pill-orange{background:var(--accent);color:#0d0d0d}
+.pill-outline{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.pill-done{background:rgba(0,200,150,0.15);color:#00c896}
+.pill-locked{background:rgba(255,255,255,0.05);color:#444}
+
+/* SECTION */
+.section{margin-bottom:32px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim)}
+.section-title span{color:var(--accent)}
+.section-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dimmer)}
+
+/* SKILL GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.skill-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;transition:all 0.15s;cursor:pointer;position:relative}
+.skill-card:hover{border-color:#3a3a3a;transform:translateY(-1px)}
+.skill-card .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.skill-card .card-title{font-size:15px;font-weight:700;color:var(--text)}
+.skill-card .card-desc{font-size:13px;color:var(--dim);line-height:1.5;margin-bottom:14px}
+.skill-card .card-bottom{display:flex;align-items:center;justify-content:space-between}
+.skill-card .card-xp{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)}
+.skill-card .card-btn{background:none;border:1px solid var(--border);color:var(--dim);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.2s}
+.skill-card .card-btn:hover{border-color:var(--accent);color:var(--accent)}
+.skill-card .card-btn.done{border-color:#00c896;color:#00c896;background:rgba(0,200,150,0.08)}
+.skill-card .cmd{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px;overflow-x:auto}
+.skill-card .cmd code{flex:1;white-space:nowrap}
+.skill-card .cmd button{background:var(--accent);color:#0d0d0d;border:none;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+
+/* CASE STUDIES */
+.case-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px}
+.case-card h4{font-size:16px;font-weight:700;margin-bottom:4px}
+.case-card .case-tag{margin-bottom:10px}
+.case-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+/* TIP */
+.tip-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px}
+.tip-card .tip-icon{font-size:20px}
+.tip-card .tip-label{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.tip-card .tip-text{font-size:13px;color:var(--dim);line-height:1.5}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+.top-bar{grid-template-columns:1fr}
+.grid{grid-template-columns:1fr}
+.nav{padding:12px 16px;flex-wrap:wrap;gap:10px}
+.nav-links{overflow-x:auto;flex-wrap:nowrap}
+.container{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-brand"><div class="dot"></div><span>Claude Code OS</span></div>
+<div class="nav-links">
+<a href="#" class="active" data-page="dashboard">Dashboard</a>
+<a href="#" data-page="modules">Modules</a>
+<a href="#" data-page="skills">Skills</a>
+<a href="#" data-page="cases">Case Studies</a>
+</div>
+<div class="nav-level">LEVEL <span id="lvlNum">1</span> // <span id="xpDisplay">0</span> XP</div>
+</nav>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<div class="page active" id="pg-dashboard">
+
+<div class="tip-card">
+<div class="tip-icon">&#9889;</div>
+<div><div class="tip-label">System Status</div><div class="tip-text" id="tipText">SYSTEM READY // All modules operational. Begin with Module 1 to start your journey.</div></div>
+</div>
+
+<div class="top-bar">
+<div class="status-card">
+<div class="label">Progress</div>
+<div class="value"><span id="pctDone">0</span>%</div>
+<div class="bar-track"><div class="bar-fill" id="mainBar" style="width:0%"></div></div>
+<div class="sub" id="skillsDone">0 / 40 SKILLS COMPLETE</div>
+</div>
+<div class="status-card">
+<div class="label">Current Level</div>
+<div class="value"><span id="lvlName">ROOKIE</span></div>
+<div class="bar-track"><div class="bar-fill" id="lvlBar" style="width:0%"></div></div>
+<div class="sub" id="lvlSub">0 / 100 XP TO NEXT LEVEL</div>
+</div>
+<div class="status-card">
+<div class="label">Next Module</div>
+<div class="value" style="font-size:16px" id="nextModule">Module 1: How to Begin</div>
+<div style="margin-top:12px"><a href="#" onclick="showPage('modules');return false" style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none">Resume Session &#8594;</a></div>
+</div>
+</div>
+
+<div class="section-header"><div class="section-title"><span>&#9632;</span> Achievements</div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px" id="badges">
+<span class="pill pill-locked">FIRST BOOT</span>
+<span class="pill pill-locked">SKILL HUNTER</span>
+<span class="pill pill-locked">IMAGE MAKER</span>
+<span class="pill pill-locked">VOICE MASTER</span>
+<span class="pill pill-locked">AGENT OPERATOR</span>
+<span class="pill pill-locked">INTEGRATOR</span>
+<span class="pill pill-locked">GOD TIER</span>
+</div>
+
+<div class="section-header"><div class="section-title"><span>&#9632;</span> Recent Activity</div></div>
+<div id="activity" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dimmer);line-height:2">
+<div>// No activity yet. Complete your first skill to begin.</div>
+</div>
+
+</div>
+
+<!-- MODULES -->
+<div class="page" id="pg-modules">
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 1 // <span>How to Begin</span></div><div class="section-count" id="cnt-m1">0/4</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="10" data-id="install"><div class="card-top"><div class="card-title">Install Claude Code</div><span class="pill pill-orange">START</span></div><div class="card-desc">One command to install the most powerful AI coding assistant on your machine.</div><div class="cmd"><code>curl -fsSL https://claude.ai/install | sh</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="10" data-id="apikey"><div class="card-top"><div class="card-title">Get Your API Key</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Sign up at console.anthropic.com, create an API key, and add credits.</div><div class="cmd"><code>https://console.anthropic.com</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="10" data-id="firstrun"><div class="card-top"><div class="card-title">First Run</div><span class="pill pill-outline">SETUP</span></div><div class="card-desc">Open Terminal, type claude, and have your first conversation. Feel the power.</div><div class="cmd"><code>claude</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+10 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="claudemd"><div class="card-top"><div class="card-title">Create CLAUDE.md</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Your AI's instruction manual. It reads this at every session start. This is where the magic begins.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 2 // <span>Foundation</span></div><div class="section-count" id="cnt-m2">0/5</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="15" data-id="memory"><div class="card-top"><div class="card-title">Memory System</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">How Claude remembers across sessions. User prefs, project context, feedback - it all persists.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="skills"><div class="card-top"><div class="card-title">Understanding Skills</div><span class="pill pill-outline">CORE</span></div><div class="card-desc">Downloadable instruction sets that teach Claude new abilities. Drop in ~/.claude/skills/ and go.</div><div class="cmd"><code>ls ~/.claude/skills/</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="hooks"><div class="card-top"><div class="card-title">Hooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Shell commands that fire automatically on events. Pre-commit checks, auto-formatting, permission controls.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="15" data-id="mcp"><div class="card-top"><div class="card-title">MCP Servers</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Model Context Protocol servers give Claude new tools. Search GitHub, query databases, control browsers.</div><div class="card-bottom"><span class="card-xp">+15 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="nanobanana"><div class="card-top"><div class="card-title">Nano Banana (Image Gen)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Generate unlimited images from text for free using Google Gemini. Your first real superpower.</div><div class="cmd"><code>git clone https://github.com/guinacio/claude-image-gen.git ~/.claude/skills/claude-image-gen</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 3 // <span>Creator Powers</span></div><div class="section-count" id="cnt-m3">0/6</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="20" data-id="imgedit"><div class="card-top"><div class="card-title">Image Editing & Face Swap</div><span class="pill pill-outline">CREATIVE</span></div><div class="card-desc">Take a reference photo and transform it into any scene while keeping their exact face.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="elevenlabs"><div class="card-top"><div class="card-title">ElevenLabs Voiceover</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Professional AI voiceovers. Hundreds of voices or clone your own.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="edgetts"><div class="card-top"><div class="card-title">Edge TTS (Free Voice)</div><span class="pill pill-orange">FREE</span></div><div class="card-desc">Microsoft Edge TTS. Completely free, unlimited, great quality. The budget voiceover move.</div><div class="cmd"><code>pip3 install edge-tts</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="vidpipe"><div class="card-top"><div class="card-title">Video Production Pipeline</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Image → Kling 3.0 animation → voiceover → deliver. One prompt produces an entire video package.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="yttranscript"><div class="card-top"><div class="card-title">YouTube Transcription</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">Pull transcripts from any video or entire channel. 238K words became a 15K word sales bible.</div><div class="cmd"><code>pip3 install youtube-transcript-api</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="20" data-id="social"><div class="card-top"><div class="card-title">Social Media Content</div><span class="pill pill-outline">CONTENT</span></div><div class="card-desc">Captions, carousels, hashtags, posting schedules. Content that sounds human, not AI.</div><div class="card-bottom"><span class="card-xp">+20 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 4 // <span>Automation</span></div><div class="section-count" id="cnt-m4">0/5</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="25" data-id="crons"><div class="card-top"><div class="card-title">Cron Jobs & /loop</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Schedule recurring tasks. Check APIs every 5 minutes, run scrapers daily, send reports weekly.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="multiagent"><div class="card-top"><div class="card-title">Multi-Agent Architecture</div><span class="pill pill-orange">ADVANCED</span></div><div class="card-desc">Spawn separate agents with their own Telegram bots, instructions, and skills. One Mac, 10 AI employees.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="40" data-id="cortexos"><div class="card-top"><div class="card-title">CortexOS (24/7 Agents)</div><span class="pill pill-orange">SUPERPOWER</span></div><div class="card-desc">Persistent sessions, crash recovery, auto-restart, Telegram control. Your AI never goes offline.</div><div class="cmd"><code>git clone https://github.com/grandaenium/claude-remote-manager.git</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="telegram"><div class="card-top"><div class="card-title">Remote Control (Telegram)</div><span class="pill pill-outline">CONTROL</span></div><div class="card-desc">Message your agent from your phone. Send tasks, receive results, get alerts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="playwright"><div class="card-top"><div class="card-title">Browser Automation</div><span class="pill pill-outline">ADVANCED</span></div><div class="card-desc">Control a real browser with Playwright. Automate web UIs, fill forms, scrape JS-heavy sites.</div><div class="cmd"><code>pip3 install playwright && playwright install</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 5 // <span>Integration</span></div><div class="section-count" id="cnt-m5">0/7</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="25" data-id="gdrive"><div class="card-top"><div class="card-title">Google Drive API</div><span class="pill pill-outline">INTEGRATION</span></div><div class="card-desc">Create folders, upload files, organize deliverables automatically.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="stripe"><div class="card-top"><div class="card-title">Stripe (Payments)</div><span class="pill pill-outline">REVENUE</span></div><div class="card-desc">Create products, generate payment links, process transactions. Claude becomes billing.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="perplexity"><div class="card-top"><div class="card-title">Perplexity (Live Search)</div><span class="pill pill-orange">INTELLIGENCE</span></div><div class="card-desc">Real-time web search with citations. The internet at Claude's fingertips.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="twilio"><div class="card-top"><div class="card-title">Twilio (SMS & Calls)</div><span class="pill pill-outline">COMMS</span></div><div class="card-desc">Send texts, make phone calls, auto-respond. Claude can literally call your clients.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="zapier"><div class="card-top"><div class="card-title">Zapier / Make Webhooks</div><span class="pill pill-outline">AUTOMATION</span></div><div class="card-desc">Connect to 5,000+ apps. Triggers fire, Claude acts.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="25" data-id="airtable"><div class="card-top"><div class="card-title">Airtable (Database)</div><span class="pill pill-outline">DATA</span></div><div class="card-desc">A real database Claude reads and writes. Track clients, manage projects, persist data forever.</div><div class="card-bottom"><span class="card-xp">+25 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="30" data-id="whisper"><div class="card-top"><div class="card-title">Whisper (Transcription)</div><span class="pill pill-outline">AUDIO</span></div><div class="card-desc">Transcribe any audio or video locally. Podcasts, meetings, voice memos to searchable text.</div><div class="card-bottom"><span class="card-xp">+30 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-header"><div class="section-title">Module 6 // <span>Mastery</span></div><div class="section-count" id="cnt-m6">0/4</div></div>
+<div class="grid">
+<div class="skill-card" data-xp="40" data-id="customskills"><div class="card-top"><div class="card-title">Build Custom Skills</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Write your own skills. Package them for others. Every workflow becomes a downloadable superpower.</div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="40" data-id="vectordb"><div class="card-top"><div class="card-title">Vector DB + RAG Memory</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">True semantic search across everything. Infinite memory with local SQLite vectors.</div><div class="cmd"><code>git clone https://github.com/codenamev/claude_memory.git ~/.claude/claude_memory</code><button onclick="copyCmd(this)">COPY</button></div><div class="card-bottom"><span class="card-xp">+40 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="50" data-id="prodpipe"><div class="card-top"><div class="card-title">Production Pipelines</div><span class="pill pill-orange">MASTERY</span></div><div class="card-desc">Batch processing at scale. 60 images, 60 videos, 10 voiceovers, organized and delivered. One prompt.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+<div class="skill-card" data-xp="50" data-id="selling"><div class="card-top"><div class="card-title">Sell AI Services</div><span class="pill pill-orange">REVENUE</span></div><div class="card-desc">Build agents for clients at $10K each. Your Claude builds their Claude. Recurring revenue.</div><div class="card-bottom"><span class="card-xp">+50 XP</span><button class="card-btn" onclick="complete(this)">MARK DONE</button></div></div>
+</div>
+</div>
+
+</div><!-- modules -->
+
+<!-- SKILLS (same as modules but flat) -->
+<div class="page" id="pg-skills">
+<div class="section-header"><div class="section-title"><span>&#9632;</span> All Skills</div><div class="section-count" id="totalSkills">0 / 31 complete</div></div>
+<div style="margin-bottom:16px"><input type="text" id="skillSearch" placeholder="Search skills..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--text);font-size:14px;outline:none;font-family:'Inter',sans-serif" oninput="filterSkills(this.value)"></div>
+<div class="grid" id="allSkillsGrid"></div>
+</div>
+
+<!-- CASE STUDIES -->
+<div class="page" id="pg-cases">
+<div class="section-header"><div class="section-title"><span>&#9632;</span> Real Stories</div></div>
+<div class="case-card"><div class="case-tag"><span class="pill pill-orange">PROPOSAL</span></div><h4>The CyberFOX Proposal</h4><p>A $500M cybersecurity company needed an AI operations proposal. The agent researched the entire company — products, leadership, financials, tech stack — then wrote a 25-page department-by-department automation plan with ROI estimates. Total time: 10 minutes. Positioned a $10K service delivering $2-5M in annual savings.</p></div>
+<div class="case-card"><div class="case-tag"><span class="pill pill-orange">CONTENT</span></div><h4>The Peptide Bible</h4><p>28 YouTube video transcripts (238,000 words) from a peptide expert were processed, voice-analyzed, and synthesized into a 15,685-word sales training manual — written in the expert's exact voice. 16 peptide chapters, dosing protocols, objection handlers, and a sales rep cheat sheet.</p></div>
+<div class="case-card"><div class="case-tag"><span class="pill pill-orange">VIDEO</span></div><h4>10 Videos Overnight</h4><p>10 cinematic video scripts, 60 source images (Nano Banana), 60 video clips (Kling 3.0), 10 voiceovers (ElevenLabs), 10 Instagram captions, all organized in labeled folders. Produced autonomously while the client slept.</p></div>
+<div class="case-card"><div class="case-tag"><span class="pill pill-orange">OPERATIONS</span></div><h4>The 24/7 Employee</h4><p>Mr. Hudson runs non-stop in a tmux session. Responds to Telegram in real time, generates images and videos, writes proposals, manages Google Drive, processes Stripe payments, runs scrapers, builds code — all without supervision. One Mac. One agent. Infinite output.</p></div>
+</div>
+
+</div><!-- container -->
+
+<script>
+const LEVELS=[{n:'ROOKIE',xp:0},{n:'APPRENTICE',xp:100},{n:'BUILDER',xp:250},{n:'ARCHITECT',xp:500},{n:'OPERATOR',xp:800},{n:'GOD TIER',xp:1200}];
+let done=JSON.parse(localStorage.getItem('ccos_done')||'{}');
+let activity=JSON.parse(localStorage.getItem('ccos_activity')||'[]');
+
+function getXP(){return Object.values(done).reduce((a,b)=>a+b,0)}
+function getLvl(){let x=getXP();for(let i=LEVELS.length-1;i>=0;i--)if(x>=LEVELS[i].xp)return{...LEVELS[i],idx:i};return{...LEVELS[0],idx:0}}
+function getNext(){let l=getLvl();return LEVELS[l.idx+1]||LEVELS[LEVELS.length-1]}
+
+function updateUI(){
+let xp=getXP(),lv=getLvl(),nx=getNext(),total=document.querySelectorAll('.skill-card').length;
+let doneCount=Object.keys(done).length;
+document.getElementById('xpDisplay').textContent=xp;
+document.getElementById('lvlNum').textContent=lv.idx+1;
+document.getElementById('lvlName').textContent=lv.n;
+document.getElementById('pctDone').textContent=Math.round(doneCount/total*100);
+document.getElementById('mainBar').style.width=Math.round(doneCount/total*100)+'%';
+document.getElementById('skillsDone').textContent=doneCount+' / '+total+' SKILLS COMPLETE';
+document.getElementById('totalSkills').textContent=doneCount+' / '+total+' complete';
+let pctLvl=nx.xp>lv.xp?Math.round((xp-lv.xp)/(nx.xp-lv.xp)*100):100;
+document.getElementById('lvlBar').style.width=pctLvl+'%';
+document.getElementById('lvlSub').textContent=xp+' / '+nx.xp+' XP TO NEXT LEVEL';
+// Module counts
+['m1','m2','m3','m4','m5','m6'].forEach(m=>{
+let el=document.getElementById('cnt-'+m);if(!el)return;
+let sec=el.closest('.section');if(!sec)return;
+let cards=sec.querySelectorAll('.skill-card');
+let d=0;cards.forEach(c=>{if(done[c.dataset.id])d++});
+el.textContent=d+'/'+cards.length;
+});
+// Mark done buttons
+document.querySelectorAll('.skill-card').forEach(c=>{
+if(done[c.dataset.id]){let b=c.querySelector('.card-btn');if(b){b.classList.add('done');b.textContent='COMPLETE'}}
+});
+// Badges
+let badges=document.getElementById('badges');if(badges){
+let pills=badges.querySelectorAll('.pill');
+if(doneCount>=1)pills[0].className='pill pill-done';
+if(doneCount>=5)pills[1].className='pill pill-done';
+if(done['nanobanana']||done['imgedit'])pills[2].className='pill pill-done';
+if(done['elevenlabs']||done['edgetts'])pills[3].className='pill pill-done';
+if(done['cortexos']||done['multiagent'])pills[4].className='pill pill-done';
+if(done['stripe']||done['gdrive']||done['zapier'])pills[5].className='pill pill-done';
+if(xp>=1200)pills[6].className='pill pill-done';
+}
+// Activity
+let actEl=document.getElementById('activity');
+if(activity.length>0){actEl.innerHTML=activity.slice(-8).reverse().map(a=>'<div>// '+a+'</div>').join('')}
+// Next module
+let nm=document.getElementById('nextModule');
+if(doneCount>=31)nm.textContent='ALL MODULES COMPLETE';
+else if(doneCount>=27)nm.textContent='Module 6: Mastery';
+else if(doneCount>=20)nm.textContent='Module 5: Integration';
+else if(doneCount>=15)nm.textContent='Module 4: Automation';
+else if(doneCount>=9)nm.textContent='Module 3: Creator Powers';
+else if(doneCount>=4)nm.textContent='Module 2: Foundation';
+else nm.textContent='Module 1: How to Begin';
+}
+
+function complete(btn){
+let card=btn.closest('.skill-card'),id=card.dataset.id,xp=parseInt(card.dataset.xp);
+if(done[id])return;
+let oldLvl=getLvl();
+done[id]=xp;
+localStorage.setItem('ccos_done',JSON.stringify(done));
+activity.push(card.querySelector('.card-title').textContent+' completed (+'+xp+' XP)');
+localStorage.setItem('ccos_activity',JSON.stringify(activity));
+btn.classList.add('done');btn.textContent='COMPLETE';
+let newLvl=getLvl();
+if(newLvl.n!==oldLvl.n)showToast('LEVEL UP: '+newLvl.n);
+updateUI();
+}
+
+function copyCmd(btn){let c=btn.parentElement.querySelector('code').textContent;navigator.clipboard.writeText(c);btn.textContent='OK';setTimeout(()=>btn.textContent='COPY',1500)}
+function showPage(p){document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));document.getElementById('pg-'+p).classList.add('active');document.querySelectorAll('.nav-links a').forEach(a=>{a.classList.remove('active');if(a.dataset.page===p)a.classList.add('active')})}
+function showToast(msg){let t=document.createElement('div');t.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 28px;border-radius:8px;font-weight:700;font-size:13px;z-index:9999;letter-spacing:0.1em';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500)}
+
+// Skills page - clone all cards
+function buildSkillsPage(){
+let grid=document.getElementById('allSkillsGrid');
+document.querySelectorAll('#pg-modules .skill-card').forEach(c=>{let cl=c.cloneNode(true);cl.querySelector('.card-btn').onclick=function(){complete(this)};let cb=cl.querySelector('.cmd button');if(cb)cb.onclick=function(){copyCmd(this)};grid.appendChild(cl)});
+}
+function filterSkills(q){
+q=q.toLowerCase();
+document.querySelectorAll('#allSkillsGrid .skill-card').forEach(c=>{
+let t=(c.querySelector('.card-title').textContent+' '+c.querySelector('.card-desc').textContent).toLowerCase();
+c.style.display=t.includes(q)?'':'none';
+});
+}
+
+// Nav clicks
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.page)}));
+
+// Tips rotation
+const TIPS=["SYSTEM READY // All modules operational.","TIP // Skills are markdown files in ~/.claude/skills/","TIP // Use /loop 5m to automate recurring tasks","TIP // Nano Banana image gen is completely free","TIP // CLAUDE.md loads at every session start","TIP // Edge TTS gives you free unlimited voiceover","TIP // You can spawn multiple agents via Telegram bots","TIP // MCP servers extend Claude with new capabilities"];
+let tipIdx=0;setInterval(()=>{tipIdx=(tipIdx+1)%TIPS.length;document.getElementById('tipText').textContent=TIPS[tipIdx]},8000);
+
+buildSkillsPage();
+updateUI();
+</script>
+</body>
+</html>
