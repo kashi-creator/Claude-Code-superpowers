@@ -1059,6 +1059,27 @@ const SKILLS = {
       story: 'Telegram becomes your remote control. Send commands from your phone, get notifications about completed tasks, check status - all from anywhere in the world.',
       steps: ['Create a bot via @BotFather on Telegram', 'Get your bot token and chat ID', 'Set up send/receive message scripts', 'Configure in .env file', 'Use for notifications, commands, and monitoring', 'Integrate with Claude Remote Manager'],
       tip: 'Set ALLOWED_USER to restrict your bot to only your Telegram account.'
+    },
+    {
+      id: 'higgsfield-automation',
+      icon: '\uD83C\uDFA8',
+      name: 'Higgsfield AI Image Automation',
+      desc: 'Automate AI image generation at scale using Higgsfield + Playwright.',
+      difficulty: 'advanced',
+      xp: 300,
+      install: 'pip install playwright requests && playwright install chromium',
+      story: 'Higgsfield is one of the most powerful AI image generators available. But clicking Generate one image at a time? That is manual labor. With Playwright, you turn it into a factory. Feed it 50 prompts, walk away, come back to 50 cinematic images. This is how you build a content library overnight.',
+      steps: [
+        'Step 1: Create a persistent browser profile to save your login session. Run the login script once and authenticate with Google manually. The session saves to ~/.hf-profile so you never log in again.',
+        'Step 2: Launch Playwright with stealth flags to avoid bot detection. Key flags: --disable-blink-features=AutomationControlled, ignore_default_args=["--enable-automation"], and delete navigator.webdriver.',
+        'Step 3: Navigate to higgsfield.ai/image. The page loads as a single-page app so use wait_until="domcontentloaded" with an 8-second buffer.',
+        'Step 4: Switch models by clicking the model selector in the bottom bar. Soul 2.0 for character-locked images, Seeddream 5.0 Lite for unlimited general images. IMPORTANT: Model switching via automation is unreliable. Switch manually before running the batch.',
+        'Step 5: For each prompt - clear the textbox with Cmd+A then Backspace, type the prompt, click Generate, wait for completion by polling the Generate button disabled state, then download the result.',
+        'Step 6: Download generated images by finding img elements with naturalWidth > 400 and extracting their src URLs. Save to a local folder with descriptive filenames.',
+        'Step 7: Store all prompts in a JSON file (prompts + names arrays) and load them at runtime. This makes it easy to swap prompt batches without editing code.',
+        'Step 8: Add "no text, no words, no letters, no numbers, no watermarks, no logos, no signs" to every prompt to prevent AI text hallucination in images.'
+      ],
+      tip: 'The biggest gotcha: Higgsfield uses a contenteditable div for the prompt bar, not a regular input. Clear it with Cmd+A + Backspace, not by setting .value. Also: always close Chrome completely before running Playwright, or the profile lock will prevent the automation from launching.'
     }
   ],
   module5: [
