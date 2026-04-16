@@ -1405,15 +1405,35 @@ body {
     { name: 'Security',       href: '#security' },
   ];
 
-  // ---- RENDERER ----
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.6;
-  wrapper.insertBefore(renderer.domElement, wrapper.firstChild);
+  // ---- RENDERER (with WebGL fallback) ----
+  let renderer;
+  try {
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+    if (!gl) throw new Error('WebGL not available');
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.6;
+    wrapper.insertBefore(renderer.domElement, wrapper.firstChild);
+  } catch(e) {
+    // Fallback: show a clickable image map instead of 3D
+    wrapper.innerHTML = `
+      <div style="min-height:100vh;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;">
+        <img src="fox_mascot.png" style="width:120px;height:120px;margin-bottom:24px;border-radius:50%;border:2px solid #C9A84C;">
+        <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:#F5F5F0;margin-bottom:16px;">The Library of Superpowers</h1>
+        <p style="color:#777;margin-bottom:40px;max-width:480px;">Your browser doesn't support the 3D world. Here are your module portals:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;max-width:800px;width:100%;">
+          ${PORTALS.map(p => `<a href="${p.href}" style="display:block;padding:24px;border:1px solid #1A1A1A;text-decoration:none;transition:all 0.3s;text-align:center;" onmouseover="this.style.borderColor='#C9A84C'" onmouseout="this.style.borderColor='#1A1A1A'"><div style="font-size:1.5rem;margin-bottom:8px;">${p.icon || '📚'}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#C9A84C;">${p.name}</div></a>`).join('')}
+        </div>
+        <a href="#getting-started" style="margin-top:32px;padding:14px 40px;border:1px solid #C9A84C;color:#C9A84C;text-decoration:none;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;">Skip to Lessons</a>
+      </div>`;
+    return; // Don't run the rest of the 3D code
+  }
 
   // ---- SCENE ----
   const scene = new THREE.Scene();
