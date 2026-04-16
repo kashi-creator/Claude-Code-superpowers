@@ -1406,11 +1406,129 @@ body {
   const ROOM_H = 10;   // height (y)
   const WALL_THICK = 0.5;
 
+  // ---- SHADER CHUNKS ----
+  const psychedelicVertexShader = `
+    varying vec2 vUv;
+    varying vec3 vWorldPos;
+    void main() {
+      vUv = uv;
+      vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  // Psychedelic wall shader - fractal-like shifting patterns
+  const wallFragShader = `
+    uniform float uTime;
+    varying vec2 vUv;
+    varying vec3 vWorldPos;
+    vec3 palette(float t) {
+      vec3 a = vec3(0.08, 0.02, 0.1);
+      vec3 b = vec3(0.15, 0.12, 0.18);
+      vec3 c = vec3(1.0, 1.0, 1.0);
+      vec3 d = vec3(0.0, 0.33, 0.67);
+      return a + b * cos(6.28318 * (c * t + d));
+    }
+    void main() {
+      vec2 p = vWorldPos.yz * 0.4;
+      float t = uTime * 0.3;
+      float v = 0.0;
+      for (int i = 0; i < 4; i++) {
+        p = abs(p) / dot(p, p) - 0.8;
+        p = p * 1.5 + vec2(sin(t + float(i)), cos(t * 0.7 + float(i)));
+        v += length(p) * 0.15;
+      }
+      vec3 col = palette(v + t * 0.2) * 0.35;
+      // Hex grid overlay
+      vec2 h = vWorldPos.yz * 1.5;
+      float hx = abs(fract(h.x + h.y * 0.577) - 0.5);
+      float hy = abs(fract(h.y * 1.1547) - 0.5);
+      float hex = smoothstep(0.02, 0.04, min(hx, hy));
+      col *= 0.6 + hex * 0.4;
+      col *= 0.7; // keep moody
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  // Psychedelic floor shader - mandala pattern
+  const floorFragShader = `
+    uniform float uTime;
+    varying vec2 vUv;
+    varying vec3 vWorldPos;
+    vec3 palette(float t) {
+      vec3 a = vec3(0.1, 0.05, 0.08);
+      vec3 b = vec3(0.2, 0.15, 0.2);
+      vec3 c = vec3(1.0, 1.0, 0.8);
+      vec3 d = vec3(0.3, 0.2, 0.0);
+      return a + b * cos(6.28318 * (c * t + d));
+    }
+    void main() {
+      vec2 p = vWorldPos.xz * 0.3;
+      float r = length(p);
+      float a = atan(p.y, p.x);
+      float t = uTime * 0.25;
+      // Mandala rings
+      float rings = sin(r * 8.0 - t * 2.0) * 0.5 + 0.5;
+      // Petal pattern
+      float petals = sin(a * 6.0 + r * 3.0 - t) * 0.5 + 0.5;
+      // Sacred geometry hex
+      float hex = sin(p.x * 4.0 + sin(p.y * 4.0 + t)) * sin(p.y * 4.0 + sin(p.x * 4.0 - t));
+      float pattern = rings * 0.4 + petals * 0.3 + hex * 0.3;
+      vec3 col = palette(pattern + t * 0.15) * 0.4;
+      // Gold-tinted center line glow
+      float centerGlow = exp(-abs(vWorldPos.x) * 0.8) * 0.15;
+      col += vec3(0.78, 0.66, 0.3) * centerGlow;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  // Psychedelic ceiling shader - cosmic fractal void
+  const ceilingFragShader = `
+    uniform float uTime;
+    varying vec2 vUv;
+    varying vec3 vWorldPos;
+    void main() {
+      vec2 p = vWorldPos.xz * 0.2;
+      float t = uTime * 0.15;
+      float v = 0.0;
+      vec2 q = p;
+      for (int i = 0; i < 5; i++) {
+        q = vec2(q.x * cos(t) - q.y * sin(t), q.x * sin(t) + q.y * cos(t));
+        q = abs(q) - 0.5;
+        v += sin(length(q) * 6.0 + t) * 0.2;
+      }
+      vec3 col = vec3(
+        sin(v * 3.0 + t) * 0.15 + 0.05,
+        sin(v * 3.0 + t + 2.094) * 0.1 + 0.03,
+        sin(v * 3.0 + t + 4.189) * 0.2 + 0.08
+      );
+      // Subtle star-like bright spots
+      float stars = pow(max(0.0, sin(vWorldPos.x * 5.0) * sin(vWorldPos.z * 5.0)), 20.0) * 0.5;
+      col += vec3(0.6, 0.4, 0.8) * stars;
+      gl_FragColor = vec4(max(col, vec3(0.0)), 1.0);
+    }
+  `;
+
+  // Time uniform shared by all shader materials
+  const shaderUniforms = { uTime: { value: 0.0 } };
+
   // ---- MATERIALS ----
-  const stoneMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9, metalness: 0.1 });
-  const stoneFloorMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.85, metalness: 0.05 });
+  const stoneMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: shaderUniforms.uTime },
+    vertexShader: psychedelicVertexShader,
+    fragmentShader: wallFragShader
+  });
+  const stoneFloorMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: shaderUniforms.uTime },
+    vertexShader: psychedelicVertexShader,
+    fragmentShader: floorFragShader
+  });
   const goldTrimMat = new THREE.MeshStandardMaterial({ color: 0xC9A84C, roughness: 0.3, metalness: 0.8, emissive: 0xC9A84C, emissiveIntensity: 0.05 });
-  const carpetMat = new THREE.MeshStandardMaterial({ color: 0x8B0000, roughness: 0.95, metalness: 0.0 });
+  const carpetMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: shaderUniforms.uTime },
+    vertexShader: psychedelicVertexShader,
+    fragmentShader: floorFragShader
+  });
   const darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x1a0e06, roughness: 0.8, metalness: 0.05 });
   const bookMats = [
     new THREE.MeshStandardMaterial({ color: 0x8B0000, roughness: 0.9 }),
@@ -1419,6 +1537,11 @@ body {
     new THREE.MeshStandardMaterial({ color: 0x1a2a0a, roughness: 0.9 }),
     new THREE.MeshStandardMaterial({ color: 0x2a0a1a, roughness: 0.9 }),
   ];
+  const ceilingMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: shaderUniforms.uTime },
+    vertexShader: psychedelicVertexShader,
+    fragmentShader: ceilingFragShader
+  });
 
   // ---- BUILD FLOOR ----
   function buildFloor() {
@@ -1493,7 +1616,7 @@ body {
   // ---- BUILD CEILING WITH BEAMS ----
   function buildCeiling() {
     const ceilGeo = new THREE.PlaneGeometry(ROOM_W, ROOM_L);
-    const ceil = new THREE.Mesh(ceilGeo, stoneMat);
+    const ceil = new THREE.Mesh(ceilGeo, ceilingMat);
     ceil.rotation.x = Math.PI / 2;
     ceil.position.set(0, ROOM_H, 0);
     scene.add(ceil);
@@ -1583,67 +1706,91 @@ body {
     }
   }
 
-  // ---- BUILD PORTALS ----
-  const portalData = []; // { mesh, frame, light, def, labelEl, baseZ }
+  // ---- BUILD MOUTH PORTALS ----
+  const portalData = []; // { group, mouth, eyes, light, def, labelEl, ... }
+  const portalColors = [
+    0xD3AA64, 0x9B59B6, 0x00CED1, 0xFF1493,
+    0x00FF7F, 0xD3AA64, 0x9B59B6, 0x00CED1, 0xFF1493
+  ];
   function buildPortals() {
-    // Place portals along the walls: left side gets 0-3, right side gets 4-7, back wall gets 8
     const leftPositions  = [-14, -8, -2, 5];
     const rightPositions = [-14, -8, -2, 5];
-    const portalW = 2;
-    const portalH = 3.5;
 
-    function makePortal(px, py, pz, rotY, def) {
+    function makePortal(px, py, pz, rotY, def, colorIndex) {
       const group = new THREE.Group();
+      const pColor = new THREE.Color(portalColors[colorIndex] || 0xC9A84C);
 
-      // Portal dark interior
-      const interiorGeo = new THREE.PlaneGeometry(portalW - 0.3, portalH - 0.2);
-      const interiorMat = new THREE.MeshBasicMaterial({ color: 0x020102, transparent: true, opacity: 0.95 });
+      // Face/head - slightly flattened sphere
+      const headGeo = new THREE.SphereGeometry(1.8, 24, 20);
+      const headMat = new THREE.MeshStandardMaterial({
+        color: 0x1a1018, roughness: 0.7, metalness: 0.3,
+        emissive: pColor, emissiveIntensity: 0.03
+      });
+      const head = new THREE.Mesh(headGeo, headMat);
+      head.scale.set(1.0, 1.2, 0.6);
+      head.position.set(0, 2.4, 0);
+      head.castShadow = true;
+      group.add(head);
+
+      // Mouth opening - torus ring (lips)
+      const mouthGeo = new THREE.TorusGeometry(0.7, 0.15, 12, 24);
+      const mouthMat = new THREE.MeshStandardMaterial({
+        color: 0x3a0a1a, roughness: 0.5, metalness: 0.2,
+        emissive: pColor, emissiveIntensity: 0.05
+      });
+      const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+      mouth.position.set(0, 1.6, 0.95);
+      mouth.scale.set(1.0, 0.6, 1.0); // oval mouth shape
+      group.add(mouth);
+
+      // Mouth interior glow plane (visible through the opening)
+      const interiorGeo = new THREE.CircleGeometry(0.55, 20);
+      const interiorMat = new THREE.MeshBasicMaterial({
+        color: pColor, transparent: true, opacity: 0.0
+      });
       const interior = new THREE.Mesh(interiorGeo, interiorMat);
-      interior.position.set(0, portalH / 2 + 0.5, 0.02);
+      interior.position.set(0, 1.6, 0.8);
       group.add(interior);
 
-      // Gold wireframe border
-      const frameShape = new THREE.Shape();
-      const hw = portalW / 2, hh = portalH / 2;
-      frameShape.moveTo(-hw, -hh);
-      frameShape.lineTo(-hw, hh - 0.5);
-      frameShape.quadraticCurveTo(-hw, hh + 0.3, 0, hh + 0.5);
-      frameShape.quadraticCurveTo(hw, hh + 0.3, hw, hh - 0.5);
-      frameShape.lineTo(hw, -hh);
-      frameShape.lineTo(-hw, -hh);
+      // Upper lip accent
+      const upperLipGeo = new THREE.TorusGeometry(0.72, 0.08, 8, 24, Math.PI);
+      const lipMat = new THREE.MeshStandardMaterial({
+        color: 0x4a1020, roughness: 0.4, metalness: 0.3,
+        emissive: pColor, emissiveIntensity: 0.08
+      });
+      const upperLip = new THREE.Mesh(upperLipGeo, lipMat);
+      upperLip.position.set(0, 2.0, 1.0);
+      upperLip.scale.set(1.0, 0.5, 1.0);
+      upperLip.rotation.x = Math.PI;
+      group.add(upperLip);
 
-      const framePoints = frameShape.getPoints(32);
-      const frameGeo = new THREE.BufferGeometry().setFromPoints(
-        framePoints.map(p => new THREE.Vector3(p.x, p.y + portalH / 2 + 0.5, 0.04))
-      );
-      const frameLine = new THREE.Line(frameGeo, new THREE.LineBasicMaterial({
-        color: 0xC9A84C, linewidth: 2, transparent: true, opacity: 0.7
-      }));
-      group.add(frameLine);
+      // Eyes - two glowing spheres
+      const eyeGeo = new THREE.SphereGeometry(0.2, 12, 10);
+      const eyeMatL = new THREE.MeshStandardMaterial({
+        color: 0xffffff, roughness: 0.2, metalness: 0.1,
+        emissive: pColor, emissiveIntensity: 0.3
+      });
+      const eyeMatR = eyeMatL.clone();
+      const eyeL = new THREE.Mesh(eyeGeo, eyeMatL);
+      eyeL.position.set(-0.55, 3.0, 0.85);
+      group.add(eyeL);
+      const eyeR = new THREE.Mesh(eyeGeo.clone(), eyeMatR);
+      eyeR.position.set(0.55, 3.0, 0.85);
+      group.add(eyeR);
 
-      // Inner glow frame
-      const innerFrameGeo = new THREE.BufferGeometry().setFromPoints(
-        framePoints.map(p => new THREE.Vector3(p.x * 0.88, p.y * 0.9 + portalH / 2 + 0.5, 0.05))
-      );
-      const innerLine = new THREE.Line(innerFrameGeo, new THREE.LineBasicMaterial({
-        color: 0xC9A84C, transparent: true, opacity: 0.25
-      }));
-      group.add(innerLine);
-
-      // Gold pillar columns on each side
-      const pillarGeo = new THREE.BoxGeometry(0.15, portalH + 0.5, 0.15);
-      const pillarL = new THREE.Mesh(pillarGeo, goldTrimMat);
-      pillarL.position.set(-hw - 0.1, (portalH + 0.5) / 2, 0);
-      pillarL.castShadow = true;
-      group.add(pillarL);
-      const pillarR = new THREE.Mesh(pillarGeo.clone(), goldTrimMat);
-      pillarR.position.set(hw + 0.1, (portalH + 0.5) / 2, 0);
-      pillarR.castShadow = true;
-      group.add(pillarR);
+      // Pupils
+      const pupilGeo = new THREE.SphereGeometry(0.1, 8, 8);
+      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const pupilL = new THREE.Mesh(pupilGeo, pupilMat);
+      pupilL.position.set(-0.55, 3.0, 1.02);
+      group.add(pupilL);
+      const pupilR = new THREE.Mesh(pupilGeo.clone(), pupilMat);
+      pupilR.position.set(0.55, 3.0, 1.02);
+      group.add(pupilR);
 
       // Point light at each portal
-      const pLight = new THREE.PointLight(0xC9A84C, 0.4, 6, 2);
-      pLight.position.set(0, portalH / 2 + 1, 1.2);
+      const pLight = new THREE.PointLight(pColor, 0.4, 6, 2);
+      pLight.position.set(0, 2.4, 1.5);
       group.add(pLight);
 
       group.position.set(px, py, pz);
@@ -1658,27 +1805,36 @@ body {
 
       portalData.push({
         group: group,
-        frameLine: frameLine,
-        innerLine: innerLine,
+        mouth: mouth,
+        mouthMat: mouthMat,
+        interiorMat: interiorMat,
+        eyeL: eyeL,
+        eyeR: eyeR,
+        eyeMatL: eyeMatL,
+        eyeMatR: eyeMatR,
+        pupilL: pupilL,
+        pupilR: pupilR,
         light: pLight,
+        pColor: pColor,
         def: def,
         labelEl: labelEl,
-        worldPos: new THREE.Vector3(px, py + portalH / 2 + 1, pz),
+        worldPos: new THREE.Vector3(px, py + 2.8, pz),
         approachPos: new THREE.Vector3(px + Math.sin(rotY) * 2.5, 0, pz + Math.cos(rotY) * 2.5),
+        rotY: rotY,
         glow: 0
       });
     }
 
     // Left wall portals (facing right, rotY = PI/2)
     for (let i = 0; i < 4; i++) {
-      makePortal(-ROOM_W / 2 + 0.3, 0, leftPositions[i], Math.PI / 2, portalDefs[i]);
+      makePortal(-ROOM_W / 2 + 0.3, 0, leftPositions[i], Math.PI / 2, portalDefs[i], i);
     }
     // Right wall portals (facing left, rotY = -PI/2)
     for (let i = 0; i < 4; i++) {
-      makePortal(ROOM_W / 2 - 0.3, 0, rightPositions[i], -Math.PI / 2, portalDefs[i + 4]);
+      makePortal(ROOM_W / 2 - 0.3, 0, rightPositions[i], -Math.PI / 2, portalDefs[i + 4], i + 4);
     }
     // Back wall portal (facing forward, rotY = 0)
-    makePortal(0, 0, -ROOM_L / 2 + 0.3, 0, portalDefs[8]);
+    makePortal(0, 0, -ROOM_L / 2 + 0.3, 0, portalDefs[8], 8);
   }
 
   // ---- BUILD FOX CHARACTER ----
@@ -1765,9 +1921,11 @@ body {
   }
 
   // ---- LIGHTING ----
+  let ambientLight;
   function setupLighting() {
-    // Ambient - very dim
+    // Ambient - very dim with pulsing
     const ambient = new THREE.AmbientLight(0x111111, 0.5);
+    ambientLight = ambient;
     scene.add(ambient);
 
     // Row of gold point lights down the hall (like chandeliers)
@@ -1798,16 +1956,20 @@ body {
     scene.add(dir);
   }
 
-  // ---- GOLD PARTICLE SYSTEM ----
+  // ---- RAINBOW PARTICLE SYSTEM ----
   let particleSystem;
   function buildParticles() {
-    const count = 300;
+    const count = 600;
     const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
     const velocities = [];
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * ROOM_W;
       positions[i * 3 + 1] = Math.random() * ROOM_H;
       positions[i * 3 + 2] = (Math.random() - 0.5) * ROOM_L;
+      colors[i * 3] = 1.0;
+      colors[i * 3 + 1] = 0.8;
+      colors[i * 3 + 2] = 0.3;
       velocities.push({
         x: (Math.random() - 0.5) * 0.005,
         y: 0.002 + Math.random() * 0.005,
@@ -1817,14 +1979,15 @@ body {
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     const mat = new THREE.PointsMaterial({
-      color: 0xC9A84C,
-      size: 0.06,
+      size: 0.07,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.6,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
-      sizeAttenuation: true
+      sizeAttenuation: true,
+      vertexColors: true
     });
     particleSystem = new THREE.Points(geo, mat);
     particleSystem.userData.velocities = velocities;
@@ -1834,6 +1997,7 @@ body {
   function updateParticles(time) {
     if (!particleSystem) return;
     const pos = particleSystem.geometry.attributes.position;
+    const col = particleSystem.geometry.attributes.color;
     const vels = particleSystem.userData.velocities;
     for (let i = 0; i < vels.length; i++) {
       let x = pos.getX(i) + vels[i].x + Math.sin(time * 0.5 + vels[i].phase) * 0.002;
@@ -1845,8 +2009,16 @@ body {
       if (z > ROOM_L / 2) z = -ROOM_L / 2;
       if (z < -ROOM_L / 2) z = ROOM_L / 2;
       pos.setXYZ(i, x, y, z);
+      // Rainbow color cycling per particle
+      const hue = (time * 0.3 + vels[i].phase + i * 0.01) % (Math.PI * 2);
+      col.setXYZ(i,
+        0.5 + 0.5 * Math.sin(hue),
+        0.5 + 0.5 * Math.sin(hue + 2.094),
+        0.5 + 0.5 * Math.sin(hue + 4.189)
+      );
     }
     pos.needsUpdate = true;
+    col.needsUpdate = true;
   }
 
   // ---- PLAYER CONTROLS ----
@@ -1920,17 +2092,40 @@ body {
     camera.position.y += (camHeight - camera.position.y) * 0.08;
     camera.lookAt(foxGroup.position.x, 1.5, foxGroup.position.z);
 
-    // Check portal proximity
+    // Check portal proximity & animate mouths + eyes
     nearPortal = null;
     let minDist = Infinity;
     for (const pd of portalData) {
       const dist = foxGroup.position.distanceTo(pd.approachPos);
-      const targetGlow = dist < 3 ? 1 : 0;
+      const targetGlow = dist < 4 ? Math.max(0, 1.0 - dist / 4.0) : 0;
       pd.glow += (targetGlow - pd.glow) * 0.06;
 
-      // Update portal visuals based on glow
-      pd.frameLine.material.opacity = 0.4 + pd.glow * 0.6;
-      pd.innerLine.material.opacity = 0.15 + pd.glow * 0.4;
+      // Mouth opens wider as fox approaches (scale Y of mouth torus)
+      const mouthOpen = 0.6 + pd.glow * 0.8;
+      pd.mouth.scale.set(1.0, mouthOpen, 1.0);
+
+      // Interior glow when mouth is open
+      pd.interiorMat.opacity = pd.glow * 0.8;
+      pd.mouthMat.emissiveIntensity = 0.05 + pd.glow * 0.4;
+
+      // Eyes glow and follow fox
+      pd.eyeMatL.emissiveIntensity = 0.3 + pd.glow * 0.7;
+      pd.eyeMatR.emissiveIntensity = 0.3 + pd.glow * 0.7;
+
+      // Pupils track fox position (in portal's local space)
+      const foxWorld = foxGroup.position.clone();
+      const portalWorld = new THREE.Vector3();
+      pd.group.getWorldPosition(portalWorld);
+      const toFox = foxWorld.clone().sub(portalWorld);
+      // Rotate toFox into portal's local frame
+      const invRot = -pd.rotY;
+      const localX = toFox.x * Math.cos(invRot) - toFox.z * Math.sin(invRot);
+      const localY = toFox.y - 3.0; // eye height offset
+      const lookX = Math.max(-0.08, Math.min(0.08, localX * 0.02));
+      const lookY = Math.max(-0.06, Math.min(0.06, localY * 0.02));
+      pd.pupilL.position.set(-0.55 + lookX, 3.0 + lookY, 1.02);
+      pd.pupilR.position.set(0.55 + lookX, 3.0 + lookY, 1.02);
+
       pd.light.intensity = 0.4 + pd.glow * 1.5;
 
       if (dist < 3 && dist < minDist) {
@@ -2065,6 +2260,15 @@ body {
   function animate() {
     requestAnimationFrame(animate);
     const time = clock.getElapsedTime();
+
+    // Update shader uniforms
+    shaderUniforms.uTime.value = time;
+
+    // Ambient light breathing/pulsing
+    if (ambientLight) {
+      ambientLight.intensity = 0.5 + Math.sin(time * 0.8) * 0.15;
+    }
+
     updateFox();
     updateParticles(time);
     updatePortalLabels();
