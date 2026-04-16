@@ -867,6 +867,72 @@ body {
   padding: 8px 12px;
 }
 
+.carousel-track {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.carousel-slide {
+  display: none;
+  animation: carouselFade 0.4s ease;
+}
+
+.carousel-slide.active {
+  display: block;
+}
+
+@keyframes carouselFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.carousel-btn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--gold);
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.carousel-btn:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s;
+}
+
+.carousel-dot.active {
+  background: var(--gold);
+}
+
 .github-link {
   display: inline-block;
   margin: 8px 0 12px;
@@ -1721,38 +1787,42 @@ const LEVELS = [
 ];
 
 // Story image mapping: skill id -> path to story slide
-const STORY_IMAGES = {
-  'install-claude': 'stories/module1/install-claude/slide_2_story.png',
-  'first-prompt': 'stories/module1/first-prompt/slide_2_story.png',
-  'understand-context': 'stories/module1/context-windows/slide_2_story.png',
-  'navigate-cli': 'stories/module1/navigate-cli/slide_2_story.png',
-  'claude-md': 'stories/module2/claude-md/slide_2_story.png',
-  'memory-system': 'stories/module2/memory-system/slide_2_story.png',
-  'custom-skills': 'stories/module2/custom-skills/slide_2_story.png',
-  'hooks': 'stories/module2/hooks/slide_2_story.png',
-  'mcp-servers': 'stories/module2/mcp-servers/slide_2_story.png',
-  'nano-banana': 'stories/module3/nano-banana/slide_2_story.png',
-  'elevenlabs': 'stories/module3/elevenlabs/slide_2_story.png',
-  'edge-tts': 'stories/module3/edge-tts/slide_2_story.png',
-  'video-pipeline': 'stories/module3/video-pipeline/slide_2_story.png',
-  'youtube-transcription': 'stories/module3/youtube-transcription/slide_2_story.png',
-  'social-media': 'stories/module3/social-media/slide_2_story.png',
-  'image-editing': 'stories/module3/image-editing/slide_2_story.png',
-  'crons': 'stories/module4/crons/slide_2_story.png',
-  'multi-agent': 'stories/module4/multi-agent/slide_2_story.png',
-  'playwright': 'stories/module4/playwright/slide_2_story.png',
-  'telegram-bot': 'stories/module4/telegram-bot/slide_2_story.png',
-  'higgsfield-automation': 'stories/module4/higgsfield-automation/slide_2_story.png',
-  'stripe': 'stories/module5/stripe/slide_2_story.png',
-  'perplexity': 'stories/module5/perplexity/slide_2_story.png',
-  'zapier': 'stories/module5/zapier/slide_2_story.png',
-  'airtable': 'stories/module5/airtable/slide_2_story.png',
-  'whisper': 'stories/module5/whisper/slide_2_story.png',
-  'vector-db': 'stories/module6/vector-db/slide_2_story.png',
-  'production-pipelines': 'stories/module6/production-pipelines/slide_2_story.png',
-  'selling-ai': 'stories/module6/selling-ai/slide_2_story.png',
-  'custom-skill-dev': 'stories/module6/custom-skill-dev/slide_2_story.png'
+// Story slide paths - each skill has 4 slides: hero, story, commands, tip
+const STORY_PATHS = {
+  'install-claude': 'stories/module1/install-claude',
+  'first-prompt': 'stories/module1/first-prompt',
+  'understand-context': 'stories/module1/context-windows',
+  'navigate-cli': 'stories/module1/navigate-cli',
+  'claude-md': 'stories/module2/claude-md',
+  'memory-system': 'stories/module2/memory-system',
+  'custom-skills': 'stories/module2/custom-skills',
+  'hooks': 'stories/module2/hooks',
+  'mcp-servers': 'stories/module2/mcp-servers',
+  'nano-banana': 'stories/module3/nano-banana',
+  'elevenlabs': 'stories/module3/elevenlabs',
+  'edge-tts': 'stories/module3/edge-tts',
+  'video-pipeline': 'stories/module3/video-pipeline',
+  'youtube-transcription': 'stories/module3/youtube-transcription',
+  'social-media': 'stories/module3/social-media',
+  'image-editing': 'stories/module3/image-editing',
+  'crons': 'stories/module4/crons',
+  'multi-agent': 'stories/module4/multi-agent',
+  'playwright': 'stories/module4/playwright',
+  'telegram-bot': 'stories/module4/telegram-bot',
+  'higgsfield-automation': 'stories/module4/higgsfield-automation',
+  'stripe': 'stories/module5/stripe',
+  'perplexity': 'stories/module5/perplexity',
+  'zapier': 'stories/module5/zapier',
+  'airtable': 'stories/module5/airtable',
+  'whisper': 'stories/module5/whisper',
+  'vector-db': 'stories/module6/vector-db',
+  'production-pipelines': 'stories/module6/production-pipelines',
+  'selling-ai': 'stories/module6/selling-ai',
+  'custom-skill-dev': 'stories/module6/custom-skill-dev'
 };
+const STORY_SLIDES = ['slide_1_hero.png', 'slide_2_story.png', 'slide_3_commands.png', 'slide_4_tip.png'];
+// Keep backward compat
+const STORY_IMAGES = Object.fromEntries(Object.entries(STORY_PATHS).map(([k,v]) => [k, v + '/slide_2_story.png']));
 
 const SKILLS = {
   module1: [
@@ -2561,6 +2631,33 @@ function copyInstall(text, btn) {
   });
 }
 
+// Carousel navigation
+function carouselNext(skillId) {
+  const container = document.getElementById('carousel-' + skillId);
+  if (!container) return;
+  const slides = container.querySelectorAll('.carousel-slide');
+  const dots = container.parentElement.querySelectorAll('.carousel-dot');
+  let current = Array.from(slides).findIndex(s => s.classList.contains('active'));
+  slides[current].classList.remove('active');
+  if (dots[current]) dots[current].classList.remove('active');
+  current = (current + 1) % slides.length;
+  slides[current].classList.add('active');
+  if (dots[current]) dots[current].classList.add('active');
+}
+
+function carouselPrev(skillId) {
+  const container = document.getElementById('carousel-' + skillId);
+  if (!container) return;
+  const slides = container.querySelectorAll('.carousel-slide');
+  const dots = container.parentElement.querySelectorAll('.carousel-dot');
+  let current = Array.from(slides).findIndex(s => s.classList.contains('active'));
+  slides[current].classList.remove('active');
+  if (dots[current]) dots[current].classList.remove('active');
+  current = (current - 1 + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  if (dots[current]) dots[current].classList.add('active');
+}
+
 function toggleCard(card) {
   card.classList.toggle('open');
 }
@@ -2679,15 +2776,29 @@ function renderSkillCard(skill) {
       <div class="skill-desc">${skill.desc}</div>
       <div class="skill-expanded">
         <div class="skill-expanded-inner">
-          <!-- Story Carousel - Fox & Turtle -->
-          <div class="story-carousel" onclick="event.stopPropagation()">
+          <!-- Story Carousel - Fox & Turtle (4 slides) -->
+          <div class="story-carousel" onclick="event.stopPropagation()" data-skill-id="${skill.id}">
             <div class="story-carousel-header">
               <span style="font-size:1.2rem;">&#x1F98A;</span>
               <span style="font-weight:600;color:var(--gold);font-size:0.85rem;letter-spacing:0.5px;">FOX & TURTLE STORY</span>
               <span style="font-size:1.2rem;">&#x1F422;</span>
             </div>
-            ${storyImageHTML}
-            <div class="story-carousel-text">${skill.story}</div>
+            ${STORY_PATHS[skill.id] ? `
+              <div class="carousel-track" id="carousel-${skill.id}">
+                ${STORY_SLIDES.map((slide, i) => `
+                  <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+                    <img src="${STORY_PATHS[skill.id]}/${slide}" alt="Slide ${i+1}" loading="lazy" style="width:100%;border-radius:8px;">
+                  </div>
+                `).join('')}
+              </div>
+              <div class="carousel-nav">
+                <button class="carousel-btn" onclick="event.stopPropagation(); carouselPrev('${skill.id}')">&#8592;</button>
+                <div class="carousel-dots">
+                  ${STORY_SLIDES.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('')}
+                </div>
+                <button class="carousel-btn" onclick="event.stopPropagation(); carouselNext('${skill.id}')">&#8594;</button>
+              </div>
+            ` : `<div class="story-carousel-text">${skill.story}</div>`}
           </div>
 
           <div class="skill-steps">
