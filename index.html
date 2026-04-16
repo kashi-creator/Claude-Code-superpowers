@@ -1361,11 +1361,34 @@ body {
   <div id="hud-controls">WASD / Arrow Keys to move &middot; ENTER to enter portal</div>
   <div id="mobile-joystick"><div id="joystick-knob"></div></div>
   <div class="mobile-enter-btn" id="mobile-enter">ENTER</div>
+  <!-- Fallback if 3D fails to load -->
+  <div id="rpg-fallback" style="display:none;position:absolute;inset:0;background:#080808;z-index:5;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:#D3AA64;margin-bottom:16px;">The Library</div>
+    <div style="color:#888;font-size:0.9rem;max-width:400px;line-height:1.7;margin-bottom:32px;">Your 3D browser doesn't support the interactive library. Scroll down to explore all the lessons below.</div>
+    <a href="#hero-section" style="color:#D3AA64;border:1px solid #D3AA64;padding:10px 28px;text-decoration:none;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">Enter the Library</a>
+  </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (function() {
+  // Check if Three.js loaded and WebGL is available
+  if (typeof THREE === 'undefined') {
+    var fb = document.getElementById('rpg-fallback');
+    if (fb) fb.style.display = 'flex';
+    return;
+  }
+  try {
+    var testCanvas = document.createElement('canvas');
+    var gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+    if (!gl) throw new Error('No WebGL');
+  } catch(e) {
+    var fb = document.getElementById('rpg-fallback');
+    if (fb) fb.style.display = 'flex';
+    return;
+  }
+
   // ========== THREE.JS 3D GOTHIC LIBRARY ==========
+  try {
   const wrapper = document.getElementById('rpg-game-wrapper');
   const labelContainer = document.getElementById('portal-labels-container');
 
@@ -2365,6 +2388,11 @@ body {
     renderer.render(scene, camera);
   }
   animate();
+  } catch(e) {
+    console.error('3D Library failed to load:', e);
+    var fb = document.getElementById('rpg-fallback');
+    if (fb) fb.style.display = 'flex';
+  }
 })();
 </script>
 
