@@ -1193,8 +1193,7 @@ body {
   transform: translateY(0);
 }
 
-/* ---- RPG WORLD MAP ---- */
-/* ---- RPG GAME CANVAS ---- */
+/* ---- 3D LIBRARY WORLD ---- */
 #rpg-game-wrapper {
   position: relative;
   width: 100vw;
@@ -1202,7 +1201,7 @@ body {
   overflow: hidden;
   background: #080808;
 }
-#rpg-canvas {
+#rpg-game-wrapper canvas {
   display: block;
   width: 100%;
   height: 100%;
@@ -1224,42 +1223,73 @@ body {
 }
 #rpg-skip-link:hover { color: #C9A84C; }
 
-/* Virtual D-pad for mobile */
-.dpad-container {
+.portal-label {
+  position: absolute;
+  pointer-events: none;
+  color: #C9A84C;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(201,168,76,0.6), 0 0 20px rgba(201,168,76,0.3);
+  transition: opacity 0.2s;
+}
+.portal-label .enter-hint {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #fff;
+  margin-top: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.portal-label.nearby .enter-hint { opacity: 1; }
+
+#hud-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(201,168,76,0.35);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* Virtual joystick for mobile */
+#mobile-joystick {
   display: none;
   position: absolute;
-  bottom: 80px;
-  left: 30px;
+  bottom: 60px;
+  left: 40px;
   z-index: 15;
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2);
+  touch-action: none;
 }
-.dpad-btn {
+#joystick-knob {
   position: absolute;
   width: 44px;
   height: 44px;
-  background: rgba(201,168,76,0.15);
-  border: 1px solid rgba(201,168,76,0.3);
-  border-radius: 10px;
-  color: #C9A84C;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.25);
+  border: 1px solid rgba(201,168,76,0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
-.dpad-btn:active { background: rgba(201,168,76,0.35); }
-.dpad-up { top: 0; left: 48px; }
-.dpad-down { bottom: 0; left: 48px; }
-.dpad-left { top: 48px; left: 0; }
-.dpad-right { top: 48px; right: 0; }
-.dpad-action {
+.mobile-enter-btn {
+  display: none;
   position: absolute;
-  bottom: 80px;
-  right: 30px;
+  bottom: 90px;
+  right: 40px;
   z-index: 15;
   width: 56px;
   height: 56px;
@@ -1270,7 +1300,6 @@ body {
   font-size: 0.7rem;
   font-weight: 700;
   font-family: 'Inter', sans-serif;
-  display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -1278,15 +1307,16 @@ body {
   -webkit-user-select: none;
   touch-action: manipulation;
 }
-.dpad-action:active { background: rgba(201,168,76,0.45); }
+.mobile-enter-btn:active { background: rgba(201,168,76,0.45); }
 
 @media (max-width: 768px) {
-  .dpad-container { display: block; }
-  .dpad-action { display: flex; }
+  #mobile-joystick { display: block; }
+  .mobile-enter-btn { display: flex; }
+  .portal-label { font-size: 0.75rem; }
 }
 @media (pointer: coarse) {
-  .dpad-container { display: block; }
-  .dpad-action { display: flex; }
+  #mobile-joystick { display: block; }
+  .mobile-enter-btn { display: flex; }
 }
 
 /* ---- RESPONSIVE ---- */
@@ -1324,481 +1354,634 @@ body {
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- RPG GAME -->
+<!-- 3D LIBRARY WORLD -->
 <div id="rpg-game-wrapper">
-  <canvas id="rpg-canvas"></canvas>
   <a href="#hero-section" id="rpg-skip-link">Skip to Lessons</a>
-  <div class="dpad-container">
-    <div class="dpad-btn dpad-up" data-dir="up">&#9650;</div>
-    <div class="dpad-btn dpad-down" data-dir="down">&#9660;</div>
-    <div class="dpad-btn dpad-left" data-dir="left">&#9664;</div>
-    <div class="dpad-btn dpad-right" data-dir="right">&#9654;</div>
-  </div>
-  <div class="dpad-action">ENTER</div>
+  <div id="portal-labels-container"></div>
+  <div id="hud-controls">WASD / Arrow Keys to move &middot; ENTER to enter portal</div>
+  <div id="mobile-joystick"><div id="joystick-knob"></div></div>
+  <div class="mobile-enter-btn" id="mobile-enter">ENTER</div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r160/three.min.js"></script>
 <script>
 (function() {
-  const canvas = document.getElementById('rpg-canvas');
-  const ctx = canvas.getContext('2d');
-  const TILE = 50;
-  const WALL = 2;
-  const GOLD = '#C9A84C';
-  const GOLD_DIM = '#b8923f';
-  const BG = '#080808';
-  const FLOOR = '#0A0A0A';
-  const GRID_LINE = 'rgba(201,168,76,0.025)';
+  // ========== THREE.JS 3D GOTHIC LIBRARY ==========
+  const wrapper = document.getElementById('rpg-game-wrapper');
+  const labelContainer = document.getElementById('portal-labels-container');
 
-  // Portal data
+  // Portal definitions
   const portalDefs = [
-    { name: 'The Entrance', sub: 'Getting Started', href: '#getting-started', icon: '\u{1F6AA}' },
-    { name: 'Module 1', sub: 'The Basics', href: '#module1', icon: '\u{1F4DC}' },
-    { name: 'Module 2', sub: 'The Foundation', href: '#module2', icon: '\u{1F3DB}' },
-    { name: 'Module 3', sub: 'The Workshop', href: '#module3', icon: '\u{1F528}' },
-    { name: 'Module 4', sub: 'The Engine Room', href: '#module4', icon: '\u2699\uFE0F' },
-    { name: 'Module 5', sub: 'The Arsenal', href: '#module5', icon: '\u2694\uFE0F' },
-    { name: 'Module 6', sub: 'The Vault', href: '#module6', icon: '\u{1F3C6}' },
-    { name: 'Case Studies', sub: 'Field Reports', href: '#cases', icon: '\u{1F4D6}' },
-    { name: 'Security', sub: 'The Wards', href: '#security', icon: '\u{1F6E1}' },
+    { name: 'Getting Started', href: '#getting-started' },
+    { name: 'Module 1',       href: '#module1' },
+    { name: 'Module 2',       href: '#module2' },
+    { name: 'Module 3',       href: '#module3' },
+    { name: 'Module 4',       href: '#module4' },
+    { name: 'Module 5',       href: '#module5' },
+    { name: 'Module 6',       href: '#module6' },
+    { name: 'Case Studies',   href: '#cases' },
+    { name: 'Security',       href: '#security' },
   ];
 
-  let W, H, cols, rows;
-  let portals = [];
-  let particles = [];
-  let fox = { x: 0, y: 0, size: 28, speed: 3.5, bobPhase: 0, moving: false };
-  let keys = {};
-  let nearPortal = null;
-  let frameCount = 0;
+  // ---- RENDERER ----
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.6;
+  wrapper.insertBefore(renderer.domElement, wrapper.firstChild);
 
-  function resize() {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W * devicePixelRatio;
-    canvas.height = H * devicePixelRatio;
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    cols = Math.floor(W / TILE);
-    rows = Math.floor(H / TILE);
-    layoutPortals();
-    if (particles.length === 0) initParticles();
-    // Center fox if first time
-    if (fox.x === 0 && fox.y === 0) {
-      fox.x = W / 2;
-      fox.y = H / 2;
+  // ---- SCENE ----
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x080808);
+  scene.fog = new THREE.FogExp2(0x080808, 0.035);
+
+  // ---- CAMERA ----
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+
+  // ---- ROOM DIMENSIONS ----
+  const ROOM_W = 16;   // width (x)
+  const ROOM_L = 40;   // length (z)
+  const ROOM_H = 10;   // height (y)
+  const WALL_THICK = 0.5;
+
+  // ---- MATERIALS ----
+  const stoneMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9, metalness: 0.1 });
+  const stoneFloorMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.85, metalness: 0.05 });
+  const goldTrimMat = new THREE.MeshStandardMaterial({ color: 0xC9A84C, roughness: 0.3, metalness: 0.8, emissive: 0xC9A84C, emissiveIntensity: 0.05 });
+  const carpetMat = new THREE.MeshStandardMaterial({ color: 0x8B0000, roughness: 0.95, metalness: 0.0 });
+  const darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x1a0e06, roughness: 0.8, metalness: 0.05 });
+  const bookMats = [
+    new THREE.MeshStandardMaterial({ color: 0x8B0000, roughness: 0.9 }),
+    new THREE.MeshStandardMaterial({ color: 0x2a1a0a, roughness: 0.9 }),
+    new THREE.MeshStandardMaterial({ color: 0x0a1a2a, roughness: 0.9 }),
+    new THREE.MeshStandardMaterial({ color: 0x1a2a0a, roughness: 0.9 }),
+    new THREE.MeshStandardMaterial({ color: 0x2a0a1a, roughness: 0.9 }),
+  ];
+
+  // ---- BUILD FLOOR ----
+  function buildFloor() {
+    // Main stone floor
+    const floorGeo = new THREE.PlaneGeometry(ROOM_W, ROOM_L);
+    const floor = new THREE.Mesh(floorGeo, stoneFloorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0, 0);
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Gold trim grid lines on the floor
+    const linesMat = new THREE.LineBasicMaterial({ color: 0xC9A84C, transparent: true, opacity: 0.08 });
+    for (let x = -ROOM_W / 2; x <= ROOM_W / 2; x += 2) {
+      const pts = [new THREE.Vector3(x, 0.005, -ROOM_L / 2), new THREE.Vector3(x, 0.005, ROOM_L / 2)];
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      scene.add(new THREE.Line(geo, linesMat));
     }
-    // Clamp fox inside walls
-    clampFox();
+    for (let z = -ROOM_L / 2; z <= ROOM_L / 2; z += 2) {
+      const pts = [new THREE.Vector3(-ROOM_W / 2, 0.005, z), new THREE.Vector3(ROOM_W / 2, 0.005, z)];
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      scene.add(new THREE.Line(geo, linesMat));
+    }
+
+    // Red carpet down the center
+    const carpetGeo = new THREE.PlaneGeometry(3, ROOM_L - 2);
+    const carpet = new THREE.Mesh(carpetGeo, carpetMat);
+    carpet.rotation.x = -Math.PI / 2;
+    carpet.position.set(0, 0.01, 0);
+    carpet.receiveShadow = true;
+    scene.add(carpet);
+
+    // Carpet gold border strips
+    const stripGeo = new THREE.PlaneGeometry(0.08, ROOM_L - 2);
+    const stripL = new THREE.Mesh(stripGeo, goldTrimMat);
+    stripL.rotation.x = -Math.PI / 2;
+    stripL.position.set(-1.5, 0.015, 0);
+    scene.add(stripL);
+    const stripR = new THREE.Mesh(stripGeo.clone(), goldTrimMat);
+    stripR.rotation.x = -Math.PI / 2;
+    stripR.position.set(1.5, 0.015, 0);
+    scene.add(stripR);
   }
 
-  function layoutPortals() {
-    portals = [];
-    const wallPx = WALL * TILE;
-    const innerW = W - wallPx * 2;
-    const innerH = H - wallPx * 2;
-    const pw = 70, ph = 90;
+  // ---- BUILD WALLS ----
+  function buildWalls() {
+    // Left wall
+    const wallGeoSide = new THREE.BoxGeometry(WALL_THICK, ROOM_H, ROOM_L);
+    const leftWall = new THREE.Mesh(wallGeoSide, stoneMat);
+    leftWall.position.set(-ROOM_W / 2 - WALL_THICK / 2, ROOM_H / 2, 0);
+    leftWall.receiveShadow = true;
+    scene.add(leftWall);
 
-    // 9 portals arranged: top row (3), middle sides (2), bottom row (3), center top (1=entrance)
-    // Layout: entrance top center, then 4 on left/right walls, 4 on bottom
-    const positions = [
-      // Top center - entrance
-      { x: W / 2, y: wallPx + 70 },
-      // Left column
-      { x: wallPx + 70, y: wallPx + innerH * 0.25 },
-      { x: wallPx + 70, y: wallPx + innerH * 0.55 },
-      // Right column
-      { x: W - wallPx - 70, y: wallPx + innerH * 0.25 },
-      { x: W - wallPx - 70, y: wallPx + innerH * 0.55 },
-      // Bottom row
-      { x: wallPx + innerW * 0.15, y: H - wallPx - 70 },
-      { x: wallPx + innerW * 0.38, y: H - wallPx - 70 },
-      { x: wallPx + innerW * 0.62, y: H - wallPx - 70 },
-      { x: wallPx + innerW * 0.85, y: H - wallPx - 70 },
-    ];
+    // Right wall
+    const rightWall = new THREE.Mesh(wallGeoSide.clone(), stoneMat);
+    rightWall.position.set(ROOM_W / 2 + WALL_THICK / 2, ROOM_H / 2, 0);
+    rightWall.receiveShadow = true;
+    scene.add(rightWall);
 
-    for (let i = 0; i < portalDefs.length; i++) {
-      const p = positions[i];
-      portals.push({
-        ...portalDefs[i],
-        x: p.x,
-        y: p.y,
-        w: pw,
-        h: ph,
-        glow: 0,
+    // Back wall
+    const wallGeoBack = new THREE.BoxGeometry(ROOM_W + WALL_THICK * 2, ROOM_H, WALL_THICK);
+    const backWall = new THREE.Mesh(wallGeoBack, stoneMat);
+    backWall.position.set(0, ROOM_H / 2, -ROOM_L / 2 - WALL_THICK / 2);
+    scene.add(backWall);
+
+    // Front wall
+    const frontWall = new THREE.Mesh(wallGeoBack.clone(), stoneMat);
+    frontWall.position.set(0, ROOM_H / 2, ROOM_L / 2 + WALL_THICK / 2);
+    scene.add(frontWall);
+  }
+
+  // ---- BUILD CEILING WITH BEAMS ----
+  function buildCeiling() {
+    const ceilGeo = new THREE.PlaneGeometry(ROOM_W, ROOM_L);
+    const ceil = new THREE.Mesh(ceilGeo, stoneMat);
+    ceil.rotation.x = Math.PI / 2;
+    ceil.position.set(0, ROOM_H, 0);
+    scene.add(ceil);
+
+    // Cross beams
+    const beamMat = new THREE.MeshStandardMaterial({ color: 0x0f0f0f, roughness: 0.9, metalness: 0.1 });
+    for (let z = -ROOM_L / 2 + 4; z < ROOM_L / 2; z += 4) {
+      const beamGeo = new THREE.BoxGeometry(ROOM_W, 0.4, 0.3);
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+      beam.position.set(0, ROOM_H - 0.2, z);
+      beam.castShadow = true;
+      scene.add(beam);
+    }
+
+    // Longitudinal beams along the edges
+    const lBeamGeo = new THREE.BoxGeometry(0.3, 0.4, ROOM_L);
+    const lBeamL = new THREE.Mesh(lBeamGeo, beamMat);
+    lBeamL.position.set(-ROOM_W / 2 + 0.5, ROOM_H - 0.2, 0);
+    scene.add(lBeamL);
+    const lBeamR = new THREE.Mesh(lBeamGeo.clone(), beamMat);
+    lBeamR.position.set(ROOM_W / 2 - 0.5, ROOM_H - 0.2, 0);
+    scene.add(lBeamR);
+  }
+
+  // ---- BUILD BOOKSHELVES ----
+  function buildBookshelves() {
+    const shelfH = 6;
+    const shelfD = 1.2;
+    const shelfW = 3;
+    const numShelves = 5; // vertical shelves per unit
+
+    function createBookshelf(x, z, facingRight) {
+      const group = new THREE.Group();
+      // Back panel
+      const backGeo = new THREE.BoxGeometry(shelfW, shelfH, 0.1);
+      const back = new THREE.Mesh(backGeo, darkWoodMat);
+      back.position.set(0, shelfH / 2, facingRight ? -shelfD / 2 + 0.05 : shelfD / 2 - 0.05);
+      group.add(back);
+
+      // Side panels
+      const sideGeo = new THREE.BoxGeometry(0.08, shelfH, shelfD);
+      const sideL = new THREE.Mesh(sideGeo, darkWoodMat);
+      sideL.position.set(-shelfW / 2, shelfH / 2, 0);
+      group.add(sideL);
+      const sideR = new THREE.Mesh(sideGeo.clone(), darkWoodMat);
+      sideR.position.set(shelfW / 2, shelfH / 2, 0);
+      group.add(sideR);
+
+      // Horizontal shelf boards + books
+      for (let i = 0; i <= numShelves; i++) {
+        const sy = (i / numShelves) * shelfH;
+        const boardGeo = new THREE.BoxGeometry(shelfW, 0.06, shelfD);
+        const board = new THREE.Mesh(boardGeo, darkWoodMat);
+        board.position.set(0, sy, 0);
+        group.add(board);
+
+        // Add books on each shelf (except bottom and top)
+        if (i > 0 && i <= numShelves) {
+          const rowY = sy + 0.03;
+          const bookH = (shelfH / numShelves) * 0.75;
+          let bx = -shelfW / 2 + 0.15;
+          while (bx < shelfW / 2 - 0.15) {
+            const bw = 0.08 + Math.random() * 0.14;
+            const bh = bookH * (0.6 + Math.random() * 0.4);
+            const bd = shelfD * 0.7;
+            const bookGeo = new THREE.BoxGeometry(bw, bh, bd);
+            const book = new THREE.Mesh(bookGeo, bookMats[Math.floor(Math.random() * bookMats.length)]);
+            book.position.set(bx + bw / 2, rowY + bh / 2, facingRight ? 0.05 : -0.05);
+            group.add(book);
+            bx += bw + 0.02;
+          }
+        }
+      }
+
+      group.position.set(x, 0, z);
+      group.castShadow = true;
+      scene.add(group);
+    }
+
+    // Left wall bookshelves
+    for (let z = -ROOM_L / 2 + 3; z < ROOM_L / 2 - 2; z += shelfW + 1.5) {
+      createBookshelf(-ROOM_W / 2 + shelfD / 2 + 0.1, z, true);
+    }
+    // Right wall bookshelves
+    for (let z = -ROOM_L / 2 + 3; z < ROOM_L / 2 - 2; z += shelfW + 1.5) {
+      createBookshelf(ROOM_W / 2 - shelfD / 2 - 0.1, z, false);
+    }
+  }
+
+  // ---- BUILD PORTALS ----
+  const portalData = []; // { mesh, frame, light, def, labelEl, baseZ }
+  function buildPortals() {
+    // Place portals along the walls: left side gets 0-3, right side gets 4-7, back wall gets 8
+    const leftPositions  = [-14, -8, -2, 5];
+    const rightPositions = [-14, -8, -2, 5];
+    const portalW = 2;
+    const portalH = 3.5;
+
+    function makePortal(px, py, pz, rotY, def) {
+      const group = new THREE.Group();
+
+      // Portal dark interior
+      const interiorGeo = new THREE.PlaneGeometry(portalW - 0.3, portalH - 0.2);
+      const interiorMat = new THREE.MeshBasicMaterial({ color: 0x020102, transparent: true, opacity: 0.95 });
+      const interior = new THREE.Mesh(interiorGeo, interiorMat);
+      interior.position.set(0, portalH / 2 + 0.5, 0.02);
+      group.add(interior);
+
+      // Gold wireframe border
+      const frameShape = new THREE.Shape();
+      const hw = portalW / 2, hh = portalH / 2;
+      frameShape.moveTo(-hw, -hh);
+      frameShape.lineTo(-hw, hh - 0.5);
+      frameShape.quadraticCurveTo(-hw, hh + 0.3, 0, hh + 0.5);
+      frameShape.quadraticCurveTo(hw, hh + 0.3, hw, hh - 0.5);
+      frameShape.lineTo(hw, -hh);
+      frameShape.lineTo(-hw, -hh);
+
+      const framePoints = frameShape.getPoints(32);
+      const frameGeo = new THREE.BufferGeometry().setFromPoints(
+        framePoints.map(p => new THREE.Vector3(p.x, p.y + portalH / 2 + 0.5, 0.04))
+      );
+      const frameLine = new THREE.Line(frameGeo, new THREE.LineBasicMaterial({
+        color: 0xC9A84C, linewidth: 2, transparent: true, opacity: 0.7
+      }));
+      group.add(frameLine);
+
+      // Inner glow frame
+      const innerFrameGeo = new THREE.BufferGeometry().setFromPoints(
+        framePoints.map(p => new THREE.Vector3(p.x * 0.88, p.y * 0.9 + portalH / 2 + 0.5, 0.05))
+      );
+      const innerLine = new THREE.Line(innerFrameGeo, new THREE.LineBasicMaterial({
+        color: 0xC9A84C, transparent: true, opacity: 0.25
+      }));
+      group.add(innerLine);
+
+      // Gold pillar columns on each side
+      const pillarGeo = new THREE.BoxGeometry(0.15, portalH + 0.5, 0.15);
+      const pillarL = new THREE.Mesh(pillarGeo, goldTrimMat);
+      pillarL.position.set(-hw - 0.1, (portalH + 0.5) / 2, 0);
+      pillarL.castShadow = true;
+      group.add(pillarL);
+      const pillarR = new THREE.Mesh(pillarGeo.clone(), goldTrimMat);
+      pillarR.position.set(hw + 0.1, (portalH + 0.5) / 2, 0);
+      pillarR.castShadow = true;
+      group.add(pillarR);
+
+      // Point light at each portal
+      const pLight = new THREE.PointLight(0xC9A84C, 0.4, 6, 2);
+      pLight.position.set(0, portalH / 2 + 1, 1.2);
+      group.add(pLight);
+
+      group.position.set(px, py, pz);
+      group.rotation.y = rotY;
+      scene.add(group);
+
+      // Create HTML label
+      const labelEl = document.createElement('div');
+      labelEl.className = 'portal-label';
+      labelEl.innerHTML = def.name + '<span class="enter-hint">Press ENTER</span>';
+      labelContainer.appendChild(labelEl);
+
+      portalData.push({
+        group: group,
+        frameLine: frameLine,
+        innerLine: innerLine,
+        light: pLight,
+        def: def,
+        labelEl: labelEl,
+        worldPos: new THREE.Vector3(px, py + portalH / 2 + 1, pz),
+        approachPos: new THREE.Vector3(px + Math.sin(rotY) * 2.5, 0, pz + Math.cos(rotY) * 2.5),
+        glow: 0
       });
     }
+
+    // Left wall portals (facing right, rotY = PI/2)
+    for (let i = 0; i < 4; i++) {
+      makePortal(-ROOM_W / 2 + 0.3, 0, leftPositions[i], Math.PI / 2, portalDefs[i]);
+    }
+    // Right wall portals (facing left, rotY = -PI/2)
+    for (let i = 0; i < 4; i++) {
+      makePortal(ROOM_W / 2 - 0.3, 0, rightPositions[i], -Math.PI / 2, portalDefs[i + 4]);
+    }
+    // Back wall portal (facing forward, rotY = 0)
+    makePortal(0, 0, -ROOM_L / 2 + 0.3, 0, portalDefs[8]);
   }
 
-  function initParticles() {
-    particles = [];
-    const count = Math.floor((W * H) / 12000);
+  // ---- BUILD FOX CHARACTER ----
+  const foxGroup = new THREE.Group();
+  let foxAngle = 0; // radians, facing direction
+  let foxBob = 0;
+  function buildFox() {
+    const gMat = new THREE.MeshStandardMaterial({ color: 0xC9A84C, roughness: 0.4, metalness: 0.3, emissive: 0xC9A84C, emissiveIntensity: 0.08 });
+    const darkMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
+    const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.3 });
+
+    // Body
+    const bodyGeo = new THREE.BoxGeometry(0.6, 0.4, 0.9);
+    const body = new THREE.Mesh(bodyGeo, gMat);
+    body.position.y = 0.5;
+    body.castShadow = true;
+    foxGroup.add(body);
+
+    // Head (sphere)
+    const headGeo = new THREE.SphereGeometry(0.28, 12, 10);
+    const head = new THREE.Mesh(headGeo, gMat);
+    head.position.set(0, 0.7, -0.5);
+    head.castShadow = true;
+    foxGroup.add(head);
+
+    // Ears (cones)
+    const earGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
+    const earL = new THREE.Mesh(earGeo, gMat);
+    earL.position.set(-0.15, 0.95, -0.5);
+    foxGroup.add(earL);
+    const earR = new THREE.Mesh(earGeo.clone(), gMat);
+    earR.position.set(0.15, 0.95, -0.5);
+    foxGroup.add(earR);
+
+    // Eyes
+    const eyeGeo = new THREE.SphereGeometry(0.05, 8, 8);
+    const eyeL = new THREE.Mesh(eyeGeo, darkMat);
+    eyeL.position.set(-0.1, 0.73, -0.74);
+    foxGroup.add(eyeL);
+    const eyeR = new THREE.Mesh(eyeGeo.clone(), darkMat);
+    eyeR.position.set(0.1, 0.73, -0.74);
+    foxGroup.add(eyeR);
+
+    // Eye shine
+    const shineGeo = new THREE.SphereGeometry(0.02, 6, 6);
+    const shineL = new THREE.Mesh(shineGeo, whiteMat);
+    shineL.position.set(-0.08, 0.75, -0.77);
+    foxGroup.add(shineL);
+    const shineR = new THREE.Mesh(shineGeo.clone(), whiteMat);
+    shineR.position.set(0.12, 0.75, -0.77);
+    foxGroup.add(shineR);
+
+    // Nose
+    const noseGeo = new THREE.SphereGeometry(0.04, 6, 6);
+    const nose = new THREE.Mesh(noseGeo, darkMat);
+    nose.position.set(0, 0.67, -0.78);
+    foxGroup.add(nose);
+
+    // Tail
+    const tailGeo = new THREE.CylinderGeometry(0.06, 0.12, 0.7, 8);
+    const tail = new THREE.Mesh(tailGeo, gMat);
+    tail.position.set(0, 0.55, 0.55);
+    tail.rotation.x = 0.6;
+    tail.name = 'tail';
+    foxGroup.add(tail);
+
+    // Legs (4 small boxes)
+    const legGeo = new THREE.BoxGeometry(0.12, 0.3, 0.12);
+    const positions = [[-0.2, 0.15, -0.3], [0.2, 0.15, -0.3], [-0.2, 0.15, 0.3], [0.2, 0.15, 0.3]];
+    positions.forEach(function(pos) {
+      const leg = new THREE.Mesh(legGeo, gMat);
+      leg.position.set(pos[0], pos[1], pos[2]);
+      leg.castShadow = true;
+      foxGroup.add(leg);
+    });
+
+    // Fox glow light
+    const foxLight = new THREE.PointLight(0xC9A84C, 0.5, 5, 2);
+    foxLight.position.set(0, 1.2, 0);
+    foxGroup.add(foxLight);
+
+    foxGroup.position.set(0, 0, 12);
+    scene.add(foxGroup);
+  }
+
+  // ---- LIGHTING ----
+  function setupLighting() {
+    // Ambient - very dim
+    const ambient = new THREE.AmbientLight(0x111111, 0.5);
+    scene.add(ambient);
+
+    // Row of gold point lights down the hall (like chandeliers)
+    for (let z = -ROOM_L / 2 + 5; z < ROOM_L / 2; z += 8) {
+      const pl = new THREE.PointLight(0xC9A84C, 0.8, 14, 2);
+      pl.position.set(0, ROOM_H - 1, z);
+      pl.castShadow = true;
+      pl.shadow.mapSize.set(512, 512);
+      scene.add(pl);
+
+      // Small gold sphere to represent the light fixture
+      const fixtureGeo = new THREE.SphereGeometry(0.15, 8, 8);
+      const fixtureMat = new THREE.MeshBasicMaterial({ color: 0xC9A84C });
+      const fixture = new THREE.Mesh(fixtureGeo, fixtureMat);
+      fixture.position.copy(pl.position);
+      scene.add(fixture);
+
+      // Chain from ceiling
+      const chainGeo = new THREE.CylinderGeometry(0.02, 0.02, 1.0, 4);
+      const chain = new THREE.Mesh(chainGeo, goldTrimMat);
+      chain.position.set(0, ROOM_H - 0.5, z);
+      scene.add(chain);
+    }
+
+    // Subtle directional light for depth
+    const dir = new THREE.DirectionalLight(0x666666, 0.15);
+    dir.position.set(2, 8, 5);
+    scene.add(dir);
+  }
+
+  // ---- GOLD PARTICLE SYSTEM ----
+  let particleSystem;
+  function buildParticles() {
+    const count = 300;
+    const positions = new Float32Array(count * 3);
+    const velocities = [];
     for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        size: 1 + Math.random() * 1.5,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: -0.1 - Math.random() * 0.3,
-        alpha: 0.1 + Math.random() * 0.3,
-        phase: Math.random() * Math.PI * 2,
+      positions[i * 3] = (Math.random() - 0.5) * ROOM_W;
+      positions[i * 3 + 1] = Math.random() * ROOM_H;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * ROOM_L;
+      velocities.push({
+        x: (Math.random() - 0.5) * 0.005,
+        y: 0.002 + Math.random() * 0.005,
+        z: (Math.random() - 0.5) * 0.005,
+        phase: Math.random() * Math.PI * 2
       });
     }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({
+      color: 0xC9A84C,
+      size: 0.06,
+      transparent: true,
+      opacity: 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true
+    });
+    particleSystem = new THREE.Points(geo, mat);
+    particleSystem.userData.velocities = velocities;
+    scene.add(particleSystem);
   }
 
-  function clampFox() {
-    const wallPx = WALL * TILE;
-    const half = fox.size / 2;
-    fox.x = Math.max(wallPx + half + 4, Math.min(W - wallPx - half - 4, fox.x));
-    fox.y = Math.max(wallPx + half + 4, Math.min(H - wallPx - half - 4, fox.y));
+  function updateParticles(time) {
+    if (!particleSystem) return;
+    const pos = particleSystem.geometry.attributes.position;
+    const vels = particleSystem.userData.velocities;
+    for (let i = 0; i < vels.length; i++) {
+      let x = pos.getX(i) + vels[i].x + Math.sin(time * 0.5 + vels[i].phase) * 0.002;
+      let y = pos.getY(i) + vels[i].y;
+      let z = pos.getZ(i) + vels[i].z;
+      if (y > ROOM_H) { y = 0; x = (Math.random() - 0.5) * ROOM_W; z = (Math.random() - 0.5) * ROOM_L; }
+      if (x > ROOM_W / 2) x = -ROOM_W / 2;
+      if (x < -ROOM_W / 2) x = ROOM_W / 2;
+      if (z > ROOM_L / 2) z = -ROOM_L / 2;
+      if (z < -ROOM_L / 2) z = ROOM_L / 2;
+      pos.setXYZ(i, x, y, z);
+    }
+    pos.needsUpdate = true;
   }
+
+  // ---- PLAYER CONTROLS ----
+  const keys = {};
+  const MOVE_SPEED = 0.1;
+  const TURN_SPEED = 0.04;
+  let nearPortal = null;
+
+  // Joystick state
+  let joystickActive = false;
+  let joystickDX = 0;
+  let joystickDY = 0;
 
   function updateFox() {
-    let dx = 0, dy = 0;
-    if (keys['ArrowUp'] || keys['KeyW']) dy = -1;
-    if (keys['ArrowDown'] || keys['KeyS']) dy = 1;
-    if (keys['ArrowLeft'] || keys['KeyA']) dx = -1;
-    if (keys['ArrowRight'] || keys['KeyD']) dx = 1;
+    let moveForward = 0;
+    let turnDir = 0;
 
-    fox.moving = dx !== 0 || dy !== 0;
-    if (fox.moving) {
-      const len = Math.sqrt(dx * dx + dy * dy);
-      fox.x += (dx / len) * fox.speed;
-      fox.y += (dy / len) * fox.speed;
-      fox.bobPhase += 0.25;
+    if (keys['ArrowUp'] || keys['KeyW']) moveForward = 1;
+    if (keys['ArrowDown'] || keys['KeyS']) moveForward = -1;
+    if (keys['ArrowLeft'] || keys['KeyA']) turnDir = 1;
+    if (keys['ArrowRight'] || keys['KeyD']) turnDir = -1;
+
+    // Joystick input
+    if (joystickActive) {
+      moveForward += -joystickDY;
+      turnDir += -joystickDX;
     }
-    clampFox();
+
+    moveForward = Math.max(-1, Math.min(1, moveForward));
+    turnDir = Math.max(-1, Math.min(1, turnDir));
+
+    const isMoving = Math.abs(moveForward) > 0.05 || Math.abs(turnDir) > 0.05;
+
+    foxAngle += turnDir * TURN_SPEED;
+    foxGroup.rotation.y = foxAngle;
+
+    if (Math.abs(moveForward) > 0.05) {
+      const dx = Math.sin(foxAngle) * moveForward * MOVE_SPEED;
+      const dz = Math.cos(foxAngle) * moveForward * MOVE_SPEED;
+      let nx = foxGroup.position.x + dx;
+      let nz = foxGroup.position.z + dz;
+
+      // Clamp inside room
+      nx = Math.max(-ROOM_W / 2 + 1.5, Math.min(ROOM_W / 2 - 1.5, nx));
+      nz = Math.max(-ROOM_L / 2 + 1.5, Math.min(ROOM_L / 2 - 1.5, nz));
+      foxGroup.position.x = nx;
+      foxGroup.position.z = nz;
+    }
+
+    // Bob animation
+    if (isMoving) {
+      foxBob += 0.15;
+      foxGroup.position.y = Math.sin(foxBob) * 0.06;
+    } else {
+      foxGroup.position.y = Math.sin(Date.now() * 0.002) * 0.03;
+    }
+
+    // Tail wag
+    const tail = foxGroup.getObjectByName('tail');
+    if (tail) {
+      tail.rotation.z = Math.sin(Date.now() * 0.005) * 0.4;
+    }
+
+    // Camera follows behind fox (third person)
+    const camDist = 5;
+    const camHeight = 3.5;
+    const camTargetX = foxGroup.position.x - Math.sin(foxAngle) * camDist;
+    const camTargetZ = foxGroup.position.z - Math.cos(foxAngle) * camDist;
+    camera.position.x += (camTargetX - camera.position.x) * 0.08;
+    camera.position.z += (camTargetZ - camera.position.z) * 0.08;
+    camera.position.y += (camHeight - camera.position.y) * 0.08;
+    camera.lookAt(foxGroup.position.x, 1.5, foxGroup.position.z);
 
     // Check portal proximity
     nearPortal = null;
     let minDist = Infinity;
-    for (const p of portals) {
-      const dist = Math.sqrt((fox.x - p.x) ** 2 + (fox.y - p.y) ** 2);
-      if (dist < 80 && dist < minDist) {
+    for (const pd of portalData) {
+      const dist = foxGroup.position.distanceTo(pd.approachPos);
+      const targetGlow = dist < 3 ? 1 : 0;
+      pd.glow += (targetGlow - pd.glow) * 0.06;
+
+      // Update portal visuals based on glow
+      pd.frameLine.material.opacity = 0.4 + pd.glow * 0.6;
+      pd.innerLine.material.opacity = 0.15 + pd.glow * 0.4;
+      pd.light.intensity = 0.4 + pd.glow * 1.5;
+
+      if (dist < 3 && dist < minDist) {
         minDist = dist;
-        nearPortal = p;
-      }
-      // Animate glow
-      p.glow += (dist < 80 ? 1 : -1) * 0.05;
-      p.glow = Math.max(0, Math.min(1, p.glow));
-    }
-  }
-
-  function updateParticles() {
-    for (const p of particles) {
-      p.x += p.speedX + Math.sin(frameCount * 0.01 + p.phase) * 0.1;
-      p.y += p.speedY;
-      p.alpha = 0.15 + Math.sin(frameCount * 0.02 + p.phase) * 0.15;
-      if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
-      if (p.x < -10) p.x = W + 10;
-      if (p.x > W + 10) p.x = -10;
-    }
-  }
-
-  function drawFloor() {
-    ctx.fillStyle = FLOOR;
-    ctx.fillRect(0, 0, W, H);
-    // Subtle grid
-    ctx.strokeStyle = GRID_LINE;
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= W; x += TILE) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y <= H; y += TILE) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-  }
-
-  function drawWalls() {
-    const wallPx = WALL * TILE;
-    ctx.fillStyle = '#111';
-    // Top
-    ctx.fillRect(0, 0, W, wallPx);
-    // Bottom
-    ctx.fillRect(0, H - wallPx, W, wallPx);
-    // Left
-    ctx.fillRect(0, 0, wallPx, H);
-    // Right
-    ctx.fillRect(W - wallPx, 0, wallPx, H);
-
-    // Wall detail lines
-    ctx.strokeStyle = 'rgba(201,168,76,0.06)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += TILE) {
-      for (let y = 0; y < wallPx; y += TILE) {
-        ctx.strokeRect(x, y, TILE, TILE);
-      }
-      for (let y = H - wallPx; y < H; y += TILE) {
-        ctx.strokeRect(x, y, TILE, TILE);
-      }
-    }
-    for (let y = 0; y < H; y += TILE) {
-      for (let x = 0; x < wallPx; x += TILE) {
-        ctx.strokeRect(x, y, TILE, TILE);
-      }
-      for (let x = W - wallPx; x < W; x += TILE) {
-        ctx.strokeRect(x, y, TILE, TILE);
+        nearPortal = pd;
       }
     }
   }
 
-  function drawPortal(p) {
-    const pulse = Math.sin(frameCount * 0.04 + portals.indexOf(p)) * 0.15;
-    const baseGlow = 0.15 + pulse;
-    const glow = baseGlow + p.glow * 0.6;
-    const hw = p.w / 2, hh = p.h / 2;
-
-    // Atmospheric light on floor
-    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 120);
-    grad.addColorStop(0, 'rgba(201,168,76,' + (glow * 0.12) + ')');
-    grad.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad;
-    ctx.fillRect(p.x - 120, p.y - 120, 240, 240);
-
-    // Portal archway
-    ctx.save();
-    ctx.translate(p.x, p.y);
-
-    // Outer glow
-    ctx.shadowColor = GOLD;
-    ctx.shadowBlur = 20 + glow * 30;
-
-    // Archway shape
-    ctx.beginPath();
-    ctx.moveTo(-hw, hh);
-    ctx.lineTo(-hw, -hh + 20);
-    ctx.quadraticCurveTo(-hw, -hh - 10, 0, -hh - 15);
-    ctx.quadraticCurveTo(hw, -hh - 10, hw, -hh + 20);
-    ctx.lineTo(hw, hh);
-
-    // Fill dark interior
-    ctx.fillStyle = 'rgba(8,6,2,' + (0.9 - glow * 0.2) + ')';
-    ctx.fill();
-
-    // Arch border
-    ctx.lineWidth = 2.5 + glow * 1.5;
-    ctx.strokeStyle = 'rgba(201,168,76,' + (0.4 + glow * 0.6) + ')';
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Inner glow lines
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(201,168,76,' + (0.1 + glow * 0.2) + ')';
-    ctx.beginPath();
-    ctx.moveTo(-hw + 6, hh - 4);
-    ctx.lineTo(-hw + 6, -hh + 24);
-    ctx.quadraticCurveTo(-hw + 6, -hh - 2, 0, -hh - 7);
-    ctx.quadraticCurveTo(hw - 6, -hh - 2, hw - 6, -hh + 24);
-    ctx.lineTo(hw - 6, hh - 4);
-    ctx.stroke();
-
-    // Icon
-    ctx.font = '22px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(p.icon, 0, 5);
-
-    ctx.restore();
-
-    // Portal label (visible when near)
-    if (p.glow > 0.1) {
-      ctx.save();
-      ctx.globalAlpha = p.glow;
-      ctx.font = "bold 15px 'Cormorant Garamond', serif";
-      ctx.textAlign = 'center';
-      ctx.fillStyle = GOLD;
-      ctx.shadowColor = GOLD;
-      ctx.shadowBlur = 12;
-      ctx.fillText(p.name, p.x, p.y - hh - 28);
-      ctx.font = "11px 'Cormorant Garamond', serif";
-      ctx.fillStyle = 'rgba(201,168,76,0.7)';
-      ctx.shadowBlur = 0;
-      ctx.fillText(p.sub, p.x, p.y - hh - 14);
-      ctx.restore();
+  // ---- PORTAL LABEL PROJECTION ----
+  function updatePortalLabels() {
+    const w2 = window.innerWidth / 2;
+    const h2 = window.innerHeight / 2;
+    for (const pd of portalData) {
+      const pos = pd.worldPos.clone();
+      pos.project(camera);
+      if (pos.z > 1 || pos.z < -1) {
+        pd.labelEl.style.display = 'none';
+        continue;
+      }
+      const sx = (pos.x * w2) + w2;
+      const sy = -(pos.y * h2) + h2;
+      pd.labelEl.style.display = 'block';
+      pd.labelEl.style.left = sx + 'px';
+      pd.labelEl.style.top = (sy - 30) + 'px';
+      pd.labelEl.style.transform = 'translate(-50%, -100%)';
+      pd.labelEl.style.opacity = Math.max(0.3, pd.glow);
+      if (pd === nearPortal) {
+        pd.labelEl.classList.add('nearby');
+      } else {
+        pd.labelEl.classList.remove('nearby');
+      }
     }
   }
 
-  function drawFox() {
-    const bob = fox.moving ? Math.sin(fox.bobPhase) * 3 : Math.sin(frameCount * 0.03) * 1.5;
-    const x = fox.x, y = fox.y + bob;
-    const s = fox.size / 2;
-
-    ctx.save();
-    ctx.translate(x, y);
-
-    // Fox shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(0, s + 4, s * 0.8, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Fox body glow
-    ctx.shadowColor = GOLD;
-    ctx.shadowBlur = 15;
-
-    // Body (rounded square)
-    const r = 6;
-    ctx.fillStyle = GOLD;
-    ctx.beginPath();
-    ctx.moveTo(-s + r, -s);
-    ctx.lineTo(s - r, -s);
-    ctx.quadraticCurveTo(s, -s, s, -s + r);
-    ctx.lineTo(s, s - r);
-    ctx.quadraticCurveTo(s, s, s - r, s);
-    ctx.lineTo(-s + r, s);
-    ctx.quadraticCurveTo(-s, s, -s, s - r);
-    ctx.lineTo(-s, -s + r);
-    ctx.quadraticCurveTo(-s, -s, -s + r, -s);
-    ctx.closePath();
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Darker inner body
-    ctx.fillStyle = GOLD_DIM;
-    ctx.beginPath();
-    ctx.moveTo(-s + r + 3, -s + 3);
-    ctx.lineTo(s - r - 3, -s + 3);
-    ctx.quadraticCurveTo(s - 3, -s + 3, s - 3, -s + r + 3);
-    ctx.lineTo(s - 3, s - r - 3);
-    ctx.quadraticCurveTo(s - 3, s - 3, s - r - 3, s - 3);
-    ctx.lineTo(-s + r + 3, s - 3);
-    ctx.quadraticCurveTo(-s + 3, s - 3, -s + 3, s - r - 3);
-    ctx.lineTo(-s + 3, -s + r + 3);
-    ctx.quadraticCurveTo(-s + 3, -s + 3, -s + r + 3, -s + 3);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ears (triangles)
-    ctx.fillStyle = GOLD;
-    // Left ear
-    ctx.beginPath();
-    ctx.moveTo(-s + 2, -s);
-    ctx.lineTo(-s + 1, -s - 10);
-    ctx.lineTo(-s + 12, -s);
-    ctx.closePath();
-    ctx.fill();
-    // Right ear
-    ctx.beginPath();
-    ctx.moveTo(s - 2, -s);
-    ctx.lineTo(s - 1, -s - 10);
-    ctx.lineTo(s - 12, -s);
-    ctx.closePath();
-    ctx.fill();
-
-    // Eyes
-    ctx.fillStyle = '#0d0d0d';
-    ctx.beginPath();
-    ctx.arc(-5, -2, 2.5, 0, Math.PI * 2);
-    ctx.arc(5, -2, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eye shine
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(-4, -3, 1, 0, Math.PI * 2);
-    ctx.arc(6, -3, 1, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Nose
-    ctx.fillStyle = '#333';
-    ctx.beginPath();
-    ctx.arc(0, 3, 2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Tail (wavy line behind)
-    ctx.strokeStyle = GOLD;
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-    const tailWag = Math.sin(frameCount * 0.08) * 6;
-    ctx.beginPath();
-    ctx.moveTo(0, s);
-    ctx.quadraticCurveTo(tailWag, s + 8, tailWag * 0.7, s + 14);
-    ctx.stroke();
-
-    ctx.restore();
-  }
-
-  function drawParticles() {
-    for (const p of particles) {
-      ctx.fillStyle = 'rgba(201,168,76,' + Math.max(0, p.alpha) + ')';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  function drawHUD() {
-    // Title
-    ctx.font = "700 clamp(1.4rem, 3vw, 2rem) 'Cormorant Garamond', serif";
-    ctx.textAlign = 'center';
-    ctx.fillStyle = GOLD;
-    ctx.shadowColor = GOLD;
-    ctx.shadowBlur = 20;
-    ctx.fillText('The Library of Superpowers', W / 2, WALL * TILE + 45);
-    ctx.shadowBlur = 0;
-
-    // Instruction text at bottom
-    ctx.font = "400 13px 'Inter', sans-serif";
-    ctx.fillStyle = 'rgba(201,168,76,0.45)';
-    ctx.textAlign = 'center';
-    let instrText = 'Use arrow keys or WASD to explore. Walk to a portal and press ENTER.';
-    if (nearPortal) {
-      instrText = 'Press ENTER to enter: ' + nearPortal.name + ' - ' + nearPortal.sub;
-      ctx.fillStyle = 'rgba(201,168,76,0.8)';
-    }
-    ctx.fillText(instrText, W / 2, H - WALL * TILE - 20);
-
-    // Enter prompt near portal
-    if (nearPortal) {
-      const pulse = 0.6 + Math.sin(frameCount * 0.08) * 0.4;
-      ctx.font = "600 12px 'Inter', sans-serif";
-      ctx.fillStyle = 'rgba(201,168,76,' + pulse + ')';
-      ctx.textAlign = 'center';
-      ctx.fillText('[ENTER]', nearPortal.x, nearPortal.y + nearPortal.h / 2 + 18);
-    }
-  }
-
-  function drawVignette() {
-    // Dark edges vignette
-    const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.7);
-    vg.addColorStop(0, 'transparent');
-    vg.addColorStop(1, 'rgba(0,0,0,0.5)');
-    ctx.fillStyle = vg;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  function gameLoop() {
-    frameCount++;
-    updateFox();
-    updateParticles();
-
-    // Draw
-    ctx.clearRect(0, 0, W, H);
-    drawFloor();
-    drawParticles();
-    drawWalls();
-    for (const p of portals) drawPortal(p);
-    drawFox();
-    drawVignette();
-    drawHUD();
-
-    requestAnimationFrame(gameLoop);
-  }
-
+  // ---- ENTER PORTAL ----
   function enterPortal() {
     if (nearPortal) {
-      document.querySelector(nearPortal.href).scrollIntoView({ behavior: 'smooth' });
+      document.querySelector(nearPortal.def.href).scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  // Keyboard
+  // ---- INPUT HANDLERS ----
   window.addEventListener('keydown', function(e) {
     keys[e.code] = true;
     if (e.code === 'Enter' && nearPortal) {
       e.preventDefault();
       enterPortal();
     }
-    // Prevent arrow key scrolling while game is visible
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) {
-      const rect = canvas.getBoundingClientRect();
+      const rect = renderer.domElement.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         e.preventDefault();
       }
@@ -1806,25 +1989,88 @@ body {
   });
   window.addEventListener('keyup', function(e) { keys[e.code] = false; });
 
-  // Mobile d-pad
-  var dpadBtns = document.querySelectorAll('.dpad-btn');
-  var dirMap = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
-  dpadBtns.forEach(function(btn) {
-    var dir = btn.getAttribute('data-dir');
-    var code = dirMap[dir];
-    btn.addEventListener('touchstart', function(e) { e.preventDefault(); keys[code] = true; }, { passive: false });
-    btn.addEventListener('touchend', function(e) { e.preventDefault(); keys[code] = false; }, { passive: false });
-    btn.addEventListener('mousedown', function(e) { keys[code] = true; });
-    btn.addEventListener('mouseup', function(e) { keys[code] = false; });
-  });
-  var actionBtn = document.querySelector('.dpad-action');
-  actionBtn.addEventListener('touchstart', function(e) { e.preventDefault(); enterPortal(); }, { passive: false });
-  actionBtn.addEventListener('click', function() { enterPortal(); });
+  // Mobile enter button
+  document.getElementById('mobile-enter').addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    enterPortal();
+  }, { passive: false });
+  document.getElementById('mobile-enter').addEventListener('click', function() { enterPortal(); });
 
-  // Resize
-  window.addEventListener('resize', resize);
-  resize();
-  gameLoop();
+  // Virtual joystick
+  (function setupJoystick() {
+    const joystick = document.getElementById('mobile-joystick');
+    const knob = document.getElementById('joystick-knob');
+    const radius = 50;
+    let touchId = null;
+    let centerX = 0, centerY = 0;
+
+    function onStart(e) {
+      e.preventDefault();
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      touchId = t.identifier || 0;
+      const rect = joystick.getBoundingClientRect();
+      centerX = rect.left + rect.width / 2;
+      centerY = rect.top + rect.height / 2;
+      joystickActive = true;
+    }
+    function onMove(e) {
+      if (!joystickActive) return;
+      e.preventDefault();
+      let t;
+      if (e.changedTouches) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === touchId) { t = e.changedTouches[i]; break; }
+        }
+        if (!t) return;
+      } else { t = e; }
+      let dx = t.clientX - centerX;
+      let dy = t.clientY - centerY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > radius) { dx = dx / dist * radius; dy = dy / dist * radius; }
+      joystickDX = dx / radius;
+      joystickDY = dy / radius;
+      knob.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px))';
+    }
+    function onEnd(e) {
+      joystickActive = false;
+      joystickDX = 0;
+      joystickDY = 0;
+      knob.style.transform = 'translate(-50%, -50%)';
+    }
+    joystick.addEventListener('touchstart', onStart, { passive: false });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+    window.addEventListener('touchcancel', onEnd);
+  })();
+
+  // ---- RESIZE ----
+  function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  window.addEventListener('resize', onResize);
+
+  // ---- INIT & RENDER LOOP ----
+  buildFloor();
+  buildWalls();
+  buildCeiling();
+  buildBookshelves();
+  buildPortals();
+  buildFox();
+  setupLighting();
+  buildParticles();
+
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
+    updateFox();
+    updateParticles(time);
+    updatePortalLabels();
+    renderer.render(scene, camera);
+  }
+  animate();
 })();
 </script>
 
