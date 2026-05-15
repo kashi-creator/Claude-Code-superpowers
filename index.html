@@ -1148,42 +1148,41 @@
       <div class="skill-badges">
         <span class="badge badge-godtier">God Tier</span>
         <span class="badge badge-xp">350 XP</span>
-        <span class="badge badge-time">45 min</span>
+        <span class="badge badge-time">30 min setup</span>
       </div>
     </div>
-    <div class="skill-name">CortexOS Framework</div>
-    <div class="skill-desc">Fox's team of agents grew to 10, then 20.</div>
+    <div class="skill-name">Cortext</div>
+    <div class="skill-desc">Persistent 24/7 Claude Code agents you talk to over Telegram, with their own memory, coordinating on a shared task board.</div>
     <div class="skill-expanded">
       <div class="skill-expanded-inner">
-        <div class="story-carousel">
-          <div class="story-carousel-header">
-            <span>🦊</span><span class="story-carousel-label">FOX &amp; TURTLE STORY</span><span>🐢</span>
-          </div>
-          <div class="carousel-track" id="carousel-cortexos">
-            <div class="carousel-slide active" data-index="0"><img loading="lazy" src="stories/module4/cortexos/slide_1_hero.png" alt="" /></div>
-            <div class="carousel-slide" data-index="1"><img loading="lazy" src="stories/module4/cortexos/slide_2_story.png" alt="" /></div>
-            <div class="carousel-slide" data-index="2"><img loading="lazy" src="stories/module4/cortexos/slide_3_commands.png" alt="" /></div>
-            <div class="carousel-slide" data-index="3"><img loading="lazy" src="stories/module4/cortexos/slide_4_tip.png" alt="" /></div>
-          </div>
-          <div class="carousel-nav">
-            <button class="carousel-btn" data-carousel-prev="cortexos" aria-label="Previous">←</button>
-            <div class="carousel-dots">
-              <span class="carousel-dot active" data-index="0"></span><span class="carousel-dot" data-index="1"></span><span class="carousel-dot" data-index="2"></span><span class="carousel-dot" data-index="3"></span>
-            </div>
-            <button class="carousel-btn" data-carousel-next="cortexos" aria-label="Next">→</button>
-          </div>
-        </div>
-        <p class="story-carousel-text">Fox's team of agents grew to 10, then 20. Managing them all was chaos. Turtle designed an operating system for the AI workforce - routing tasks, handling errors, scaling automatically. "CortexOS does not replace your agents," Turtle said. "It makes them an army."</p>
+        <p class="story-carousel-text">Cortext is a system for running persistent 24/7 Claude Code agents that live on your machine, talk to you over Telegram, coordinate with each other on a shared task board, and run a web dashboard so you can see what they're up to. The agents have their own memory — they know what they worked on yesterday and they pick up where they left off without you having to explain anything. Still a work in progress. Sharp edges exist. But it works well, and the community is building on top of it fast.</p>
         <div class="skill-steps">
-          <h4>Step by Step</h4>
-          <ol><li>Install the CortexOS framework</li><li>Define agent roles and their capabilities</li><li>Create workflow graphs that show how tasks flow between agents</li><li>Set up error handling: what happens when an agent fails?</li><li>Monitor everything through the CortexOS dashboard</li><li>Scale horizontally - add more agents as your workload grows</li></ol>
+          <h4>What You Actually Get</h4>
+          <ol>
+            <li><strong>Orchestrator</strong> — the one you text to organize the whole fleet. Breaks goals into tasks, delegates to other agents, tracks progress, sends you briefings. It checks in on you, not the other way around.</li>
+            <li><strong>Analyst</strong> — watches everything the other agents do and runs deep reviews every night. Proposes improvements, flags problems, and pulls the latest community skills automatically. Can submit your fixes back upstream as PRs.</li>
+            <li><strong>Specialist agents</strong> — add as many as you want. Migrate any OpenClaw or Hermes setup in as a specialist.</li>
+            <li><strong>Shared task board + real-time agent chat</strong> — see what's in progress, done, or blocked on the dashboard.</li>
+            <li><strong>Memory system</strong> — daily log + long-term index. Agents read their own memory before each session. The longer you run Cortext, the better your agents get.</li>
+            <li><strong>Skill catalog</strong> — content pipelines, research, CRM, email, social, KB management, trading. Browse and install from your agent. Skills you build get shared back via the Analyst.</li>
+          </ol>
         </div>
-        <div class="skill-tip">CortexOS is for when you have 5+ agents doing complex coordinated work. If you only have 1-2 agents, this is overkill. Build up to it gradually.</div>
+        <div class="skill-steps">
+          <h4>Installing Cortext</h4>
+          <ol>
+            <li>Run the one-liner below (Mac/Linux). Windows PowerShell variant is on the GitHub README.</li>
+            <li>Open the installed Cortext folder in Claude Code, type <code>/onboarding</code>.</li>
+            <li>The agent walks you through Telegram, first agent config, memory structure, crons — about 30 minutes.</li>
+            <li>After that you do not type commands. Your agents handle everything. You just talk to them.</li>
+          </ol>
+        </div>
+        <div class="skill-tip">Run <code>/onboarding</code> first and let it finish completely. Skip it and you will spend a lot of time debugging things that should have been automatic. Read your agent's memory files at <code>memory/YYYY-MM-DD.md</code> — if memory looks thin, tell your agent to be more detailed. Agents that write sparse memory basically restart every session.</div>
         <div class="install-row">
-          <code class="install-cmd cmd-code">git clone https://github.com/your-org/cortexos</code>
-          <button class="copy-btn" data-copy="git clone https://github.com/your-org/cortexos">Copy</button>
+          <code class="install-cmd cmd-code">curl -fsSL https://raw.githubusercontent.com/grandamenium/cortextos/main/install.mjs | node</code>
+          <button class="copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/grandamenium/cortextos/main/install.mjs | node">Copy</button>
         </div>
-        
+        <p class="story-carousel-text" style="margin-top: 14px;">Open source — framework, agent templates, and community skill catalog all on GitHub: <a href="https://github.com/grandamenium/cortextos" target="_blank" rel="noopener">github.com/grandamenium/cortextos</a></p>
+
         <button class="complete-btn" data-complete-id="cortexos" data-complete-xp="350">Mark Complete · +350 XP</button>
       </div>
     </div>
